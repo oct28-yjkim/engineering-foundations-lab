@@ -13,6 +13,8 @@
 
 각 강의의 “다중 노드”, “별도 환경”, “구현 과제” 표시는 E0만으로 완료되지 않습니다. 상위 환경의 IaC·Compose·설정·운영 명령 작성 자체가 평가 결과물입니다.
 
+Kafka는 [별도 Compose](../../streaming/kafka/compose.yaml)와 [로컬 실습 안내](../../streaming/kafka/labs/local-lab.md)를 제공합니다. 이 문서의 `docker compose` 명령은 루트의 두 DB에만 적용됩니다. Kafka는 `docker compose -f streaming/kafka/compose.yaml ...`로 관리하며 프로젝트·네트워크·volume을 분리합니다. 기본 상태에서는 PostgreSQL → Kafka → ClickHouse 파이프라인이 만들어지지 않습니다. connector와 네트워크 연결은 [통합 연구](capstone.md)의 구현 과제입니다.
+
 트랙별 표기는 PostgreSQL의 S가 E0, E가 선택 확장을 포함한 E1, T가 E2, B가 E3에 대응합니다. ClickHouse의 LOCAL은 E0, CLUSTER-DESIGN은 E2에 해당하며 OPS-DESIGN은 과제에 따라 E1/E2가 필요합니다. SOURCE의 정적 읽기는 파일 탐색으로 가능하지만 직접 빌드·디버깅은 E3 준비가 필요합니다.
 
 Docker에 사용할 메모리는 입문 두 서비스를 합쳐 6–8GiB 정도를 출발점으로 삼되, 이는 보장된 최소 요구사항이 아닙니다. 실제 소비량을 `docker stats --no-stream`으로 확인합니다. 규모 확대는 1배→2배→10배로 진행하고 disk/memory 예산을 먼저 정합니다. Keeper 다수 노드와 replica를 구성하는 경우 E0 예산을 그대로 적용하지 않습니다.
