@@ -1,0 +1,51 @@
+name: engineering-foundations-lab
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.8
+    container_name: efl-clickhouse
+    environment:
+      CLICKHOUSE_DB: lab
+      CLICKHOUSE_USER: lab
+      CLICKHOUSE_PASSWORD: lab_password
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ./databases/clickhouse/sql/00_setup.sql:/docker-entrypoint-initdb.d/00_setup.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --user lab --password lab_password --query 'SELECT 1'"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  postgres:
+    image: postgres:18
+    container_name: efl-postgres
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - track_io_timing=on
+    environment:
+      POSTGRES_DB: lab
+      POSTGRES_USER: lab
+      POSTGRES_PASSWORD: lab_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./databases/postgresql/sql/00_setup.sql:/docker-entrypoint-initdb.d/00_setup.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lab -d lab"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  clickhouse-data:
+  postgres-data:
+
