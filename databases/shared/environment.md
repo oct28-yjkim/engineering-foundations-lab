@@ -99,4 +99,6 @@ docker compose up -d
 
 ## 검증 상태의 해석
 
+Terraform·Terragrunt의 선택 실습은 [IaC 전용 환경](../../infrastructure/shared/environment.md)에서 진행합니다. DB/Kafka Compose와 state/cache의 수명 주기를 공유하지 않습니다. CPU 모형과 실제 로컬 CLI 검증, 미검증 cloud backend를 구분합니다.
+
 문서의 “예상”과 “통과 기준”은 독자가 수행할 실험 조건입니다. 해당 컴퓨터의 실행 결과를 미리 제공한 것이 아닙니다. Compose 구문 검사는 엔진 실행·이미지 다운로드·SQL 문법 실행·복구 성공을 대신하지 않습니다. 실험 보고서에 수행한 범위와 미수행 범위를 따로 남깁니다.

@@ -5,5 +5,8 @@
 *.mjs text eol=lf
 *.json text eol=lf
 *.py text eol=lf
+*.tf text eol=lf
+*.hcl text eol=lf
+infrastructure/shared/terraform.rc text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf

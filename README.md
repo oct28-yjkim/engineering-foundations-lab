@@ -1,6 +1,6 @@
 # Engineering Foundations Lab — Zero to Hero
 
-데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, Apache Kafka, Sentry, Supabase, Apache Spark, Databricks와 LLM 논문 실험 트랙을 제공합니다.
+데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, Apache Kafka, Sentry, Supabase, Apache Spark, Databricks, Terraform, Terragrunt와 LLM 논문 실험 트랙을 제공합니다.
 
 SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 스트리밍, 관측, 인증·인가, 성능 측정, 소스 코드 분석을 연결합니다. 가장 높은 단계의 완료 기준은 낯선 현상을 최소 재현으로 줄이고, 원인을 코드와 측정값으로 설명하며, 수정안의 회귀를 검증하는 것입니다.
 
@@ -18,11 +18,14 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | [Supabase](platforms/supabase/README.md) | 14개 모듈, PostgreSQL·Auth/JWT·RLS·Realtime·Storage·Functions·복구 |
 | [Apache Spark](data-processing/spark/README.md) | 14개 모듈, 실행 엔진·Catalyst·shuffle·AQE·memory·Structured Streaming |
 | [Databricks](platforms/databricks/README.md) | 14개 모듈, Delta·Unity Catalog·Lakeflow·Photon·배포·비용·복구 |
+| [Terraform](infrastructure/terraform/README.md) | 14개 모듈, HCL·graph·provider·plan/apply·state·모듈·복구 |
+| [Terragrunt](infrastructure/terragrunt/README.md) | 14개 모듈, include·dependency·unit/stack·실행 순서·CI·부분 실패 |
 | [LLM 논문 실험](ai/llm-paper-lab/README.md) | 핵심 논문 20편·14모듈, CPU 실험 6개와 GPU/API 선택 확장 |
 | [실험 방법](databases/shared/experiment-method.md) | 재현성, 측정 오차, 정확성 oracle, 반증 |
 | [통합 연구 8주](databases/shared/capstone.md) | PostgreSQL → Kafka → ClickHouse, CDC·복구·설계 검증 |
 | [보안·관측 앱 연구 8주](capstones/secure-observable-app.md) | Supabase + Sentry, 테넌트 격리·privacy·장애·전체 상태 복구 |
 | [Lakehouse 연구 8주](capstones/governed-lakehouse.md) | Spark + Databricks, version·권한·재처리·비용·복원 |
+| [인프라 연구 8주](capstones/reproducible-infrastructure.md) | Terraform + Terragrunt, 변경 승인·state 소유권·부분 적용·복구 |
 | [환경과 실행 범위](databases/shared/environment.md) | 실행 명령, 버전 고정, 제공/미제공 환경 |
 
 ## 시간 계획
@@ -38,6 +41,8 @@ LLM 논문 실험은 별도의 **28주·336시간 선택 트랙**입니다. [논
 Spark와 Databricks도 각각 **28주·14모듈·336시간**의 선택 트랙입니다. [분산 처리 경로](data-processing/README.md)는 Spark 원리 → Databricks 플랫폼 순서를 권장하며, 두 트랙만 순차로 56주입니다. 공통 기초·선택 8주 통합 연구는 별도이고 기존 경로에 자동 가산하지 않습니다. Spark 4.0.4 로컬 실습과 Databricks Runtime의 관리형 기능을 동일 환경으로 취급하지 않습니다.
 
 기술 한 개에 집중하는 경우 공통 기반 8주와 해당 트랙 28주를 먼저 진행합니다. 소스 빌드, 별도 복제 환경 구성, 실제 업무 경험을 더하면 기간이 늘어날 수 있습니다. 숙련도는 자료를 읽은 횟수보다 재현 가능한 결과물로 평가합니다.
+
+Terraform과 Terragrunt는 각각 **28주·14모듈·336시간**의 선택 과정입니다. [인프라 경로](infrastructure/README.md)는 Terraform 실행·state 원리 → Terragrunt의 여러 unit 운영 순서이며 순차 56주입니다. 다른 제품 경로나 캡스톤 기간에 자동 합산하지 않습니다.
 
 ## 첫 실습
 
@@ -95,6 +100,15 @@ python -B -m unittest discover -s data-processing/spark/labs -p "test_*.py" -v
 
 skew·version merge·watermark·budget의 작은 모형이며 실제 Spark/Delta 실행이 아닙니다. 별도 준비 후 사용할 Spark 배치·file streaming 코드와 [관리형 Delta SQL 예제](platforms/databricks/labs/README.md)도 제공합니다. Java/PySpark 설치와 Databricks 계정·compute 생성은 자동 수행하지 않습니다.
 
+Terraform/Terragrunt는 [CPU 모형](infrastructure/shared/labs/README.md)으로 시작하거나 [실제 CLI 준비](infrastructure/shared/environment.md) 후 클라우드 없는 built-in 리소스 실습을 선택할 수 있습니다.
+
+```text
+python -B infrastructure/shared/labs/offline_lab.py --lab all
+python -B -m unittest discover -s infrastructure/shared/labs -p "test_*.py" -v
+```
+
+실제 CLI 예제는 Terraform 1.16.5·Terragrunt 1.1.6의 로컬 state만 사용합니다. 원격 backend·cloud 계정·유료 자원은 자동 구성하지 않습니다. plan/state에는 비밀이 들어갈 수 있으므로 실행 산출물을 소스와 분리합니다.
+
 ## 저장소에 제공되는 것
 
 - 단일 노드 PostgreSQL 18 및 ClickHouse 26.8 Compose 구성과 결정적으로 생성되는 합성 데이터
@@ -102,6 +116,7 @@ skew·version merge·watermark·budget의 작은 모형이며 실제 Spark/Delta
 - Sentry의 네트워크 없는 sampling 모델, Supabase의 18개 권한 기대 결과 fixture와 제품별 준비 지침
 - LLM 핵심 논문 20편의 읽기·실험 지도, CPU 실험 6개와 단위 테스트, GPU/API 확장·재현 보고서 지침
 - Spark/Databricks 심화 과정, CPU 계약 모형 4개, 선택 실행용 실제 Spark 배치·스트리밍 코드와 관리형 Delta SQL fixture
+- Terraform/Terragrunt 심화 과정, CPU 모형 4개, built-in Terraform 실제 테스트와 로컬 Terragrunt 2-unit 실습
 - 기술별 커리큘럼, 원리·실험 강의, 소스 탐색 지도, 단계별 평가
 - 기초 SQL 문제/답안, 읽기 전용 내부 상태 관찰 SQL
 - 실험 기록 양식과 통합 연구 프로젝트 요구사항

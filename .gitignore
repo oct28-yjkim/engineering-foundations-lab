@@ -6,3 +6,19 @@
 /lab-workspaces/
 __pycache__/
 *.pyc
+
+# IaC runtime artifacts can contain secrets. Keep provider lock selections tracked.
+.terraform/
+.terragrunt-cache/
+.terragrunt-stack/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfplan.json
+*.tfvars
+*.tfvars.json
+crash.log
+crash.*.log
+.terraform.tfstate.lock.info
+!*.tfvars.example
+!*.tfvars.json.example
