@@ -4,6 +4,10 @@ AI 시스템의 품질·비용·지연·안전성을 논문의 주장과 실제 
 
 현재 제공하는 [LLM 논문 실험 트랙](llm-paper-lab/README.md)은 핵심 논문 20편, 28주·14모듈, 심화 강의 7개와 Python 표준 라이브러리 기반 CPU 실험 6개로 구성됩니다. GPU 학습·서빙과 외부 API는 선택 확장입니다. 기본 실행에서 모델·데이터를 내려받거나 외부 요청을 보내지 않습니다.
 
+[MCP 심화 트랙](mcp/README.md)은 별도의 **28주·14모듈·7강·336시간**입니다. Model Context Protocol의 명세·wire·SDK·앱 정책을 분리하고 tool/resource/prompt, stdio/HTTP, 인증·권한, cache·취소·재시도, 호환성·운영을 연결합니다. CPU 모형 4개와 선택 공식 SDK stdio fixture를 제공하며 모델/API 없이 실행합니다. 두 트랙을 순차로 모두 하면 56주이며 기초·선택 캡스톤은 별도입니다.
+
+MCP의 기준은 protocol 2026-07-28, SDK 2.3.0입니다. 2025-11-25 handshake는 비교 과정이며 현재 stateless core와 섞지 않습니다. [버전 계약](mcp/compatibility.md)과 [실험 검증 범위](mcp/labs/validation.md)를 확인합니다.
+
 ## 기존 기술과 연결할 질문
 
 | 기술 | AI 시스템에서의 실험 질문 |
@@ -13,5 +17,7 @@ AI 시스템의 품질·비용·지연·안전성을 논문의 주장과 실제 
 | [ClickHouse](../databases/clickhouse/README.md) | 모델·prompt·dataset별 품질/비용/latency 비교에서 분모와 누락을 보존하는가? |
 | [Sentry](../observability/sentry/README.md) | 요청 실패와 모델 오답을 구별하며 prompt·사용자 데이터가 telemetry로 새지 않는가? |
 | [Supabase](../platforms/supabase/README.md) | 검색 전에 tenant 권한을 적용하며 RLS·Storage·API의 경계가 일치하는가? |
+| [MCP](mcp/README.md) | protocol 성공·모델의 도구 선택·업무 허가·실제 실행 결과를 분리하는가? |
+| [OpenBao/Vault](../security/README.md) | 모델에 비밀을 노출하지 않고 trusted tool 실행 경계에만 credential을 전달하는가? |
 
 이 연결은 학습자가 선택할 통합 과제입니다. CPU 논문 실험에 Docker·DB·모델 API·전체 플랫폼 구축을 필수로 요구하지 않습니다. 기존 GPT 구현이나 에이전트 런타임 학습에서 만든 코드를 가져오는 경우에도 입력·버전·평가 계약을 새로 기록합니다.

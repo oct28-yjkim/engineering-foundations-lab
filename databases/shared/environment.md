@@ -107,6 +107,8 @@ docker compose up -d
 
 ## 검증 상태의 해석
 
+[MCP 실습](../../ai/mcp/labs/README.md)은 이 DB Compose와 독립입니다. CPU 모델은 Python 표준 라이브러리, 선택 stdio 실습은 별도 venv의 공식 MCP SDK 2.3.0을 사용합니다. DB·LLM API·OAuth 서버·현재 앱 연결을 자동 구성하지 않으며 실제 DB 도구 연동은 별도 합성 대상과 최소 권한을 준비하는 과제입니다.
+
 Terraform·Terragrunt의 선택 실습은 [IaC 전용 환경](../../infrastructure/shared/environment.md)에서 진행합니다. DB/Kafka Compose와 state/cache의 수명 주기를 공유하지 않습니다. CPU 모형과 실제 로컬 CLI 검증, 미검증 cloud backend를 구분합니다.
 
 문서의 “예상”과 “통과 기준”은 독자가 수행할 실험 조건입니다. 해당 컴퓨터의 실행 결과를 미리 제공한 것이 아닙니다. Compose 구문 검사는 엔진 실행·이미지 다운로드·SQL 문법 실행·복구 성공을 대신하지 않습니다. 실험 보고서에 수행한 범위와 미수행 범위를 따로 남깁니다.

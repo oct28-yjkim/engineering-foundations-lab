@@ -1,0 +1,3 @@
+# Optional local stdio fixture; direct dependency pin, NOT a transitive lock.
+# Review/lock resolved dependencies in an isolated environment before reuse.
+mcp==2.3.0

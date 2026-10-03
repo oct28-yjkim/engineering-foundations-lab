@@ -1,6 +1,6 @@
 # Engineering Foundations Lab — Zero to Hero
 
-데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, MySQL, Apache Kafka, Sentry, Supabase, Apache Spark, Databricks, Terraform, Terragrunt, OpenSearch, OpenBao, HashiCorp Vault와 LLM 논문 실험 트랙을 제공합니다.
+데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, MySQL, Apache Kafka, Sentry, Supabase, Apache Spark, Databricks, Terraform, Terragrunt, OpenSearch, OpenBao, HashiCorp Vault, MCP(Model Context Protocol)와 LLM 논문 실험 트랙을 제공합니다.
 
 SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 스트리밍, 관측, 인증·인가, 성능 측정, 소스 코드 분석을 연결합니다. 가장 높은 단계의 완료 기준은 낯선 현상을 최소 재현으로 줄이고, 원인을 코드와 측정값으로 설명하며, 수정안의 회귀를 검증하는 것입니다.
 
@@ -26,6 +26,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | [HashiCorp Vault](security/vault/README.md) | 14개 모듈, 비밀 수명·workload 인증·최소 권한·암호 서비스·HA·플러그인·edition 경계 |
 | [비밀·신원 보안 경로](security/README.md) | 제품 비교, 공통 CPU 실험과 격리 dev 환경 |
 | [LLM 논문 실험](ai/llm-paper-lab/README.md) | 핵심 논문 20편·14모듈, CPU 실험 6개와 GPU/API 선택 확장 |
+| [MCP](ai/mcp/README.md) | 14개 모듈, 명세·tools/resources/prompts·stdio/HTTP·인증·권한·cache·재시도·상호운용 |
 | [실험 방법](databases/shared/experiment-method.md) | 재현성, 측정 오차, 정확성 oracle, 반증 |
 | [통합 연구 8주](databases/shared/capstone.md) | PostgreSQL → Kafka → ClickHouse, CDC·복구·설계 검증 |
 | [보안·관측 앱 연구 8주](capstones/secure-observable-app.md) | Supabase + Sentry, 테넌트 격리·privacy·장애·전체 상태 복구 |
@@ -34,6 +35,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | [검색 품질·복구 연구 8주](capstones/search-quality-recovery.md) | OpenSearch, relevance·freshness·권한·재처리·복원 |
 | [MySQL 트랜잭션·복구 연구 8주](capstones/mysql-transaction-recovery.md) | 불변식·재시도·동시 실행·복제 지연·독립 복원 |
 | [비밀·신원·복구 연구 8주](capstones/secrets-identity-recovery.md) | OpenBao 또는 Vault, 권한·동적 계정 회수·키 수명·감사·독립 복원 |
+| [MCP 도구 경계·장애 연구 8주](capstones/mcp-tool-boundary-recovery.md) | principal 격리·schema·cache·취소·업무 idempotency·호환성 |
 | [환경과 실행 범위](databases/shared/environment.md) | 실행 명령, 버전 고정, 제공/미제공 환경 |
 
 ## 시간 계획
@@ -57,6 +59,8 @@ OpenSearch도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. [�
 MySQL도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. InnoDB의 저장·동시성·실행·복구를 깊이 있게 다루며 MySQL 8.4 LTS를 기준으로 합니다. 기존 72주 경로에 자동 추가하지 않고, PostgreSQL과 같은 isolation 이름도 실제 보장과 내부 구현을 따로 비교합니다.
 
 OpenBao와 HashiCorp Vault도 각각 **28주·14모듈·7강·336시간**의 선택 트랙입니다. 두 제품을 순차 이수하면 56주이며 [공통 원리·제품 차이](security/shared/comparison.md)를 함께 학습합니다. 기본 모형은 공유하지만 제품별 구현과 검증은 분리합니다. 마지막 2주 미니 연구와 별도 선택 캡스톤 8주는 다르며 기존 경로에 자동 합산하지 않습니다.
+
+MCP도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. protocol 2026-07-28의 stateless core와 2025-11-25 classic 방식을 비교하고, SDK 구현과 앱의 권한/승인을 분리합니다. LLM 논문 경로에 자동 가산하지 않으며 기본 실습에 모델·유료 API가 필요하지 않습니다.
 
 ## 첫 실습
 
@@ -150,6 +154,15 @@ python -B -m unittest discover -s security/shared/labs -p "test_*.py" -v
 
 선택 실행용 OpenBao 2.7.1·Vault Community 2.1.1 dev Compose와 KV/CAS·제한 token 권한 runner도 제공합니다. 컨테이너 외부 네트워크·host port·영속 volume 없이 합성 값만 사용합니다. 자동 unseal·공개 dummy root·인메모리 구성은 운영용이 아니며 seal/Raft/내구성 검증을 대신하지 않습니다. [환경 경계](security/shared/environment.md)와 [검증 기록](security/shared/labs/validation.md)을 확인합니다.
 
+MCP는 [CPU 모형 4개](ai/mcp/labs/README.md)부터 시작합니다.
+
+```text
+python -B ai/mcp/labs/offline_lab.py --lab all
+python -B -m unittest discover -s ai/mcp/labs -p "test_*.py" -v
+```
+
+선택 공식 Python SDK 2.3.0 stdio 서버·클라이언트 fixture도 제공합니다. 합성 재고 tool·resource·prompt와 오류를 검산하며 외부 모델·API·현재 앱의 MCP 연결을 사용하지 않습니다. [별도 venv 설치](ai/mcp/environment.md)와 [CPU/mock/실제 SDK 검증](ai/mcp/labs/validation.md)을 구분합니다. HTTP/OAuth·MRTR·확장·교차 host는 별도 심화 과제입니다.
+
 ## 저장소에 제공되는 것
 
 - 단일 노드 PostgreSQL 18 및 ClickHouse 26.8 Compose 구성과 결정적으로 생성되는 합성 데이터
@@ -161,6 +174,7 @@ python -B -m unittest discover -s security/shared/labs -p "test_*.py" -v
 - OpenSearch 심화 과정, CPU 모형 4개, 선택 실행용 단일 노드 Compose·REST 정확성 fixture, BM25/RRF/HNSW 논문·소스 지도
 - MySQL 심화 과정, CPU 모형 4개, 선택 실행용 단일 노드 Compose·SQL 정확성 fixture, InnoDB 소스·격리/복구/최적화 논문 지도
 - OpenBao/Vault 각각의 심화 과정, 공통 CPU 모형 4개, 격리 dev Compose·KV/ACL fixture, 제품별 소스·보안/정족수 논문·복구 연구
+- MCP 심화 과정, CPU 모형 4개, 공식 SDK stdio fixture, 명세/SDK/표준 소스 지도, revision 호환성·도구 경계 연구
 - 기술별 커리큘럼, 원리·실험 강의, 소스 탐색 지도, 단계별 평가
 - 기초 SQL 문제/답안, 읽기 전용 내부 상태 관찰 SQL
 - 실험 기록 양식과 통합 연구 프로젝트 요구사항
