@@ -1,76 +1,53 @@
-# Engineering Foundations Lab
+# Engineering Foundations Lab — Zero to Hero
 
-업무에서 자주 접하는 데이터베이스와 클라우드 기술을 **개념 → 실습 → 성능 분석 → 운영 판단** 순서로 익히는 저장소입니다.
+데이터베이스를 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL과 ClickHouse 트랙을 제공합니다.
 
-## 현재 학습 트랙
+SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 성능 측정, 소스 코드 분석을 하나의 경로로 연결합니다. 가장 높은 단계의 완료 기준은 낯선 현상을 최소 재현으로 줄이고, 원인을 코드와 측정값으로 설명하며, 수정안의 회귀를 검증하는 것입니다.
 
-| 트랙 | 핵심 목표 | 시작 문서 |
-| --- | --- | --- |
-| ClickHouse | 대규모 분석 워크로드의 모델링·집계·운영 | [`databases/clickhouse`](databases/clickhouse/README.md) |
-| PostgreSQL | 관계형 모델링·트랜잭션·인덱스·운영 | [`databases/postgresql`](databases/postgresql/README.md) |
+## 시작할 곳
 
-## 빠른 시작
+| 문서 | 역할 |
+| --- | --- |
+| [전체 교육 과정](databases/README.md) | 수준 진단, 72주 경로, 통과 기준 |
+| [공통 기초 8주](databases/shared/foundations.md) | SQL·자료구조·OS·확률·분산 시스템의 연결 |
+| [PostgreSQL](databases/postgresql/README.md) | 14개 모듈, 저장·MVCC·planner·WAL·운영 |
+| [ClickHouse](databases/clickhouse/README.md) | 14개 모듈, MergeTree·실행 pipeline·집계·분산 |
+| [실험 방법](databases/shared/experiment-method.md) | 재현성, 측정 오차, 정확성 oracle, 반증 |
+| [통합 연구 8주](databases/shared/capstone.md) | PostgreSQL → 분석 저장소, CDC·복구·설계 검증 |
+| [환경과 실행 범위](databases/shared/environment.md) | 실행 명령, 버전 고정, 제공/미제공 환경 |
 
-준비물은 실행 중인 Docker Desktop과 Docker Compose입니다.
+## 시간 계획
 
-```bash
-docker compose up -d
-docker compose ps
-```
+처음부터 두 트랙을 순차로 공부한다면 공통 기반 8주 + PostgreSQL 28주 + ClickHouse 28주 + 통합 연구 8주, 총 **72주·약 864시간**을 기준으로 합니다. 주 12시간 가정이며 기간은 보장치가 아닙니다. 이미 익힌 내용은 진단 과제를 통과하면 줄이고, 복구·분산 실험에 실패하면 해당 모듈을 반복합니다.
 
-ClickHouse 접속:
+기술 한 개에 집중하는 경우 공통 기반 8주와 해당 트랙 28주를 먼저 진행합니다. 소스 빌드, 별도 복제 환경 구성, 실제 업무 경험을 더하면 기간이 늘어날 수 있습니다. 숙련도는 자료를 읽은 횟수보다 재현 가능한 결과물로 평가합니다.
 
-```bash
-docker compose exec clickhouse clickhouse-client \
-  --user lab --password lab_password --database lab
-```
+## 첫 실습
 
-PostgreSQL 접속:
-
-```bash
-docker compose exec postgres psql -U lab -d lab
-```
-
-초기 SQL은 컨테이너의 데이터 볼륨이 처음 생성될 때 한 번 실행됩니다. 처음부터 다시 실습하려면 아래 명령으로 **이 저장소가 만든 볼륨만** 삭제한 뒤 재시작합니다.
-
-```bash
-docker compose down -v
-docker compose up -d
-```
-
-> 비밀번호는 로컬 실습 전용입니다. 외부에 노출되는 환경에서는 반드시 별도 비밀 값으로 교체하세요.
-
-## 권장 학습 방식
-
-1. 기술별 `README.md`의 핵심 개념과 판단 기준을 읽습니다.
-2. `sql/01_exercises.sql`을 정답 없이 실행합니다.
-3. 실행 계획과 시스템 지표를 먼저 해석합니다.
-4. `sql/02_solutions.sql`과 비교하고 차이를 기록합니다.
-5. 각 트랙의 미니 프로젝트와 운영 장애 시나리오를 수행합니다.
-
-정답 SQL 자체보다 다음 질문에 답할 수 있는지를 기준으로 학습합니다.
-
-- 왜 이 데이터 모델과 인덱스/정렬 키를 선택했는가?
-- 데이터가 10배가 되면 무엇이 먼저 병목이 되는가?
-- 변경이 쓰기 성능, 저장 공간, 운영 복잡도에 주는 비용은 무엇인가?
-- 운영 환경에 적용하기 전에 어떤 지표와 실패 조건을 확인해야 하는가?
-
-## 저장소 구조
+실행 중인 Docker Desktop의 Linux 컨테이너 엔진과 Docker Compose v2가 필요합니다. 저장소 루트에서 실행합니다. 아래 명령은 PowerShell과 Bash 모두에서 한 줄씩 사용할 수 있습니다.
 
 ```text
-.
-├── compose.yaml
-└── databases
-    ├── clickhouse
-    │   ├── README.md
-    │   └── sql
-    │       ├── 00_setup.sql
-    │       ├── 01_exercises.sql
-    │       └── 02_solutions.sql
-    └── postgresql
-        ├── README.md
-        └── sql
-            ├── 00_setup.sql
-            ├── 01_exercises.sql
-            └── 02_solutions.sql
+docker compose config --quiet
+docker compose up -d
+docker compose ps
+docker compose exec postgres psql -X -v ON_ERROR_STOP=1 -U lab -d lab
 ```
+
+PostgreSQL 안에서 `SELECT version();`과 `SELECT count(*) FROM commerce.orders;`를 확인하고 `\q`로 나옵니다. ClickHouse는 다음 명령으로 접속합니다.
+
+```text
+docker compose exec clickhouse clickhouse-client --user lab --password lab_password --database lab
+```
+
+`SELECT version();`과 `SELECT count() FROM lab.events;`를 확인합니다. 상세 절차와 SQL 파일 실행은 [환경 안내](databases/shared/environment.md)를 따릅니다.
+
+## 저장소에 제공되는 것
+
+- 단일 노드 PostgreSQL 18 및 ClickHouse 26.8 Compose 구성과 결정적으로 생성되는 합성 데이터
+- 기술별 커리큘럼, 원리·실험 강의, 소스 탐색 지도, 단계별 평가
+- 기초 SQL 문제/답안, 읽기 전용 내부 상태 관찰 SQL
+- 실험 기록 양식과 통합 연구 프로젝트 요구사항
+
+복제 클러스터, Keeper, CDC connector, 부하 생성기, 디버그 빌드, 모니터링 스택은 심화 단계에서 학습자가 구성할 과제입니다. 현재 Compose를 실행하는 것만으로 이 구성들이 만들어지지는 않습니다. 문서에 기재한 기대 관찰값과 실행 계획은 실측 결과와 구분합니다.
+
+기존 `sql/00_setup.sql`~`02_solutions.sql`은 입문 진단 및 워밍업 자료로 유지합니다. 기존 볼륨에는 바뀐 초기 데이터가 자동 반영되지 않습니다. 보존·재초기화 절차는 [환경 안내](databases/shared/environment.md)에 있습니다.

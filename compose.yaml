@@ -10,11 +10,12 @@ services:
       CLICKHOUSE_PASSWORD: lab_password
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
     ports:
-      - "8123:8123"
-      - "9000:9000"
+      - "127.0.0.1:8123:8123"
+      - "127.0.0.1:9000:9000"
     volumes:
       - clickhouse-data:/var/lib/clickhouse
       - ./databases/clickhouse/sql/00_setup.sql:/docker-entrypoint-initdb.d/00_setup.sql:ro
+      - ./databases/clickhouse/sql:/lab/sql:ro
     healthcheck:
       test: ["CMD-SHELL", "clickhouse-client --user lab --password lab_password --query 'SELECT 1'"]
       interval: 5s
@@ -35,10 +36,11 @@ services:
       POSTGRES_USER: lab
       POSTGRES_PASSWORD: lab_password
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql
       - ./databases/postgresql/sql/00_setup.sql:/docker-entrypoint-initdb.d/00_setup.sql:ro
+      - ./databases/postgresql/sql:/lab/sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U lab -d lab"]
       interval: 5s
@@ -48,4 +50,3 @@ services:
 volumes:
   clickhouse-data:
   postgres-data:
-

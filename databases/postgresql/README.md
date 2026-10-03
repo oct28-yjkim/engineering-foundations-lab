@@ -1,226 +1,70 @@
-# PostgreSQL Lab
+# PostgreSQL: Zero to Hero → Internals & Production Engineering
 
-주문 시스템의 데이터를 안전하게 저장하고, 쿼리와 운영 상태를 근거 있게 개선하는 업무를 가정합니다.
+SQL 입문부터 실행 계획, 페이지와 WAL, 동시성 제어, 복구·복제, 소스 코드까지 연결하는 **14모듈 심화 과정**입니다. 목표는 처음 보는 장애에서 가설을 세우고 관측·재현·소스 근거로 원인을 좁히며 복구의 안전성을 입증하는 것입니다. 완료는 읽은 분량이 아니라 [평가 기준](assessment.md)의 증거와 재현 결과로 판단합니다.
 
-## 학습 목표
+기준은 **PostgreSQL 18 계열**, 권장 페이스는 **28주 × 주 12시간 = 336시간**입니다. 처음 배우는 사람은 기초 모듈에 시간을 더 쓰고, 경험자는 진단 과제를 통과한 모듈만 압축합니다. 날짜보다 통과 기준을 우선하며, 특정 기간 이수가 전문성을 보장하지는 않습니다.
 
-- 관계형 모델과 제약 조건으로 데이터 무결성을 표현한다.
-- transaction, MVCC, isolation level, lock의 관계를 설명한다.
-- B-tree를 중심으로 복합·부분·covering 인덱스를 설계한다.
-- `EXPLAIN (ANALYZE, BUFFERS)`로 추측이 아닌 측정 기반 최적화를 한다.
-- vacuum, analyze, 통계, connection, backup/restore의 운영 기준을 설명한다.
+## 학습 경로
 
-## 4주 학습 로드맵
+1. [전체 커리큘럼과 선수 지식](curriculum.md)을 읽고 진입 수준을 확인합니다.
+2. 강의의 원리를 읽고 결과를 예측한 뒤 실험과 반증을 수행합니다.
+3. [소스 읽기 지도](source-reading.md)에서 해당 동작의 구현 경계를 추적합니다.
+4. [평가·캡스톤](assessment.md)에 실행 증거를 모읍니다.
 
-| 주차 | 주제 | 산출물 |
+공통 기초가 부족하면 [공통 선수 지식](../shared/foundations.md)부터 시작합니다. 실험 기록은 [공통 실험 방법](../shared/experiment-method.md), 실행 제약은 [환경 안내](../shared/environment.md), 두 엔진의 통합 과제는 [공통 캡스톤](../shared/capstone.md)을 따릅니다.
+
+| 모듈 | 강의 | 핵심 질문 |
 | --- | --- | --- |
-| 1주 | 관계형 모델, 제약 조건, 기본·분석 SQL | 주문 스키마와 KPI 쿼리 |
-| 2주 | transaction, MVCC, isolation, lock | 동시성 재현 기록 |
-| 3주 | index, planner, `EXPLAIN` | 측정 전후 비교표 |
-| 4주 | vacuum, 모니터링, backup/restore, 미니 프로젝트 | 운영 runbook과 DB 설계서 |
+| M01–02 | [관계 모델·SQL·프로세스](lessons/01-foundations-and-architecture.md) | 정답인 SQL과 빠른 SQL을 어떻게 구분하며, 요청은 어떤 경로로 실행되는가? |
+| M03–04 | [페이지·버퍼·WAL](lessons/02-storage-buffer-wal.md) | 행 변경이 언제 메모리에 있고 언제 내구성을 얻는가? |
+| M05–06 | [MVCC·SSI·잠금](lessons/03-mvcc-ssi-locking.md) | 각 세션은 무엇을 볼 수 있고, 어떤 업무 불변식이 깨질 수 있는가? |
+| M07–08 | [플래너·통계·인덱스](lessons/04-planner-and-indexes.md) | 추정 오차가 왜 잘못된 접근 경로로 이어지는가? |
+| M09–10 | [실행기·I/O·HOT·Vacuum](lessons/05-executor-and-maintenance.md) | 병렬성과 메모리가 왜 오히려 느려지게 만들며, 버전은 언제 회수되는가? |
+| M11–12 | [복구·복제·타임라인](lessons/06-recovery-and-replication.md) | 백업을 실제로 살릴 수 있고, 장애조치 후 무엇을 잃을 수 있는가? |
+| M13–14 | [운영 판단·소스·캡스톤](lessons/07-production-and-capstone.md) | 관측에서 원인을 구별하고 근거 있는 변경을 제안할 수 있는가? |
 
-## 0. 환경 확인
+## 실습 환경과 실행 범위
+
+저장소 루트에서 실행합니다. 초기 데이터는 사용자 1만 명, 상품 1천 개, 주문 10만 건, 주문 항목 30만 건입니다. 생성 SQL은 새 데이터 볼륨을 초기화할 때만 자동 실행됩니다. 재실행을 위해 기존 볼륨을 삭제하지 말고 각 강의의 별도 실험 테이블을 사용합니다.
 
 ```bash
 docker compose up -d postgres
-docker compose exec postgres psql -U lab -d lab
+docker compose exec postgres psql -X -U lab -d lab
 ```
 
-접속 후:
+접속한 `psql`에서:
 
 ```sql
-SELECT version();
+\set ON_ERROR_STOP on
+\timing on
+SELECT version(), current_setting('server_version_num');
+SELECT current_database(), current_user, pg_backend_pid();
+SHOW block_size;
+SHOW data_checksums;
+SHOW io_method;
 SELECT count(*) FROM commerce.orders;
-\dt commerce.*
 ```
 
-초기 데이터는 사용자 1만 명, 상품 1천 개, 주문 10만 건, 주문 항목 30만 건입니다.
+실제 마이너 버전, 이미지 digest, OS/CPU/메모리 제한, 설정 변경, 데이터 크기를 기록합니다. `postgres:18`은 시간이 지나면 다른 마이너 빌드를 가리킬 수 있습니다. 재현 실험에서는 확인한 digest를 별도 실험 구성에 고정합니다. 소스는 같은 런타임 버전의 태그/커밋을 사용합니다.
 
-편의를 위해 세션의 기본 schema를 지정할 수 있습니다.
+| 표시 | 제공 범위 | 완료에 필요한 것 |
+| --- | --- | --- |
+| **S: 단일 노드** | 현재 Compose에서 실행 가능한 SQL·관찰·논리 백업/복원 | Docker 엔진, 필요한 경우 2–3개 psql 세션 |
+| **E: 확장** | `pageinspect` 등 선택 확장 기반 페이지 관찰 | 해당 확장 설치 가능 여부·권한 확인 |
+| **T: 별도 토폴로지** | PITR, 물리/논리 복제, 장애조치의 실험 설계와 판정 절차 | 격리된 별도 클러스터·보관소·네트워크 구성. 자동 배포는 제공하지 않음 |
+| **B: 소스 빌드** | 디버깅·회귀/격리 테스트 과제 | 일치하는 소스, Linux/WSL2 개발 도구, 별도 debug 서버 |
 
-```sql
-SET search_path TO commerce, public;
-```
+**T/B 항목의 설계서 제출과 실행 완료는 다른 상태**입니다. 단일 노드 실행만으로 복제·PITR·소스 디버깅까지 검증했다고 기록하지 않습니다. 강의의 예상 증거는 관측할 항목이며, 미리 측정한 성능 결과가 아닙니다.
 
-## 1. 관계형 모델링과 무결성
+## SQL 자산 활용
 
-### 스키마에서 표현할 것
+- [00_setup.sql](sql/00_setup.sql): 주문 데이터와 기본 스키마. 데이터 모델의 전제부터 읽습니다.
+- [01_exercises.sql](sql/01_exercises.sql): SQL·운영 기본 문제. 먼저 직접 풉니다.
+- [02_solutions.sql](sql/02_solutions.sql): 답안 비교. 같은 결과·다른 계획이 가능한 이유를 설명합니다.
+- [03_internals.sql](sql/03_internals.sql): 읽기 전용 내부 상태 진단. 시점별 원본 출력을 보관합니다.
 
-- entity의 식별자는 `PRIMARY KEY`
-- 참조 관계는 `FOREIGN KEY`
-- 업무적으로 중복될 수 없는 값은 `UNIQUE`
-- 허용 범위는 `CHECK`
-- 값의 부재가 의미 있을 때만 nullable
+각 강의 SQL은 명시한 순서와 세션에서 수동 실행합니다. `CREATE`가 있는 준비 블록은 최초 한 번 실행하며, 재실행은 새 이름/suffix를 정해 해당 실험 전체에 일관되게 적용합니다. 기존 객체를 덮어쓰거나 전체 스키마를 삭제하지 않습니다. `EXPLAIN ANALYZE`는 쿼리를 실제 실행하고, `ROLLBACK`도 이미 발생한 WAL·I/O·시퀀스 사용을 되돌리지는 않습니다. 쓰기 실험은 이름이 분명한 학습용 객체에서 수행합니다. 현재 `lab` 계정은 실습 편의를 위한 고권한 계정이며 운영 애플리케이션 역할의 예시가 아닙니다.
 
-제약 조건은 애플리케이션 검증을 대체하는 것이 아니라, 어떤 경로로 쓰기가 발생해도 지켜야 하는 마지막 경계입니다. 다만 foreign key와 index는 별개이므로 참조 방향의 조회·삭제 패턴에 필요한 index를 직접 검토합니다.
+첫 주에는 환경 지문을 저장하고 M01의 NULL/중복 반례와 주문 금액 검산을 실행합니다. 이후 M02에서 자신의 backend와 한 개의 대기 세션을 식별합니다. 결과가 예상과 다르면 가설을 수정한 기록을 남깁니다.
 
-### 모델링 질문
-
-- 주문 당시 상품명과 가격은 현재 상품 정보가 바뀌어도 보존되어야 하는가?
-- 주문 상태 전이는 어떤 값과 순서만 허용하는가?
-- 금액은 계산 결과인가, 감사 가능한 snapshot인가?
-- 삭제는 물리 삭제, soft delete, 별도 이력 테이블 중 무엇이 적합한가?
-
-## 2. 트랜잭션, MVCC, 잠금
-
-PostgreSQL은 변경 시 행 버전을 생성하고 각 statement/transaction이 snapshot에 따라 볼 수 있는 버전을 결정합니다. 이 덕분에 일반적인 읽기와 쓰기가 서로 직접 차단하지 않지만, 같은 행을 변경하거나 DDL을 수행할 때는 lock 경합이 생길 수 있습니다.
-
-### 두 터미널 실습
-
-터미널 A:
-
-```sql
-BEGIN;
-UPDATE commerce.accounts
-SET balance = balance - 100
-WHERE account_id = 1;
--- COMMIT하지 않고 대기
-```
-
-터미널 B:
-
-```sql
-SET lock_timeout = '3s';
-UPDATE commerce.accounts
-SET balance = balance + 100
-WHERE account_id = 1;
-```
-
-별도 세션에서 대기 관계를 확인합니다.
-
-```sql
-SELECT pid, state, wait_event_type, wait_event,
-       pg_blocking_pids(pid) AS blockers, query
-FROM pg_stat_activity
-WHERE datname = current_database() AND pid <> pg_backend_pid();
-```
-
-실습 후 A에서 `ROLLBACK;`을 실행합니다.
-
-### 업무 규칙
-
-- transaction은 짧게 유지하고 사용자 입력이나 외부 API 응답을 기다리지 않습니다.
-- 여러 행을 갱신할 때 애플리케이션 전체에서 일관된 lock 순서를 사용합니다.
-- “재시도하면 된다”면 어떤 오류 코드와 최대 재시도 횟수, idempotency 조건인지 정의합니다.
-- isolation level을 높이기 전에 방지하려는 anomaly를 재현합니다.
-
-## 3. 인덱스와 실행 계획
-
-연습 문제는 [`sql/01_exercises.sql`](sql/01_exercises.sql), 비교용 답안은 [`sql/02_solutions.sql`](sql/02_solutions.sql)에 있습니다.
-
-측정 기본형:
-
-```sql
-EXPLAIN (ANALYZE, BUFFERS, VERBOSE)
-SELECT *
-FROM commerce.orders
-WHERE user_id = 42
-ORDER BY ordered_at DESC
-LIMIT 20;
-```
-
-확인 순서:
-
-1. 추정 행 수와 실제 행 수가 크게 다른가?
-2. 가장 많은 실제 시간과 loop를 사용한 node는 무엇인가?
-3. filter로 버린 행이 많은가?
-4. sequential scan이 문제인가, 전체의 큰 비율을 읽으니 합리적인가?
-5. shared hit/read와 temp read/write는 어떠한가?
-6. index가 WHERE와 ORDER BY를 함께 지원할 수 있는가?
-
-### 인덱스 선택 기준
-
-- B-tree 복합 인덱스는 일반적으로 선두 열 조건이 중요합니다.
-- partial index는 일부 상태만 자주 조회할 때 크기와 쓰기 비용을 줄일 수 있습니다.
-- `INCLUDE`를 이용한 covering index는 heap 접근을 줄일 수 있지만 index 크기와 쓰기 비용이 증가합니다.
-- expression index의 쿼리 표현식은 index 정의와 맞아야 합니다.
-- 중복·미사용 index는 쓰기, vacuum, 저장 공간 비용을 만들므로 관찰 후 제거합니다.
-
-> `EXPLAIN ANALYZE`는 실제로 쿼리를 실행합니다. 쓰기 쿼리는 테스트 환경에서 실행하거나 `BEGIN`/`ROLLBACK`으로 보호하세요.
-
-## 4. Vacuum과 통계
-
-MVCC의 오래된 row version은 더 이상 보이지 않더라도 즉시 파일에서 제거되지 않습니다. 일반 `VACUUM`은 공간을 재사용 가능하게 하고 visibility map을 갱신하며, `ANALYZE`는 planner 통계를 갱신합니다. autovacuum을 무작정 끄지 않습니다.
-
-```sql
-SELECT
-    relname,
-    n_live_tup,
-    n_dead_tup,
-    last_autovacuum,
-    last_autoanalyze,
-    autovacuum_count,
-    autoanalyze_count
-FROM pg_stat_user_tables
-ORDER BY n_dead_tup DESC;
-```
-
-`VACUUM FULL`은 테이블을 다시 쓰고 강한 lock을 요구하므로 routine maintenance 수단이 아닙니다. bloat의 원인과 재발 조건을 먼저 해결합니다.
-
-## 5. 운영과 트러블슈팅
-
-### 현재 활동과 장기 transaction
-
-```sql
-SELECT pid, usename, application_name, state,
-       now() - xact_start AS transaction_age,
-       wait_event_type, wait_event, left(query, 160) AS query
-FROM pg_stat_activity
-WHERE datname = current_database()
-ORDER BY xact_start NULLS LAST;
-```
-
-### 누적 비용이 큰 쿼리
-
-```sql
-SELECT calls,
-       round(total_exec_time::numeric, 2) AS total_ms,
-       round(mean_exec_time::numeric, 2) AS mean_ms,
-       rows,
-       left(query, 160) AS query
-FROM pg_stat_statements
-ORDER BY total_exec_time DESC
-LIMIT 10;
-```
-
-### 운영 체크리스트
-
-- 연결 수와 pool 크기에 근거가 있는가?
-- `statement_timeout`, `lock_timeout`, `idle_in_transaction_session_timeout`을 서비스 특성에 맞게 두었는가?
-- backup 파일 생성이 아니라 실제 restore를 정기 검증하는가?
-- RPO/RTO에 따라 base backup, WAL archive, PITR 전략이 정의됐는가?
-- 장기 transaction, replication lag, dead tuples, 디스크 증가, 실패 query를 경보하는가?
-- application role은 owner/superuser와 분리되고 최소 권한을 갖는가?
-
-## 6. 미니 프로젝트
-
-“재고를 초과 판매하지 않는 주문 생성 API”의 DB 부분을 설계합니다.
-
-필수 결과물:
-
-- 사용자·상품·재고·주문·주문 항목 모델과 제약 조건
-- 주문 생성 transaction과 실패/재시도 정책
-- 동시에 같은 상품을 주문하는 두 세션의 경합 재현
-- 고객 주문 목록과 운영자 미처리 주문 목록을 위한 index
-- `EXPLAIN (ANALYZE, BUFFERS)` 전후 비교
-- deadlock, 장기 transaction, autovacuum 지연 대응 runbook
-- backup/restore 검증 절차와 목표 RPO/RTO
-
-## 학습 체크리스트
-
-- [ ] 제약 조건이 잘못된 데이터를 차단하는 예를 만들었다.
-- [ ] 두 세션으로 lock wait를 재현하고 blocker를 찾았다.
-- [ ] index 전후 실행 계획과 buffer 사용량을 비교했다.
-- [ ] window function과 `LATERAL`을 이용한 분석 쿼리를 작성했다.
-- [ ] dead tuple과 autovacuum 상태를 조회했다.
-- [ ] 미니 프로젝트의 동시성·운영 결정을 문서화했다.
-
-## 공식 참고 자료
-
-- [PostgreSQL 18 documentation](https://www.postgresql.org/docs/18/)
-- [PostgreSQL tutorial](https://www.postgresql.org/docs/18/tutorial.html)
-- [Indexes](https://www.postgresql.org/docs/18/indexes.html)
-- [Using EXPLAIN](https://www.postgresql.org/docs/18/using-explain.html)
-- [Concurrency control](https://www.postgresql.org/docs/18/mvcc.html)
-- [Routine vacuuming](https://www.postgresql.org/docs/18/routine-vacuuming.html)
-- [Monitoring database activity](https://www.postgresql.org/docs/18/monitoring.html)
+공식 기준: [PostgreSQL 18 문서](https://www.postgresql.org/docs/18/), [18 릴리스 노트](https://www.postgresql.org/docs/18/release-18.html). 문서의 `/current/` 대신 `/18/` 링크를 사용하며, 릴리스 노트만으로 성능 향상을 단정하지 않습니다.
