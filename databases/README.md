@@ -2,6 +2,16 @@
 
 목표는 “무엇을 설정해야 하는가”와 함께 “왜 그 설정이 이 조건에서만 효과가 있는가”를 설명하는 것입니다. 한 쿼리의 요청부터 저장 장치와 복제본까지 추적하고, 지연·정확성·복구 가능성의 상충 관계를 실험으로 판단합니다.
 
+## 제품별 선택 트랙
+
+| 트랙 | 핵심 범위 | 실습 입구 |
+| --- | --- | --- |
+| [PostgreSQL](postgresql/README.md) | heap·MVCC·SSI·planner·WAL·vacuum·복구 | [공통 DB 환경](shared/environment.md) |
+| [ClickHouse](clickhouse/README.md) | MergeTree·column/pipeline·집계·분산 | [공통 DB 환경](shared/environment.md) |
+| [MySQL](mysql/README.md) | InnoDB·read view·next-key lock·optimizer·redo/binlog·GTID·복구 | [CPU 및 별도 MySQL 환경](mysql/labs/README.md) |
+
+각 제품은 **28주·14모듈·336시간** 선택 과정입니다. 아래 72주 표는 기존 PostgreSQL+ClickHouse 경로이며 MySQL을 자동 가산하지 않습니다. MySQL 중심이면 공통 8주 + MySQL 28주를 먼저 진행하고 [선택 연구 8주](../capstones/mysql-transaction-recovery.md)를 추가합니다. 세 DB를 모두 순차 이수할 때는 공통 8주 + 트랙 84주 + 선택 연구 8주 = **100주·약 1,200시간**입니다. 모든 DB 이수가 실무 적용의 전제는 아닙니다.
+
 ## 시작점 진단
 
 아래 결과물을 먼저 만들어 통과한 범위만 건너뜁니다. 명령을 알고 있어도 예상 결과를 설명하지 못하면 해당 부분을 학습합니다.
@@ -25,7 +35,7 @@
 
 트랙 안의 주차는 1–28주로 표기합니다. 두 트랙의 순서는 업무 우선순위에 따라 바꿀 수 있습니다. 공통 과정·통합 과정은 각각 한 번만 이수합니다. 병렬 학습은 가능한 시간이 충분할 때 선택하며, 의존 관계와 증거 기준을 생략하지 않습니다.
 
-이 표는 DB 전용 72주 경로입니다. [Kafka 28주 트랙](../streaming/kafka/README.md)을 더하면 공통 8주 + PostgreSQL 28주 + Kafka 28주 + ClickHouse 28주 + 통합 8주, **100주·약 1,200시간**의 확장 경로가 됩니다. 자세한 순서와 시스템별 보장 비교는 [이벤트 스트리밍 과정](../streaming/README.md)을 봅니다.
+이 표는 PostgreSQL+ClickHouse 전용 72주 경로입니다. [Kafka 28주 트랙](../streaming/kafka/README.md)을 더하면 공통 8주 + PostgreSQL 28주 + Kafka 28주 + ClickHouse 28주 + 통합 8주, **100주·약 1,200시간**의 확장 경로가 됩니다. 자세한 순서와 시스템별 보장 비교는 [이벤트 스트리밍 과정](../streaming/README.md)을 봅니다.
 
 ## 각 모듈을 공부하는 방식
 
@@ -71,6 +81,8 @@ L4 결과물은 upstream PR 채택 여부와 분리해서 평가합니다. 공�
 | 장애 후 맞게 복구됐는가? | base backup, WAL, LSN, timeline, 업무 불변식 | backup metadata/data, 복제 상태, 원본 재처리·집계 대조 |
 
 각 트랙은 특정 강점을 중심으로 다루지만 “PostgreSQL은 분석 불가”, “ClickHouse는 어떤 UPDATE도 불가” 같은 이분법을 사용하지 않습니다. 지원 기능의 이름과 해당 버전에서 제공하는 보장을 구별합니다.
+
+MySQL과 PostgreSQL을 비교할 때는 clustered row/secondary lookup과 heap/TID, read view+undo와 tuple visibility+vacuum, next-key lock과 SSI predicate conflict를 같은 용어로 합치지 않습니다. InnoDB의 RR consistent read와 current read, PostgreSQL의 isolation 동작은 같은 세션 사건표·업무 불변식으로 대조합니다. [MySQL 소스 지도](mysql/source-reading.md)는 server/handler/InnoDB 경계를 따로 추적합니다.
 
 ## 최종 포트폴리오
 

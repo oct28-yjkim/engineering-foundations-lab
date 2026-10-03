@@ -15,6 +15,8 @@
 
 Kafka는 [별도 Compose](../../streaming/kafka/compose.yaml)와 [로컬 실습 안내](../../streaming/kafka/labs/local-lab.md)를 제공합니다. 이 문서의 `docker compose` 명령은 루트의 두 DB에만 적용됩니다. Kafka는 `docker compose -f streaming/kafka/compose.yaml ...`로 관리하며 프로젝트·네트워크·volume을 분리합니다. 기본 상태에서는 PostgreSQL → Kafka → ClickHouse 파이프라인이 만들어지지 않습니다. connector와 네트워크 연결은 [통합 연구](capstone.md)의 구현 과제입니다.
 
+MySQL은 [전용 환경](../mysql/labs/README.md)과 `databases/mysql/compose.yaml`을 사용합니다. 기존 root Compose에 세 번째 DB를 추가하지 않으며 MySQL만 학습할 때 두 DB를 먼저 시작할 필요가 없습니다. 호스트 포트 없이 로컬 Docker exec·container socket으로 접속하고 project/network/volume을 분리합니다. CPU 모형과 실제 SQL fixture, 별도 다중 세션·복제·PITR 실험을 구분합니다.
+
 [Sentry 준비 실습](../../observability/sentry/labs/local-lab.md)과 [Supabase CLI local 준비](../../platforms/supabase/labs/local-lab.md)는 별도 과정입니다. Sentry의 offline 계산과 Supabase 권한 reference fixture는 제공하지만, 두 제품의 전체 스택·SDK 앱·클라우드 프로젝트·실제 Auth/RLS 검증은 제공된 DB Compose에 포함되지 않습니다. 기존 PostgreSQL·Kafka·ClickHouse를 제품 내부 dependency로 자동 연결하지 않습니다.
 
 [LLM 논문 실험](../../ai/llm-paper-lab/environment.md)의 CPU 기본 경로는 Python 표준 라이브러리만 사용하며 이 DB Compose와 독립적입니다. GPU·모델 다운로드·외부 API 호출은 별도 선택 확장이고 기본 실험에서 자동 수행하지 않습니다.

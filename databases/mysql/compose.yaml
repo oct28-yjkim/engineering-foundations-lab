@@ -1,0 +1,42 @@
+name: engineering-foundations-mysql-lab
+
+services:
+  mysql:
+    image: mysql:8.4.11
+    hostname: efl-mysql-lab
+    environment:
+      # Public dummy credential for a disposable, synthetic-data-only local lab.
+      MYSQL_ROOT_PASSWORD: local_mysql_root_not_for_production
+    command:
+      - mysqld
+      - --server-id=8411
+      - --log-bin=mysql-bin
+      - --binlog-format=ROW
+      - --gtid-mode=ON
+      - --enforce-gtid-consistency=ON
+      - --sync-binlog=1
+      - --innodb-flush-log-at-trx-commit=1
+      - --innodb-buffer-pool-size=134217728
+      - --max-connections=30
+      - --transaction-isolation=REPEATABLE-READ
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --performance-schema=ON
+      - --local-infile=OFF
+      - --mysqlx=OFF
+      - --skip-name-resolve
+    # No host ports. Use the container-local Unix socket through Docker exec.
+    volumes:
+      - mysql-data:/var/lib/mysql
+    mem_limit: 1g
+    cpus: 2.0
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$${MYSQL_ROOT_PASSWORD}\" mysql --no-defaults --no-login-paths --protocol=socket --socket=/var/run/mysqld/mysqld.sock -uroot --batch --skip-column-names --execute='SELECT 1' > /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    stop_grace_period: 60s
+
+volumes:
+  mysql-data:
