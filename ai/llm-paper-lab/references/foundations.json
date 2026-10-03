@@ -1,0 +1,92 @@
+[
+  {
+    "id": "P01",
+    "title": "Attention Is All You Need",
+    "year": 2017,
+    "url": "https://arxiv.org/abs/1706.03762",
+    "area": "transformer",
+    "read_focus": "Scaled dot-product attention, causal mask, multi-head projection, encoder-decoder와 decoder-only의 구분",
+    "reproduction_limit": "CPU attention 수치 검사는 원논문의 번역 모델 학습 또는 WMT BLEU 재현이 아니다."
+  },
+  {
+    "id": "P02",
+    "title": "Language Models are Few-Shot Learners",
+    "year": 2020,
+    "url": "https://arxiv.org/abs/2005.14165",
+    "area": "in-context-learning",
+    "read_focus": "Gradient update 없는 few-shot 설정, demonstration 선택, prompt 조건, 오염 분석",
+    "reproduction_limit": "작은 공개 모델의 prompt 비교는 GPT-3 사전학습·전체 benchmark 재현이 아니다."
+  },
+  {
+    "id": "P03",
+    "title": "Training Compute-Optimal Large Language Models",
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2203.15556",
+    "area": "scaling-laws",
+    "read_focus": "IsoFLOP 비교, 파라미터·학습 토큰 배분, loss surface fitting, 근사 FLOPs의 가정",
+    "reproduction_limit": "합성 loss surface 또는 소규모 학습 곡선은 Chinchilla 스케일링 계수·최적 비율의 실증 재현이 아니다."
+  },
+  {
+    "id": "P04",
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "year": 2021,
+    "url": "https://arxiv.org/abs/2106.09685",
+    "area": "parameter-efficient-finetuning",
+    "read_focus": "Frozen base, 저랭크 업데이트, 초기화, rank·alpha·target layer의 분리, merge 동치",
+    "reproduction_limit": "CPU 저랭크 행렬 실험은 실제 LLM fine-tuning 품질·GPU 메모리·추론 지연을 검증하지 않는다."
+  },
+  {
+    "id": "P05",
+    "title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2305.14314",
+    "area": "quantized-finetuning",
+    "read_focus": "NF4 저장 표현과 계산 dtype, double quantization, paged optimizer, adapter 대상 레이어",
+    "reproduction_limit": "일반 균일 양자화나 LoRA CPU 모형은 NF4 kernel·paged optimizer·QLoRA 학습 재현이 아니다."
+  },
+  {
+    "id": "P06",
+    "title": "Training language models to follow instructions with human feedback",
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2203.02155",
+    "area": "rlhf",
+    "read_focus": "SFT→선호 reward model→PPO, KL 제어, pretraining mix, 평가자·prompt 분포와 목표의 한계",
+    "reproduction_limit": "합성 선호쌍 또는 작은 reward model은 원래의 GPT-3·비공개 사용자 prompt·인간 평가를 재현하지 않는다."
+  },
+  {
+    "id": "P07",
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2305.18290",
+    "area": "preference-optimization",
+    "read_focus": "KL 정규화 최적 정책과 reward 재매개화, reference 대비 log-ratio, Bradley-Terry 가정",
+    "reproduction_limit": "CPU scalar DPO loss·gradient 검사는 언어모델 학습·인간 선호 개선·alignment 안전성의 증거가 아니다."
+  },
+  {
+    "id": "P08",
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2205.14135",
+    "area": "attention-kernels",
+    "read_focus": "HBM/SRAM IO, tiling, online softmax, backward recomputation, exact와 bitwise equality의 구분",
+    "reproduction_limit": "CPU attention 또는 online softmax 수치 검사는 GPU kernel의 IO 감소·wall-clock speedup 재현이 아니다."
+  },
+  {
+    "id": "P09",
+    "title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2309.06180",
+    "area": "llm-serving",
+    "read_focus": "KV block mapping, fragmentation, reference count·copy-on-write, workload별 serving 평가",
+    "reproduction_limit": "CPU KV-cache 모형은 vLLM 실행, GPU allocator, continuous batching 또는 논문의 throughput 재현이 아니다."
+  },
+  {
+    "id": "P10",
+    "title": "Fast Inference from Transformers via Speculative Decoding",
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2211.17192",
+    "area": "speculative-decoding",
+    "read_focus": "Target·draft 분포, acceptance ratio, rejection residual, 분포 보존 증명과 실제 speedup 조건",
+    "reproduction_limit": "유한 categorical 예제는 실제 draft/target 모델·tokenizer·KV-cache rollback·서빙 속도를 재현하지 않는다."
+  }
+]

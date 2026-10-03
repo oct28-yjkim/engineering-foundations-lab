@@ -1,6 +1,6 @@
 # Engineering Foundations Lab — Zero to Hero
 
-데이터 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, Apache Kafka, Sentry, Supabase 트랙을 제공합니다.
+데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, Apache Kafka, Sentry, Supabase와 LLM 논문 실험 트랙을 제공합니다.
 
 SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 스트리밍, 관측, 인증·인가, 성능 측정, 소스 코드 분석을 연결합니다. 가장 높은 단계의 완료 기준은 낯선 현상을 최소 재현으로 줄이고, 원인을 코드와 측정값으로 설명하며, 수정안의 회귀를 검증하는 것입니다.
 
@@ -16,6 +16,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | [Apache Kafka](streaming/kafka/README.md) | 14개 모듈, log·producer·consumer·KRaft·transaction·Streams·Connect |
 | [Sentry](observability/sentry/README.md) | 14개 모듈, SDK·ingestion·grouping·tracing·sampling·개인정보·운영 |
 | [Supabase](platforms/supabase/README.md) | 14개 모듈, PostgreSQL·Auth/JWT·RLS·Realtime·Storage·Functions·복구 |
+| [LLM 논문 실험](ai/llm-paper-lab/README.md) | 핵심 논문 20편·14모듈, CPU 실험 6개와 GPU/API 선택 확장 |
 | [실험 방법](databases/shared/experiment-method.md) | 재현성, 측정 오차, 정확성 oracle, 반증 |
 | [통합 연구 8주](databases/shared/capstone.md) | PostgreSQL → Kafka → ClickHouse, CDC·복구·설계 검증 |
 | [보안·관측 앱 연구 8주](capstones/secure-observable-app.md) | Supabase + Sentry, 테넌트 격리·privacy·장애·전체 상태 복구 |
@@ -27,7 +28,9 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 
 주 12시간 가정이며 기간은 보장치가 아닙니다. 이미 익힌 내용은 진단 과제를 통과하면 줄이고, 복구·분산 실험에 실패하면 해당 모듈을 반복합니다.
 
-Sentry와 Supabase도 각각 **28주·14모듈·약 336시간**의 선택 트랙입니다. 백엔드·보안·관측이 우선이면 PostgreSQL → Supabase → Sentry → 보안·관측 앱 연구를 선택할 수 있습니다. 이 3트랙 경로도 공통 8주 + 트랙 84주 + 선택한 캡스톤 8주 = 100주입니다. 두 종류의 통합 연구를 모두 필수로 더하지 않습니다. 다섯 트랙을 모두 순차 이수하는 경우에만 공통 8주 + 140주 + 선택 캡스톤 8주 = **156주·약 1,872시간**입니다. 모든 트랙을 끝내야 실무에 적용할 수 있다는 뜻은 아닙니다.
+Sentry와 Supabase도 각각 **28주·14모듈·약 336시간**의 선택 트랙입니다. 백엔드·보안·관측이 우선이면 PostgreSQL → Supabase → Sentry → 보안·관측 앱 연구를 선택할 수 있습니다. 이 3트랙 경로도 공통 8주 + 트랙 84주 + 선택한 캡스톤 8주 = 100주입니다. 두 종류의 통합 연구를 모두 필수로 더하지 않습니다. 다섯 제품 트랙을 모두 순차 이수하는 경우에만 공통 8주 + 140주 + 선택 캡스톤 8주 = **156주·약 1,872시간**입니다. 모든 트랙을 끝내야 실무에 적용할 수 있다는 뜻은 아닙니다.
+
+LLM 논문 실험은 별도의 **28주·336시간 선택 트랙**입니다. [논문 20편](ai/llm-paper-lab/papers.md)을 원리·구현·평가와 연결하며 CPU 오프라인부터 시작합니다. 기존 156주 경로에 자동으로 더하지 않으며 GPU/API는 필요할 때만 확장합니다. 행렬·미분·확률·Python은 별도 선수 지식입니다.
 
 기술 한 개에 집중하는 경우 공통 기반 8주와 해당 트랙 28주를 먼저 진행합니다. 소스 빌드, 별도 복제 환경 구성, 실제 업무 경험을 더하면 기간이 늘어날 수 있습니다. 숙련도는 자료를 읽은 횟수보다 재현 가능한 결과물로 평가합니다.
 
@@ -69,11 +72,21 @@ node observability/sentry/labs/sampling-oracle.mjs
 
 Supabase는 [CLI local 준비와 권한 oracle](platforms/supabase/labs/local-lab.md)을 먼저 봅니다. 루트 PostgreSQL 컨테이너가 Supabase Auth·API·RLS 앱 전체를 제공하는 것은 아닙니다. 두 과정의 SDK 앱·제품 스택은 별도 구성 과제이며 기존 Compose를 바꾸지 않았습니다.
 
+LLM 논문 실험은 Python 3.10 이상으로 시작합니다. 별도 패키지·모델 다운로드·GPU·API 키·Docker가 필요하지 않습니다.
+
+```text
+python ai/llm-paper-lab/labs/lab.py --lab all
+python -B -m unittest discover -s ai/llm-paper-lab/labs -p test_lab.py -v
+```
+
+이는 Attention·LoRA·DPO·KV cache·검색·평가의 **합성 CPU 모형**입니다. 실제 LLM 학습이나 논문 benchmark 재현과는 다릅니다. [실습 범위](ai/llm-paper-lab/labs/README.md)와 [환경 안내](ai/llm-paper-lab/environment.md)를 먼저 확인합니다.
+
 ## 저장소에 제공되는 것
 
 - 단일 노드 PostgreSQL 18 및 ClickHouse 26.8 Compose 구성과 결정적으로 생성되는 합성 데이터
 - Apache Kafka 4.3.1 단일 broker/controller KRaft Compose, 상태 관측 및 정확성 smoke 실습
 - Sentry의 네트워크 없는 sampling 모델, Supabase의 18개 권한 기대 결과 fixture와 제품별 준비 지침
+- LLM 핵심 논문 20편의 읽기·실험 지도, CPU 실험 6개와 단위 테스트, GPU/API 확장·재현 보고서 지침
 - 기술별 커리큘럼, 원리·실험 강의, 소스 탐색 지도, 단계별 평가
 - 기초 SQL 문제/답안, 읽기 전용 내부 상태 관찰 SQL
 - 실험 기록 양식과 통합 연구 프로젝트 요구사항

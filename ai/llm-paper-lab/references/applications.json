@@ -1,0 +1,92 @@
+[
+  {
+    "id": "P11",
+    "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+    "year": 2020,
+    "url": "https://arxiv.org/abs/2004.04906",
+    "area": "retrieval",
+    "read_focus": "질문·문서 dual encoder, negative 구성, 검색 품질과 QA 품질의 분리",
+    "reproduction_limit": "lexical CPU toy는 DPR 학습·dense embedding·논문 benchmark를 재현하지 않는다."
+  },
+  {
+    "id": "P12",
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "year": 2020,
+    "url": "https://arxiv.org/abs/2005.11401",
+    "area": "retrieval-generation",
+    "read_focus": "parametric/non-parametric memory, RAG-Sequence와 RAG-Token의 문서 주변화 경계",
+    "reproduction_limit": "문서 문자열을 prompt에 붙이는 앱은 원 논문의 retriever·generator 학습과 latent-document 주변화 재현이 아니다."
+  },
+  {
+    "id": "P13",
+    "title": "Lost in the Middle: How Language Models Use Long Contexts",
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2307.03172",
+    "area": "long-context",
+    "read_focus": "근거 위치·길이·방해 문서를 분리한 paired 평가와 context 사용 능력",
+    "reproduction_limit": "새 모델에서 위치 효과를 재측정해야 하며 과거 관찰을 모든 모델의 필연적 U자 곡선으로 일반화하지 않는다."
+  },
+  {
+    "id": "P14",
+    "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2201.11903",
+    "area": "reasoning-prompting",
+    "read_focus": "중간 풀이 예시가 포함된 few-shot prompt와 직접 답변 baseline의 조건 통제",
+    "reproduction_limit": "공개 생성 설명은 관측 가능한 출력이지 충실한 내부 추론의 증거가 아니다. 최신 reasoning API의 비공개 추론 접근을 가정하지 않는다."
+  },
+  {
+    "id": "P15",
+    "title": "Self-Consistency Improves Chain of Thought Reasoning in Language Models",
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2203.11171",
+    "area": "inference-time-aggregation",
+    "read_focus": "다중 sample의 답변 정규화·집계, 상관된 오류, 동일 예산 비교",
+    "reproduction_limit": "다수결은 정답 보장이 아니며 synthetic vote fixture만으로 모델 성능 향상을 입증하지 않는다."
+  },
+  {
+    "id": "P16",
+    "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2210.03629",
+    "area": "agents",
+    "read_focus": "관측·행동·설명의 interleaving, 환경 feedback, 행동 없는 대조군",
+    "reproduction_limit": "mock agent state machine은 ReAct 모델 benchmark 재현이 아니며 readable trajectory가 내부 추론의 충실성을 보증하지 않는다."
+  },
+  {
+    "id": "P17",
+    "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2302.04761",
+    "area": "tool-learning",
+    "read_focus": "API 후보 생성·실행·후속 token loss 기반 필터·학습과 inference 도구 사용의 구분",
+    "reproduction_limit": "현대 function-calling API를 호출하거나 도구 router를 수작업 작성한 것은 Toolformer의 자기지도 학습 재현이 아니다."
+  },
+  {
+    "id": "P18",
+    "title": "Holistic Evaluation of Language Models",
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2211.09110",
+    "area": "evaluation",
+    "read_focus": "scenario·adaptation·metric을 분리한 다차원 평가, coverage와 누락의 공개",
+    "reproduction_limit": "소규모 사내 fixture의 다중 지표는 HELM 전체 benchmark나 원 논문 모델 순위의 재현이 아니다."
+  },
+  {
+    "id": "P19",
+    "title": "Instruction-Following Evaluation for Large Language Models",
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2311.07911",
+    "area": "verifiable-evaluation",
+    "read_focus": "프로그램으로 확인할 수 있는 지시, checker의 경계 조건, prompt-level과 instruction-level 집계",
+    "reproduction_limit": "직접 만든 JSON·길이·keyword checker는 IFEval 공식 데이터·공식 채점기 재현이 아니며 사실성·안전성 평가를 대체하지 않는다."
+  },
+  {
+    "id": "P20",
+    "title": "Ragas: Automated Evaluation of Retrieval Augmented Generation",
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2309.15217",
+    "area": "rag-evaluation",
+    "read_focus": "검색 관련성·근거 충실성·응답 품질의 분해, reference-free proxy와 독립 정답의 차이",
+    "reproduction_limit": "논문과 현재 Ragas package의 API·지표는 같다고 가정하지 않는다. LLM judge 점수는 truth oracle가 아니며 synthetic CPU 평가는 Ragas 실행이 아니다."
+  }
+]
