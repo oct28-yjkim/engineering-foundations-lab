@@ -1,8 +1,10 @@
-# Backend Platform Engineering
+# Backend and Data Platform Engineering
 
-플랫폼 기능을 연결하는 방법과 그 기능이 지키는 보장·권한·복구 경계를 함께 공부합니다. 첫 트랙은 [Supabase](supabase/README.md)이며, PostgreSQL을 중심으로 Auth·API·Realtime·Storage·Functions·운영 계층을 연결합니다.
+플랫폼 기능을 연결하는 방법과 그 기능이 지키는 보장·권한·복구 경계를 함께 공부합니다. [Supabase](supabase/README.md)는 PostgreSQL을 중심으로 Auth·API·Realtime·Storage·Functions·운영 계층을, [Databricks](databricks/README.md)는 Spark·Delta·Unity Catalog·Lakeflow를 중심으로 데이터 플랫폼 계층을 연결합니다.
 
 ## 시작점
+
+### Supabase
 
 - [28주 커리큘럼](supabase/curriculum.md): 14모듈과 심화 강의 7개
 - [독립 local 준비](supabase/labs/local-lab.md): 제공 fixture와 실제 제품 실행의 차이
@@ -12,7 +14,17 @@
 
 [PostgreSQL 트랙](../databases/postgresql/README.md)을 선행하면 RLS·WAL·동시성·인덱스·복구를 깊게 연결할 수 있습니다. 먼저 작은 Supabase 앱을 만들고 부족한 SQL·HTTP·JWT·OS 기초를 돌아가서 보충하는 경로도 가능합니다. 라이브러리 호출 성공만으로 보안·내구성·정합성을 판정하지 않습니다.
 
-## 경계별 질문
+### Databricks
+
+- [28주 커리큘럼](databricks/curriculum.md): 14모듈과 심화 강의 7개
+- [실습 준비와 Delta SQL](databricks/labs/README.md): CPU/로컬 Spark/관리형 workspace의 경계
+- [소스·논문](databricks/source-reading.md): 공개 Delta와 비공개/관리형 구성요소의 구분
+- [평가](databricks/assessment.md): 정합성·권한·비용·복구의 필수 게이트
+- [Lakehouse 캡스톤](../capstones/governed-lakehouse.md): 선택 8주 통합 연구
+
+[Apache Spark 트랙](../data-processing/spark/README.md)과 병행하면 plan·shuffle·state·메모리의 원리를 플랫폼 관측과 연결할 수 있습니다. DBR/Spark/Delta의 버전을 자동으로 동일시하거나 로컬 API 성공을 Photon·Unity Catalog 검증으로 확대하지 않습니다.
+
+## Supabase 경계별 질문
 
 | 경계 | 증명할 것 | 독립 증거 |
 | --- | --- | --- |
