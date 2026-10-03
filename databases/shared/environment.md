@@ -21,6 +21,8 @@ Kafka는 [별도 Compose](../../streaming/kafka/compose.yaml)와 [로컬 실습 
 
 [Spark 실습](../../data-processing/spark/labs/README.md)은 CPU 모형과 별도 Java/PySpark 4.0.4 기반 로컬 runner를 구분합니다. [Databricks 실습](../../platforms/databricks/labs/README.md)은 허가된 관리형 대상과 비용 계약이 필요한 별도 단계입니다. 이 DB Compose가 Spark cluster·Delta·Unity Catalog·Databricks를 제공하지 않습니다.
 
+[OpenSearch 실습](../../search/opensearch/labs/README.md)은 독립 CPU 모형과 별도 `search/opensearch/compose.yaml`을 사용합니다. 단일 노드·합성 데이터·보안 플러그인 off·loopback HTTP 전용이며 운영·권한·HA 검증용이 아닙니다. DB/Kafka와 network·volume·수명 주기를 공유하지 않고 connector·CDC·embedding 모델을 자동 구성하지 않습니다. [검증 기록](../../search/opensearch/labs/validation.md)의 CPU/mock/실제 엔진 구분을 확인합니다.
+
 트랙별 표기는 PostgreSQL의 S가 E0, E가 선택 확장을 포함한 E1, T가 E2, B가 E3에 대응합니다. ClickHouse의 LOCAL은 E0, CLUSTER-DESIGN은 E2에 해당하며 OPS-DESIGN은 과제에 따라 E1/E2가 필요합니다. SOURCE의 정적 읽기는 파일 탐색으로 가능하지만 직접 빌드·디버깅은 E3 준비가 필요합니다.
 
 Docker에 사용할 메모리는 입문 두 서비스를 합쳐 6–8GiB 정도를 출발점으로 삼되, 이는 보장된 최소 요구사항이 아닙니다. 실제 소비량을 `docker stats --no-stream`으로 확인합니다. 규모 확대는 1배→2배→10배로 진행하고 disk/memory 예산을 먼저 정합니다. Keeper 다수 노드와 replica를 구성하는 경우 E0 예산을 그대로 적용하지 않습니다.
