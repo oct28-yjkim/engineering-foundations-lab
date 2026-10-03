@@ -1,0 +1,57 @@
+{
+  "scope": "Expected authorization outcomes only; no SQL, JWT validation, RLS engine, or API execution is supplied by this fixture.",
+  "identity_mapping": "Symbolic IDs must be mapped to real synthetic Auth users and tenant IDs in the learner's isolated project. Never generate a user JWT by trusting these strings.",
+  "rules": [
+    "Only an active membership grants access. Read all documents in the member's own tenant.",
+    "A member may insert a document owned by themselves in their own tenant.",
+    "A member may update only the title of their own document.",
+    "An admin may update titles or delete documents within their own tenant, never another tenant.",
+    "tenant_id and owner_id are immutable through this application API, including for tenant admins.",
+    "Membership changes come from trusted server state, not editable user_metadata or request fields.",
+    "Every write case starts from the original fixture; denied writes leave all rows unchanged.",
+    "Privileged maintenance is a separate server-only path and is not a tenant-admin session."
+  ],
+  "subjects": [
+    { "id": "signed_out", "session": "none", "membership": null },
+    { "id": "u_a", "session": "authenticated", "membership": { "tenant_id": "tenant_a", "role": "member", "active": true } },
+    { "id": "u_a2", "session": "authenticated", "membership": { "tenant_id": "tenant_a", "role": "member", "active": true } },
+    { "id": "u_b", "session": "authenticated", "membership": { "tenant_id": "tenant_b", "role": "member", "active": true } },
+    { "id": "admin_a", "session": "authenticated", "membership": { "tenant_id": "tenant_a", "role": "admin", "active": true } },
+    { "id": "anonymous_auth_user", "session": "authenticated_anonymous", "membership": null },
+    { "id": "revoked_a", "session": "old_but_unexpired_user_token", "membership": { "tenant_id": "tenant_a", "role": "member", "active": false } }
+  ],
+  "documents": [
+    { "id": "a1", "tenant_id": "tenant_a", "owner_id": "u_a", "title": "Synthetic A1" },
+    { "id": "a2", "tenant_id": "tenant_a", "owner_id": "u_a2", "title": "Synthetic A2" },
+    { "id": "b1", "tenant_id": "tenant_b", "owner_id": "u_b", "title": "Synthetic B1" }
+  ],
+  "cases": [
+    { "id": "R01", "actor": "signed_out", "operation": "select_all", "expected_visible_ids": [] },
+    { "id": "R02", "actor": "u_a", "operation": "select_all", "expected_visible_ids": ["a1", "a2"] },
+    { "id": "R03", "actor": "u_b", "operation": "select_all", "expected_visible_ids": ["b1"] },
+    { "id": "R04", "actor": "admin_a", "operation": "select_all", "expected_visible_ids": ["a1", "a2"] },
+    { "id": "R05", "actor": "anonymous_auth_user", "operation": "select_all", "expected_visible_ids": [] },
+    { "id": "R06", "actor": "revoked_a", "operation": "select_all", "expected_visible_ids": [] },
+    { "id": "W01", "actor": "u_a", "operation": "insert", "candidate": { "id": "new_a", "tenant_id": "tenant_a", "owner_id": "u_a", "title": "Synthetic new" }, "expected_changed_ids": ["new_a"] },
+    { "id": "W02", "actor": "u_a", "operation": "insert", "candidate": { "id": "new_b", "tenant_id": "tenant_b", "owner_id": "u_a", "title": "Synthetic forged tenant" }, "expected_changed_ids": [] },
+    { "id": "W03", "actor": "u_a", "operation": "update", "target": "a1", "patch": { "title": "Synthetic changed" }, "expected_changed_ids": ["a1"] },
+    { "id": "W04", "actor": "u_a", "operation": "update", "target": "a2", "patch": { "title": "Synthetic forbidden" }, "expected_changed_ids": [] },
+    { "id": "W05", "actor": "admin_a", "operation": "update", "target": "a2", "patch": { "title": "Synthetic admin change" }, "expected_changed_ids": ["a2"] },
+    { "id": "W06", "actor": "admin_a", "operation": "update", "target": "b1", "patch": { "title": "Synthetic cross tenant" }, "expected_changed_ids": [] },
+    { "id": "W07", "actor": "admin_a", "operation": "update", "target": "a1", "patch": { "tenant_id": "tenant_b" }, "expected_changed_ids": [] },
+    { "id": "W08", "actor": "u_a", "operation": "update", "target": "a1", "patch": { "owner_id": "u_a2" }, "expected_changed_ids": [] },
+    { "id": "W09", "actor": "u_a", "operation": "delete", "target": "a1", "expected_changed_ids": [] },
+    { "id": "W10", "actor": "admin_a", "operation": "delete", "target": "a2", "expected_changed_ids": ["a2"] },
+    { "id": "W11", "actor": "admin_a", "operation": "delete", "target": "b1", "expected_changed_ids": [] },
+    { "id": "W12", "actor": "revoked_a", "operation": "insert", "candidate": { "id": "revoked_write", "tenant_id": "tenant_a", "owner_id": "revoked_a", "title": "Synthetic revoked" }, "expected_changed_ids": [] }
+  ],
+  "assertion_contract": [
+    "Compare visible payload/IDs and independently inspected post-state, not HTTP status alone.",
+    "An unauthorized read may be filtered to zero rows or rejected earlier by grants; it must not expose another tenant's payload.",
+    "An unauthorized update/delete may affect zero rows without an HTTP error; assert that no forbidden row changed.",
+    "Validate allowed new state values too, not only changed row IDs; denied writes require byte-equivalent protected state.",
+    "R06/W12 require server-side membership revocation to take effect despite a stale user token. A claim-only design fails this chosen business contract.",
+    "Run with actual user sessions. Owner/superuser/BYPASSRLS SQL tests do not prove client isolation.",
+    "Actual API, view, RPC, Storage, and Realtime tests remain separate implementation tasks."
+  ]
+}

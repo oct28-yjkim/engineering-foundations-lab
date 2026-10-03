@@ -15,6 +15,8 @@
 
 Kafka는 [별도 Compose](../../streaming/kafka/compose.yaml)와 [로컬 실습 안내](../../streaming/kafka/labs/local-lab.md)를 제공합니다. 이 문서의 `docker compose` 명령은 루트의 두 DB에만 적용됩니다. Kafka는 `docker compose -f streaming/kafka/compose.yaml ...`로 관리하며 프로젝트·네트워크·volume을 분리합니다. 기본 상태에서는 PostgreSQL → Kafka → ClickHouse 파이프라인이 만들어지지 않습니다. connector와 네트워크 연결은 [통합 연구](capstone.md)의 구현 과제입니다.
 
+[Sentry 준비 실습](../../observability/sentry/labs/local-lab.md)과 [Supabase CLI local 준비](../../platforms/supabase/labs/local-lab.md)는 별도 과정입니다. Sentry의 offline 계산과 Supabase 권한 reference fixture는 제공하지만, 두 제품의 전체 스택·SDK 앱·클라우드 프로젝트·실제 Auth/RLS 검증은 제공된 DB Compose에 포함되지 않습니다. 기존 PostgreSQL·Kafka·ClickHouse를 제품 내부 dependency로 자동 연결하지 않습니다.
+
 트랙별 표기는 PostgreSQL의 S가 E0, E가 선택 확장을 포함한 E1, T가 E2, B가 E3에 대응합니다. ClickHouse의 LOCAL은 E0, CLUSTER-DESIGN은 E2에 해당하며 OPS-DESIGN은 과제에 따라 E1/E2가 필요합니다. SOURCE의 정적 읽기는 파일 탐색으로 가능하지만 직접 빌드·디버깅은 E3 준비가 필요합니다.
 
 Docker에 사용할 메모리는 입문 두 서비스를 합쳐 6–8GiB 정도를 출발점으로 삼되, 이는 보장된 최소 요구사항이 아닙니다. 실제 소비량을 `docker stats --no-stream`으로 확인합니다. 규모 확대는 1배→2배→10배로 진행하고 disk/memory 예산을 먼저 정합니다. Keeper 다수 노드와 replica를 구성하는 경우 E0 예산을 그대로 적용하지 않습니다.
