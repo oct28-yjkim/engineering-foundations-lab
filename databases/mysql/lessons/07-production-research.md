@@ -57,7 +57,7 @@ TLS 시험은 암호화 여부뿐 아니라 CA/hostname 검증 실패, 잘못된
 | query 최적화 | 단일 index → 근거 있는 복합 index/통계 변화 | tenant skew, 분포/상관관계 변화 |
 | 복구 경계 | 단순 count 검산 → 업무 ledger 검산 | 누락된 transaction, 중복/잘못된 replay 경계 |
 
-복구 경계를 선택하더라도 이미 준비된 RESTORE-LAB만 재사용합니다. CPU 모형으로만 수행하면 연구 결론의 범위를 OFFLINE으로 제한합니다.
+복구 경계를 선택하더라도 이미 준비된 RESTORE-LAB만 재사용합니다. 선택 모형만 수행하면 원리 연구로 기록하며 실제 운영 관문은 미완료입니다. 단일 노드 운영 연구에는 [기준선·사건·회복 증거](../operations.md)를 함께 제출합니다.
 
 ### 1주차: 예측·baseline·실패
 

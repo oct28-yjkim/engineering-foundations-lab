@@ -13,6 +13,8 @@
 
 ## 필수 gate
 
+제품 운영 실습은 [실제 기준선·두 문제의 진단·회복 비교](operations.md)가 있어야 완료합니다. unit별 상태·시간·dependency·조치 전후 outputs/state와 미검증 범위를 [운영 보고서](../../operations/incident-report-template.md)에 제출합니다. 원리 모형 또는 제공된 로그 분석만으로 실제 scheduler/backend 운영 통과를 선언하지 않습니다.
+
 1. **두 DAG:** Terraform resource DAG와 Terragrunt unit DAG를 다른 그림/자료구조로 제시합니다. 여러 state를 하나의 원자적 transaction으로 주장하지 않습니다.
 2. **선택 집합:** intended/selected/started/succeeded/failed/blocked 집합을 별도로 기록합니다. 포함 누락과 초과 포함 양쪽을 검사합니다. Git diff만으로 공유 설정 영향이 완전하다고 주장하지 않습니다.
 3. **Outputs:** dependency는 기존 적용 결과를 읽으며 upstream plan의 미래 값을 downstream plan에 자동 전파하지 않습니다. mock과 실제 값의 출처를 표시하고 apply에 mock을 허용하지 않습니다.

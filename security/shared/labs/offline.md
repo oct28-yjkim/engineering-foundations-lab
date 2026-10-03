@@ -1,5 +1,7 @@
 # CPU 모델: 권한·버전·만료·quorum의 경계를 반례로 이해하기
 
+이 문서는 **선택 원리 부록**입니다. 기본 학습은 [실제 제품 운영 실습](../operations.md)의 상태·지표·감사·소비자 관측과 회복 검증이며, 아래 모형 PASS는 운영 gate를 대체하지 않습니다. 코드와 과거 검증 기록은 원리 연구를 위해 보존합니다.
+
 [공통 실습](README.md) · [OpenBao](../../openbao/README.md) · [Vault](../../vault/README.md) · [구현](offline_lab.py) · [테스트](test_offline_lab.py)
 
 Python 3.10 이상과 표준 라이브러리만으로 실행한다. 패키지 설치·Docker·클라우드·API key·네트워크·파일 읽기/쓰기·외부 프로세스·실제 시계가 필요 없다. 아래 `-B`는 bytecode cache 생성도 막는다. 입력은 공개된 가상 문자열과 정수이며 **운영 secret을 넣지 않는다**.

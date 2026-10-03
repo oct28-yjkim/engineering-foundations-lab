@@ -57,7 +57,7 @@
 | 분산 후보 | 후보 크기 또는 shard 배치 하나 | 후보 부족, 집계 누락 | 고정 score 정렬·전체 counter |
 | vector·hybrid | filter 방식 또는 fusion 하나 | restrictive filter, union 후보 누락 | 같은 필터의 exhaustive top-k·judgment |
 
-OFFLINE을 선택하면 모형 연구로 완료할 수 있지만 실제 OpenSearch 실험으로 이름을 바꾸지 않습니다. LOCAL-ENGINE을 선택하면 기본 fixture 외 필요한 구현을 추가합니다. 다중 노드·보안·ANN·복원은 필요한 환경이 이미 있을 때만 작은 범위로 선택합니다.
+선택 OFFLINE 부록으로는 원리 연구만 기록하며 운영 과정은 미완료입니다. 주 경로 LOCAL-ENGINE은 기본 fixture 외 [정상 기준선·실제 사건·회복 증거](../operations.md)를 추가합니다. 다중 노드·보안·ANN·복원은 필요한 환경이 이미 있을 때만 작은 범위로 선택합니다.
 
 ### 10일 작업 단위
 

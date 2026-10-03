@@ -7,18 +7,18 @@ Spark는 실행 엔진입니다. Parquet은 파일 형식이고 Delta Lake는 �
 ## 시작 순서
 
 1. [공통 기초](../../databases/shared/foundations.md)의 SQL·OS·분산 실패 모델을 진단합니다. Python iterator·예외·가상환경, JVM heap/GC, Scala case class·pattern matching은 필요에 따라 별도 보충합니다.
-2. [실습 안내](labs/README.md)에서 OFFLINE과 LOCAL-SPARK의 차이를 확인합니다.
+2. [운영 관측·트러블슈팅](operations.md)에서 Spark UI·event log·실행계획을 연결하고 실제 정상 실행의 기준선을 수집합니다. [실습 안내](labs/README.md)의 LOCAL-SPARK 준비를 확인합니다.
 3. [28주 커리큘럼](curriculum.md)을 따라 7개 강의와 14개 실험 보고서를 작성합니다.
 4. [소스·논문 지도](source-reading.md)로 관찰한 현상의 구현 경계를 찾습니다.
 5. [평가](assessment.md)에서 실행·설계·미검증 증거를 구별합니다.
 
-저장소 루트에서 별도 패키지 없이 시작합니다. 이 명령은 Spark 실행이 아닌 Python 표준 라이브러리의 교육용 모형입니다.
+선택 원리 부록이 필요할 때만 다음 교육용 모형을 실행합니다. Spark 실행이 아니며 선수 과정이나 운영 수료 조건이 아닙니다.
 
 ```text
 python data-processing/spark/labs/offline_lab.py --lab all
 ```
 
-실제 PySpark `batch`·`streaming` 과제 코드는 별도로 제공합니다. Java·PySpark 준비 및 출력 경로 등은 [실습 안내](labs/README.md)를 먼저 따릅니다. Java나 PySpark가 없는 환경에서 이 과제의 실행 성공을 주장하지 않습니다.
+기본 실무 경로는 실제 PySpark `batch`·`streaming` 실행 → 지표·계획 비교 → 장애 진단 → 복구 검증입니다. Java·PySpark 준비 및 출력 경로는 [실습 안내](labs/README.md)를 따릅니다. 환경이 없으면 정제된 실제 UI/event log 증거 분석으로 시작하되 실제 실행 성공을 주장하지 않습니다.
 
 ## 버전과 실행 범위
 

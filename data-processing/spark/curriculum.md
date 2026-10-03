@@ -4,6 +4,10 @@
 
 ## 모듈 지도
 
+기본 경로는 [운영 가이드](operations.md)의 실제 job baseline → UI/event log/plan/progress 관측 → 경쟁 가설 → 병목 또는 오류 재현 → 원복·정합성/복구 → 내부 소스입니다. [14모듈 관측 산출물](operations.md#4-14모듈-관측-산출물)을 아래 원리 제출물과 함께 요구합니다. CPU 모형은 선택 보충이며 선수 조건이 아닙니다. 환경이 없으면 정제된 실제 실행 자료를 분석하되 실행 gate를 완료로 쓰지 않습니다.
+
+기본 운영 gate는 실제 baseline 1개·상이한 증상 2개·가설 배제·완화/원복·업무 정합성과 지표 회복입니다. 로컬 성공으로 cluster/managed 관문을 대신하지 않습니다.
+
 | 모듈 / 주 | 선수 조건 | 핵심 질문 | 제출·최소 통과 |
 | --- | --- | --- | --- |
 | SP01 / 1–2 | Python·SQL | [lazy execution·job/stage/task](lessons/01-execution-model.md#sp01) | action 전후 계획·job 원장; 호출 1회=job 1개라는 반례 |

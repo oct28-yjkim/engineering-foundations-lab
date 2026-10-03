@@ -4,10 +4,13 @@
 
 SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 스트리밍, 관측, 인증·인가, 성능 측정, 소스 코드 분석을 연결합니다. 가장 높은 단계의 완료 기준은 낯선 현상을 최소 재현으로 줄이고, 원인을 코드와 측정값으로 설명하며, 수정안의 회귀를 검증하는 것입니다.
 
+**제품·도구는 실제 실행과 관측·트러블슈팅 중심**, LLM 논문은 기존 CPU 기본·GPU/API 선택 경로로 학습합니다. 제품별 원리 모형은 선택 보조자료입니다. [개편된 학습 원칙과 제품별 운영 실습](operations/README.md)을 확인합니다.
+
 ## 시작할 곳
 
 | 문서 | 역할 |
 | --- | --- |
+| [운영·모니터링·트러블슈팅](operations/README.md) | 15개 제품의 핵심 지표·진단 순서·회복 검증·보고서 |
 | [데이터베이스 교육 과정](databases/README.md) | 수준 진단, PG+CH 72주 경로와 MySQL 선택 과정, 통과 기준 |
 | [이벤트 스트리밍 교육 과정](streaming/README.md) | Kafka·NATS 선택 트랙과 PG/Kafka/CH 통합 100주 경로 |
 | [공통 기초 8주](databases/shared/foundations.md) | SQL·자료구조·OS·확률·분산 시스템의 연결 |
@@ -25,7 +28,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | [OpenSearch](search/opensearch/README.md) | 14개 모듈, Lucene·색인/refresh·BM25·분산 검색·복제·권한·벡터/하이브리드 |
 | [OpenBao](security/openbao/README.md) | 14개 모듈, barrier·seal·identity·policy·KV·lease·transit·PKI·audit·Raft·복구 |
 | [HashiCorp Vault](security/vault/README.md) | 14개 모듈, 비밀 수명·workload 인증·최소 권한·암호 서비스·HA·플러그인·edition 경계 |
-| [비밀·신원 보안 경로](security/README.md) | 제품 비교, 공통 CPU 실험과 격리 dev 환경 |
+| [비밀·신원 보안 경로](security/README.md) | 제품 비교, 격리 dev 환경과 상태·권한·lease·audit 진단 |
 | [LLM 논문 실험](ai/llm-paper-lab/README.md) | 핵심 논문 20편·14모듈, CPU 실험 6개와 GPU/API 선택 확장 |
 | [MCP](ai/mcp/README.md) | 14개 모듈, 명세·tools/resources/prompts·stdio/HTTP·인증·권한·cache·재시도·상호운용 |
 | [실험 방법](databases/shared/experiment-method.md) | 재현성, 측정 오차, 정확성 oracle, 반증 |
@@ -66,129 +69,47 @@ MCP도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. protocol 
 
 NATS도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. Core NATS와 JetStream의 전달·보존·복구 경계를 구분하고 Kafka와 비교합니다. 기존 100주 PG/Kafka/CH 경로에 자동 가산하지 않으며, 마지막 2주 미니 연구와 별도 8주 캡스톤은 구분합니다.
 
-## 첫 실습
+## 첫 실습: 제품 관측과 트러블슈팅
 
-아래 DB 실습에는 실행 중인 Docker Desktop의 Linux 컨테이너 엔진과 Docker Compose v2가 필요합니다. 저장소 루트에서 실행합니다. 아래 명령은 PowerShell과 Bash 모두에서 한 줄씩 사용할 수 있습니다.
+제품별로 **실제 실행 → 정상 기준선 → 증상·지표·로그 → 원인/내부 구현 → 조치·복구**를 기본 경로로 사용합니다. [공통 운영 학습 안내](operations/README.md)와 [장애 보고서 양식](operations/incident-report-template.md)을 먼저 봅니다. 원리 모형은 선택 보조자료이며 실제 실습의 선수 조건이나 완료 증거가 아닙니다.
 
-```text
-docker compose config --quiet
-docker compose up -d
-docker compose ps
-docker compose exec postgres psql -X -v ON_ERROR_STOP=1 -U lab -d lab
-```
+| 트랙 | 환경·실행 시작점 | 기본 운영 실습 |
+| --- | --- | --- |
+| PostgreSQL / ClickHouse | [별도 DB 환경과 SQL](databases/shared/environment.md) | [PG 세션·잠금·plan](databases/postgresql/operations.md), [CH query log·merge·복제](databases/clickhouse/operations.md) |
+| MySQL | [단일 엔진·SQL](databases/mysql/labs/README.md) | [Performance Schema·InnoDB·복제 진단](databases/mysql/operations.md) |
+| Kafka | [KRaft Compose·로컬 실습](streaming/kafka/labs/local-lab.md) | [lag·ISR·request latency·장애 대응](streaming/kafka/operations.md) |
+| NATS | [격리 서버·SDK](streaming/nats/labs/README.md) | [consumer·ACK·slow consumer·stream 상태](streaming/nats/operations.md) |
+| OpenSearch | [단일 엔진·REST](search/opensearch/labs/README.md) | [shard·heap·rejection·검색/색인 지연](search/opensearch/operations.md) |
+| Spark / Databricks | [실제 Spark](data-processing/spark/labs/README.md), [관리형 환경 준비](platforms/databricks/labs/README.md) | [Spark UI·skew·spill](data-processing/spark/operations.md), [query/job·권한·비용](platforms/databricks/operations.md) |
+| Sentry / Supabase | [Sentry 준비](observability/sentry/labs/local-lab.md), [Supabase 준비](platforms/supabase/labs/local-lab.md) | [오류·trace·ingestion](observability/sentry/operations.md), [DB/pool·Auth/RLS·서비스별 오류](platforms/supabase/operations.md) |
+| Terraform / Terragrunt | [격리 local CLI 환경](infrastructure/shared/environment.md) | [plan/state·lock·부분 적용](infrastructure/terraform/operations.md), [unit·dependency·실행 원장](infrastructure/terragrunt/operations.md) |
+| OpenBao / Vault | [격리 dev 환경](security/shared/environment.md) | [OpenBao 상태·lease·audit](security/openbao/operations.md), [Vault health·권한·Raft](security/vault/operations.md) |
+| MCP | [실제 SDK stdio](ai/mcp/labs/README.md) | [요청 지연·오류 층·timeout·권한 경계](ai/mcp/operations.md) |
 
-PostgreSQL 안에서 `SELECT version();`과 `SELECT count(*) FROM commerce.orders;`를 확인하고 `\q`로 나옵니다. ClickHouse는 다음 명령으로 접속합니다.
+각 트랙은 **제공된 실행 코드 / 직접 구성할 관측·장애 과제 / 실제 검증 이력**을 구분합니다. 이 표가 모든 제품의 exporter·dashboard·다중 노드·cloud 환경을 자동 제공한다는 뜻은 아닙니다. 실제 계정·비용·권한이 필요한 단계는 사용자가 선택한 허가된 환경에서만 진행하며, 기본 재편 작업이 환경을 자동 실행하거나 자원을 만들지 않습니다.
 
-```text
-docker compose exec clickhouse clickhouse-client --user lab --password lab_password --database lab
-```
-
-`SELECT version();`과 `SELECT count() FROM lab.events;`를 확인합니다. 상세 절차와 SQL 파일 실행은 [환경 안내](databases/shared/environment.md)를 따릅니다.
-
-Kafka는 별도 Compose 프로젝트로 실행합니다. DB volume과 수명 주기를 분리하며, Kafka만 공부할 때는 위의 DB 시작 명령이 필요하지 않습니다.
-
-```text
-docker compose -f streaming/kafka/compose.yaml config --quiet
-docker compose -f streaming/kafka/compose.yaml up -d --wait
-docker compose -f streaming/kafka/compose.yaml exec -T kafka bash /lab/scripts/00-inspect.sh
-docker compose -f streaming/kafka/compose.yaml exec -T kafka bash /lab/scripts/01-smoke.sh
-```
-
-Smoke 실습은 매번 새 학습용 topic을 만들고 기록·조회 결과를 검사합니다. 보존 데이터와 실행 범위는 [Kafka 로컬 실습](streaming/kafka/labs/local-lab.md)을 확인합니다. 컨테이너가 정상이라는 것과 복제·exactly-once가 검증됐다는 것은 다릅니다.
-
-NATS는 [CPU 모형 4개](streaming/nats/labs/README.md)로 시작하며 Python 표준 라이브러리만 사용합니다.
-
-```text
-python -B streaming/nats/labs/offline_lab.py --lab all
-python -B -m unittest discover -s streaming/nats/labs -p "test_*.py" -v
-```
-
-선택 실습은 NATS 서버 2.15.0과 nats-py 2.16.0으로 새 loopback 서버를 시작해 Core 수신·no responder·JetStream dedup·NAK 재전달·ACK를 검사합니다. 공식 바이너리와 격리 venv 준비 후 opt-in하며 기존 서버·DB·Docker에 자동 연결하지 않습니다. [환경 안내](streaming/nats/environment.md)와 [실제 검증 범위](streaming/nats/labs/validation.md)를 확인합니다.
-
-Sentry는 외부 계정 없이 [오프라인 sampling 실험](observability/sentry/labs/local-lab.md)부터 시작할 수 있습니다. 이것은 SDK나 서버 실행이 아닌 원리 검증입니다.
-
-```text
-node observability/sentry/labs/sampling-oracle.mjs
-```
-
-Supabase는 [CLI local 준비와 권한 oracle](platforms/supabase/labs/local-lab.md)을 먼저 봅니다. 루트 PostgreSQL 컨테이너가 Supabase Auth·API·RLS 앱 전체를 제공하는 것은 아닙니다. 두 과정의 SDK 앱·제품 스택은 별도 구성 과제이며 기존 Compose를 바꾸지 않았습니다.
-
-LLM 논문 실험은 Python 3.10 이상으로 시작합니다. 별도 패키지·모델 다운로드·GPU·API 키·Docker가 필요하지 않습니다.
+LLM 논문 트랙은 기존의 **CPU 기본 + GPU/API 선택 확장**을 유지합니다. 수학·알고리즘의 작은 재현과 실제 모델 학습/benchmark 재현을 구분합니다.
 
 ```text
 python ai/llm-paper-lab/labs/lab.py --lab all
 python -B -m unittest discover -s ai/llm-paper-lab/labs -p test_lab.py -v
 ```
 
-이는 Attention·LoRA·DPO·KV cache·검색·평가의 **합성 CPU 모형**입니다. 실제 LLM 학습이나 논문 benchmark 재현과는 다릅니다. [실습 범위](ai/llm-paper-lab/labs/README.md)와 [환경 안내](ai/llm-paper-lab/environment.md)를 먼저 확인합니다.
-
-Spark·Databricks도 [CPU 계약 실험](data-processing/spark/labs/README.md)부터 시작할 수 있습니다.
-
-```text
-python -B data-processing/spark/labs/offline_lab.py --lab all
-python -B -m unittest discover -s data-processing/spark/labs -p "test_*.py" -v
-```
-
-skew·version merge·watermark·budget의 작은 모형이며 실제 Spark/Delta 실행이 아닙니다. 별도 준비 후 사용할 Spark 배치·file streaming 코드와 [관리형 Delta SQL 예제](platforms/databricks/labs/README.md)도 제공합니다. Java/PySpark 설치와 Databricks 계정·compute 생성은 자동 수행하지 않습니다.
-
-Terraform/Terragrunt는 [CPU 모형](infrastructure/shared/labs/README.md)으로 시작하거나 [실제 CLI 준비](infrastructure/shared/environment.md) 후 클라우드 없는 built-in 리소스 실습을 선택할 수 있습니다.
-
-```text
-python -B infrastructure/shared/labs/offline_lab.py --lab all
-python -B -m unittest discover -s infrastructure/shared/labs -p "test_*.py" -v
-```
-
-실제 CLI 예제는 Terraform 1.16.5·Terragrunt 1.1.6의 로컬 state만 사용합니다. 원격 backend·cloud 계정·유료 자원은 자동 구성하지 않습니다. plan/state에는 비밀이 들어갈 수 있으므로 실행 산출물을 소스와 분리합니다.
-
-OpenSearch는 [CPU 실험 4개](search/opensearch/labs/README.md)로 시작합니다. 별도 패키지·계정·네트워크가 필요 없습니다.
-
-```text
-python -B search/opensearch/labs/offline_lab.py --lab all
-python -B -m unittest discover -s search/opensearch/labs -p "test_*.py" -v
-```
-
-선택 실행용 OpenSearch 3.9.0 전용 Compose와 합성 문서 6개를 검산하는 REST runner도 제공합니다. CPU 모형·mock 테스트와 실제 엔진 실행을 구분하며 [검증 기록](search/opensearch/labs/validation.md)에 수행 범위를 남깁니다. 단일 노드의 security-disabled 로컬 구성으로 보안·HA를 검증하지 않으며, 실제 엔진 실행은 [준비·안전 경계](search/opensearch/labs/README.md)를 읽은 뒤 선택합니다.
-
-MySQL은 [CPU 실험 4개](databases/mysql/labs/README.md)로 시작합니다. Python 표준 라이브러리만 사용합니다.
-
-```text
-python -B databases/mysql/labs/offline_lab.py --lab all
-python -B -m unittest discover -s databases/mysql/labs -p "test_*.py" -v
-```
-
-선택 실행용 `mysql:8.4.11` 전용 Compose와 SQL 정확성 runner도 제공합니다. 호스트 포트를 열지 않고 로컬 Docker exec를 사용하며, 매번 새 합성 학습 DB를 보존합니다. root 실습 계정은 운영 권한 설계가 아닙니다. CPU·mock·실제 엔진 수행 여부는 [MySQL 검증 기록](databases/mysql/labs/validation.md)을 확인합니다.
-
-OpenBao/Vault는 [공통 CPU 실험 4개](security/shared/labs/README.md)부터 시작합니다. Python 표준 라이브러리만 사용합니다.
-
-```text
-python -B security/shared/labs/offline_lab.py --lab all
-python -B -m unittest discover -s security/shared/labs -p "test_*.py" -v
-```
-
-선택 실행용 OpenBao 2.7.1·Vault Community 2.1.1 dev Compose와 KV/CAS·제한 token 권한 runner도 제공합니다. 컨테이너 외부 네트워크·host port·영속 volume 없이 합성 값만 사용합니다. 자동 unseal·공개 dummy root·인메모리 구성은 운영용이 아니며 seal/Raft/내구성 검증을 대신하지 않습니다. [환경 경계](security/shared/environment.md)와 [검증 기록](security/shared/labs/validation.md)을 확인합니다.
-
-MCP는 [CPU 모형 4개](ai/mcp/labs/README.md)부터 시작합니다.
-
-```text
-python -B ai/mcp/labs/offline_lab.py --lab all
-python -B -m unittest discover -s ai/mcp/labs -p "test_*.py" -v
-```
-
-선택 공식 Python SDK 2.3.0 stdio 서버·클라이언트 fixture도 제공합니다. 합성 재고 tool·resource·prompt와 오류를 검산하며 외부 모델·API·현재 앱의 MCP 연결을 사용하지 않습니다. [별도 venv 설치](ai/mcp/environment.md)와 [CPU/mock/실제 SDK 검증](ai/mcp/labs/validation.md)을 구분합니다. HTTP/OAuth·MRTR·확장·교차 host는 별도 심화 과제입니다.
+제품별 기존 `offline_lab.py`와 테스트는 삭제하지 않습니다. [원리 모형의 역할](operations/README.md)에 따라 필요한 개념의 보조 자료로 사용하고, 테스트 PASS나 모형의 속도를 제품 운영 숙련도·실제 처리량으로 보고하지 않습니다.
 
 ## 저장소에 제공되는 것
 
 - 단일 노드 PostgreSQL 18 및 ClickHouse 26.8 Compose 구성과 결정적으로 생성되는 합성 데이터
 - Apache Kafka 4.3.1 단일 broker/controller KRaft Compose, 상태 관측 및 정확성 smoke 실습
-- NATS 심화 과정, CPU 모형 4개, 선택 고정 서버/SDK 정확성 fixture, Core/JetStream 소스·Raft 원전·전달/업무 복구 연구
+- NATS 심화 과정, 고정 서버/SDK fixture와 운영 진단 지침, Core/JetStream 소스·Raft 원전·선택 원리 모형
 - Sentry의 네트워크 없는 sampling 모델, Supabase의 18개 권한 기대 결과 fixture와 제품별 준비 지침
 - LLM 핵심 논문 20편의 읽기·실험 지도, CPU 실험 6개와 단위 테스트, GPU/API 확장·재현 보고서 지침
-- Spark/Databricks 심화 과정, CPU 계약 모형 4개, 선택 실행용 실제 Spark 배치·스트리밍 코드와 관리형 Delta SQL fixture
-- Terraform/Terragrunt 심화 과정, CPU 모형 4개, built-in Terraform 실제 테스트와 로컬 Terragrunt 2-unit 실습
-- OpenSearch 심화 과정, CPU 모형 4개, 선택 실행용 단일 노드 Compose·REST 정확성 fixture, BM25/RRF/HNSW 논문·소스 지도
-- MySQL 심화 과정, CPU 모형 4개, 선택 실행용 단일 노드 Compose·SQL 정확성 fixture, InnoDB 소스·격리/복구/최적화 논문 지도
-- OpenBao/Vault 각각의 심화 과정, 공통 CPU 모형 4개, 격리 dev Compose·KV/ACL fixture, 제품별 소스·보안/정족수 논문·복구 연구
-- MCP 심화 과정, CPU 모형 4개, 공식 SDK stdio fixture, 명세/SDK/표준 소스 지도, revision 호환성·도구 경계 연구
+- Spark/Databricks 실제 Spark 배치·스트리밍/Delta SQL fixture, UI·실행 계획·지연·비용 진단 지침과 선택 원리 모형
+- Terraform/Terragrunt built-in 실제 테스트·로컬 2-unit 실습, plan/state·실행 로그·부분 실패 진단과 선택 원리 모형
+- OpenSearch 단일 노드 Compose·REST fixture, shard/heap/검색 진단과 BM25/RRF/HNSW 논문·소스·선택 원리 모형
+- MySQL 단일 노드 Compose·SQL fixture, Performance Schema/InnoDB 진단·소스·복구 연구와 선택 원리 모형
+- OpenBao/Vault 격리 dev Compose·KV/ACL fixture, 제품별 health·lease·audit·Raft 진단·소스·선택 원리 모형
+- MCP 공식 SDK stdio fixture, 요청·오류·timeout 진단·명세/SDK 소스·호환성·선택 원리 모형
 - 기술별 커리큘럼, 원리·실험 강의, 소스 탐색 지도, 단계별 평가
 - 기초 SQL 문제/답안, 읽기 전용 내부 상태 관찰 SQL
 - 실험 기록 양식과 통합 연구 프로젝트 요구사항

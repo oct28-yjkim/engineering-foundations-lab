@@ -1,5 +1,29 @@
 # OpenSearch 28주 심화 커리큘럼
 
+## 운영 중심 진행과 모듈별 진단 증거
+
+주 실습은 [실제 제품 운영 runbook](operations.md)의 **정상 기준선 → 지표/로그 → 경쟁 가설 → 제한된 재현 → 조치 → 회복 검산**입니다. 기존 28주·14모듈·336시간과 원리/내부 구현의 깊이는 유지합니다. 모듈당 실험 10시간은 정상 관측 2시간, 사건/반례와 진단 5시간, 조치·회복 검산 3시간을 기본 배분으로 삼습니다. 원리 모형은 필요할 때 선택하는 보조 자료이며 필수 선행 조건이 아닙니다.
+
+| 모듈 | 실제 제품에서 추가로 남길 진단 증거 |
+| --- | --- |
+| OS01 | analyzer/token·문서 정답·버전 기준선 |
+| OS02 | mapping 오류의 status/error type 분류 |
+| OS03 | ACK/GET/search·refresh 상태 진단 |
+| OS04 | bulk item별 오류·OCC·안전한 재시도 |
+| OS05 | explain/profile과 후보/점수 원인 구분 |
+| OS06 | query/judgment slice와 품질 회귀 진단 |
+| OS07 | shard/routing·partial 결과·집계 누락 |
+| OS08 | allocation decider·replica·복구 상태 |
+| OS09 | node stats·GC·queue/rejected·I/O 가설 |
+| OS10 | 권한 실패·snapshot 독립 복원 검산 |
+| OS11 | exact 대비 ANN recall·latency·memory |
+| OS12 | 후보 누락·fusion·필터·최신성 검증 |
+| OS13 | 실제 관측→Lucene/OpenSearch source 경계 |
+| OS14 | 실제 사건 2개·복구 후 검색/업무 검산 |
+
+각 증거에는 버전·관측 지점·지표 단위/형식/창·경쟁 가설·회복 기준을 붙입니다. 별도 복제/복원/보안 환경이 필요한 항목은 설계와 실행을 분리합니다. 단일 노드 운영 관문은 실제 baseline 1개와 실제 사건 2개 이상 및 회복 후 업무 검산입니다. 환경 미준비·모형/단위 테스트만 통과한 상태는 운영 미완료입니다. 기존 개별 모듈의 더 엄격한 요구는 그대로 적용합니다.
+
+
 14모듈 × 2주 × 주 12시간 = 약 336시간입니다. 모듈당 원리·공식 자료 6시간, 실험 10시간, 소스 추적 4시간, 분석·구술 4시간을 기준으로 합니다. Java/Lucene 보충, 별도 cluster·보안 환경 구축, 미통과 실험의 재수행 시간은 추가로 확보합니다.
 
 ## 모듈 지도
@@ -41,11 +65,11 @@ snapshot ID+shard status / restore target / lost+stale+unauthorized IDs / RTO+RP
 
 ## Gate와 완료 범위
 
-- G1, OS01–OS04: analyzer·자료구조·가시성·내구성·write 불변식. CPU 모형이 실제 Lucene과 다른 지점을 설명합니다.
+- G1, OS01–OS04: 실제 analyzer·자료구조·가시성·내구성·write 불변식. 선택 모형을 썼다면 실제 Lucene과 다른 지점을 설명합니다.
 - G2, OS05–OS08: 일치·순위·분산 후보·실패 경계. 검색 결과를 정확성, relevance, freshness로 나누고 shard 실패를 숨기지 않습니다.
 - G3, OS09–OS12: resource·권한·복구·ANN·hybrid. workload filter를 인증/인가로 오인하거나 replica를 backup으로 오인하면 미통과입니다.
 - G4, OS13–OS14: 구현 근거·반증·제한된 연구. 실행하지 않은 보안·분산·ANN·복원을 PASS로 표시하지 않습니다.
 
-[평가표](assessment.md)는 정확성 25, 원리·소스 25, 실험·반증 25, 운영·재현성 25점입니다. 총 80점 이상, 모든 영역 15점 이상, 필수 gate를 함께 충족해야 합니다. CPU/단일 노드만 실행했다면 그 범위의 완료로 기록하고 CLUSTER-LAB·SECURITY-LAB·ANN-LAB은 별도 상태로 남깁니다.
+[평가표](assessment.md)는 정확성 25, 원리·소스 25, 실험·반증 25, 운영·재현성 25점입니다. 총 80점 이상, 모든 영역 15점 이상, 필수 gate를 함께 충족해야 합니다. 모형만 했다면 원리 학습으로, 실제 기준선·사건·회복 관문을 통과했다면 단일 노드 운영으로 기록합니다. CLUSTER-LAB·SECURITY-LAB·ANN-LAB은 별도 상태로 남깁니다.
 
 매 모듈은 업무 질문 → 불변식·실패 모델 → 입력·기대값 → 실행 범위 → 관찰 → 경쟁 가설 → 소스 근거 → 한계 순으로 제출합니다. HTTP 200·cluster green·높은 nDCG 중 어느 하나도 다른 gate를 대신하지 않습니다.

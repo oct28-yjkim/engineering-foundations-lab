@@ -46,4 +46,4 @@ path "lab-kv/data/orders/config" {
 
 **Edition 과제:** Vault namespaces는 Enterprise 문서의 범위로 표시합니다. Community에서 경로 prefix를 나눈 것을 별도 namespace와 같은 격리라고 부르지 않습니다. [Vault namespaces](https://developer.hashicorp.com/vault/docs/enterprise/namespaces)
 
-**통과:** 주체×경로×연산×시간의 최소 12행 행렬, 허용/거부의 실제 결과, CPU 모형의 누락 기능 4개, token tree와 폐기 원장을 제출합니다.
+**통과:** 주체×경로×연산×시간의 최소 12행 행렬, 허용/거부의 실제 결과, token tree와 폐기 원장을 제출합니다. [운영 실습](../operations.md)에서 status·capability·sanitized audit로 403의 경쟁 가설을 구분합니다. CPU 모형을 선택했다면 누락 기능도 별도 기록하되 모형 실행은 필수가 아닙니다.

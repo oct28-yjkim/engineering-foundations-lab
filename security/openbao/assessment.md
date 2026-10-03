@@ -17,6 +17,8 @@
 
 ## 필수 gate
 
+**운영 gate:** [운영 runbook](operations.md)의 실제 정상 baseline, 서로 다른 사건 2개, 사건마다 두 개 이상의 경쟁 가설·지표/감사/소비자 증거·제한된 변경과 원복 또는 재발급·회복 후 검산을 제출합니다. 모형/단위 테스트나 상태 화면 하나는 이를 대체하지 않습니다. 환경/권한 부족은 운영 미실행으로 표시하고 별도 설계 평가를 받습니다. dev 실습은 그 범위만 평가하며 audit/Raft/DR 미실행을 숨기지 않습니다.
+
 1. **위협·seal:** 초기화, unseal, rekey, barrier rotation, auto-unseal, recovery key의 역할을 구별합니다. online 서버의 root/host 침해를 암호화 저장만으로 막는다고 주장하면 미통과입니다.
 2. **인증·인가:** root가 아닌 실제 주체별 양성/음성 대조군, KV v2의 실제 data/metadata 경로, exact와 glob selector의 차이를 냅니다. list 응답이 읽기 정책으로 필터링된다는 가정을 금합니다.
 3. **수명·외부 상태:** token과 secret lease, renewal 요청과 실제 TTL, 만료와 backend revoke 완료, KV soft delete와 destroy를 분리합니다.
@@ -29,7 +31,7 @@
 
 | 범위 | 제출물 | 증명하지 않는 것 |
 | --- | --- | --- |
-| OFFLINE | CPU 4개·수작업 기대값·틀린 대조군·생략 조건 | 제품 policy matcher, 암호 강도, 실시간 만료, 실제 Raft |
+| OFFLINE 선택 부록 | 선택 모형·수작업 기대값·틀린 대조군·생략 조건 | 제품 policy matcher, 암호 강도, 실시간 만료, 실제 Raft·운영 gate |
 | LOCAL-DEV | 제품/이미지 고정·합성 fixture·API 응답·정확한 거부 | 운영 TLS, init/unseal, 영속성, HA, 백업 |
 | AUTH-LAB | 서로 다른 주체·claim·token tree·정책 revision·TLS 실패 | 단일 root 세션의 성공만으로 최소 권한 완료 불가 |
 | LIFECYCLE-LAB | 발급·갱신·만료·폐기·앱 reload 및 외부 소비자 결과 | 서버 TTL·revoke 응답만으로 모든 연결 종료 불가 |

@@ -2,7 +2,7 @@
 
 [트랙](../README.md) · [평가](../assessment.md) · [Spark 로컬 실습](../../../data-processing/spark/labs/README.md)
 
-이 저장소는 Databricks 계정·workspace·warehouse·cluster·catalog·storage credential을 만들지 않습니다. 기본 시작점은 Spark 트랙의 **CPU 모형**이며, 관리형 실습은 사용 권한과 비용 한도를 확보한 환경에서 사용자가 직접 수행합니다. 무료 제공/기능 지원은 계정·cloud·시점에 따라 다르므로 무료 실행을 보장하지 않습니다.
+이 저장소는 Databricks 계정·workspace·warehouse·cluster·catalog·storage credential을 만들지 않습니다. 기본 시작점은 [운영 가이드](../operations.md)의 실제 query/job/pipeline 증거 분석입니다. 사용 권한과 비용 한도가 있는 비운영 환경에서만 직접 실행하고, 환경이 없으면 정제된 기존 실측 자료를 받아 분석하되 실행 gate는 미완료로 남깁니다. Spark CPU 모형은 선택 원리 부록일 뿐입니다. 무료 제공/기능 지원은 계정·cloud·시점에 따라 다르므로 무료 실행을 보장하지 않습니다.
 
 ## 세 가지 환경을 구분
 

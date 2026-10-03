@@ -4,7 +4,7 @@ AI 시스템의 품질·비용·지연·안전성을 논문의 주장과 실제 
 
 현재 제공하는 [LLM 논문 실험 트랙](llm-paper-lab/README.md)은 핵심 논문 20편, 28주·14모듈, 심화 강의 7개와 Python 표준 라이브러리 기반 CPU 실험 6개로 구성됩니다. GPU 학습·서빙과 외부 API는 선택 확장입니다. 기본 실행에서 모델·데이터를 내려받거나 외부 요청을 보내지 않습니다.
 
-[MCP 심화 트랙](mcp/README.md)은 별도의 **28주·14모듈·7강·336시간**입니다. Model Context Protocol의 명세·wire·SDK·앱 정책을 분리하고 tool/resource/prompt, stdio/HTTP, 인증·권한, cache·취소·재시도, 호환성·운영을 연결합니다. CPU 모형 4개와 선택 공식 SDK stdio fixture를 제공하며 모델/API 없이 실행합니다. 두 트랙을 순차로 모두 하면 56주이며 기초·선택 캡스톤은 별도입니다.
+[MCP 심화 트랙](mcp/README.md)은 별도의 **28주·14모듈·7강·336시간**입니다. Model Context Protocol의 명세·wire·SDK·앱 정책을 분리하고 tool/resource/prompt, stdio/HTTP, 인증·권한, cache·취소·재시도, 호환성·운영을 연결합니다. 기본은 실제 공식 SDK stdio와 [요청·오류·지연 진단](mcp/operations.md)이며 원리 모형 4개는 선택 보조자료입니다. 모델/API 없이 실행합니다. 두 트랙을 순차로 모두 하면 56주이며 기초·선택 캡스톤은 별도입니다.
 
 MCP의 기준은 protocol 2026-07-28, SDK 2.3.0입니다. 2025-11-25 handshake는 비교 과정이며 현재 stateless core와 섞지 않습니다. [버전 계약](mcp/compatibility.md)과 [실험 검증 범위](mcp/labs/validation.md)를 확인합니다.
 

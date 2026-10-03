@@ -31,7 +31,7 @@ Delta·Photon·Lakehouse를 읽는 목표는 유명 시스템의 이름을 기�
 ### 1주차: 계약과 정상 경로
 
 1. 입력에 entity_id, event_id, sequence, operation, integer amount, tenant_id, synthetic provenance를 둡니다. 동일 sequence 상충 입력·NULL key·음수 금액 처리와 replay horizon을 문서화합니다.
-2. source canonicalization→latest-state projection→tenant별 합계를 구성합니다. 제공된 CPU merge 실험과 [선택 Delta SQL](../labs/delta-contract.sql)을 출발점으로 사용하되 서로 다른 fixture의 oracle를 혼합하지 않습니다.
+2. source canonicalization→latest-state projection→tenant별 합계를 구성합니다. 승인된 환경의 [Delta SQL](../labs/delta-contract.sql) 또는 정제된 실제 실행 증거에서 시작하고, CPU merge 모형은 필요할 때만 원리 보충으로 사용합니다. 서로 다른 fixture의 oracle를 혼합하지 않습니다.
 3. independent Python/수기 oracle와 실제 chosen runtime 결과의 PK/value/tombstone을 비교합니다. managed 계정이 없으면 local/model 구현만 완료로 표시하고 UC 권한은 matrix 설계로 둡니다.
 4. 배포 artifact·지문·리소스 상한·secret 무노출 규칙을 기록합니다. 자동 계정 생성이나 유료 compute 실행은 포함하지 않습니다.
 

@@ -7,7 +7,8 @@
 | [OpenBao](openbao/README.md) | barrier·seal·identity·policy·KV·lease·transit·PKI·audit·Agent·Raft·복원·구현 추적 | 28주·14모듈·7강·336시간 |
 | [HashiCorp Vault](vault/README.md) | 같은 핵심 원리 + Vault 구현·플러그인 경계·Community/Enterprise 구분 | 28주·14모듈·7강·336시간 |
 | [제품 비교와 전환 검증](shared/comparison.md) | API·저장소·namespace·plugin·edition별 호환성 계약 | 두 트랙의 비교 과제 |
-| [CPU / 선택 엔진 실습](shared/labs/README.md) | 설치 없는 원리 모형 4개 + 제품별 격리 dev fixture | 각 트랙 실습에 포함 |
+| [실제 엔진 실습](shared/labs/README.md) | 제품별 격리 dev fixture·기준선, 원리 모형은 선택 부록 | 각 트랙 실습에 포함 |
+| [OpenBao 진단](openbao/operations.md) / [Vault 진단](vault/operations.md) | health·권한·lease·audit·storage/Raft·회복 검증 | 제품별 실제 관측 |
 | [비밀·신원·복구 캡스톤](../capstones/secrets-identity-recovery.md) | workload 권한·DB lease·회전·감사·독립 복원 | 별도 선택 8주 |
 
 각 모듈은 2주·24시간입니다. 두 제품을 순차로 모두 하면 56주·672시간이며 공통 기초와 선택 캡스톤은 별도입니다. 기존 데이터베이스·AI·IaC 경로에 자동 합산하지 않습니다. 이미 익힌 공통 원리는 실험·소스·실패 oracle을 제출해 진단을 통과하면 단축할 수 있지만, 한 제품의 PASS를 다른 제품의 검증으로 인정하지 않습니다.
@@ -15,18 +16,11 @@
 ## 시작 순서
 
 1. HTTP/TLS, Linux 프로세스·파일 권한, JSON, 시간·재시도·분산 정족수를 점검합니다. 부족한 부분은 [공통 기초](../databases/shared/foundations.md)로 보완합니다.
-2. 아래 CPU 실험에서 **같은 path에 대한 read 허용 ≠ metadata list 허용**, **만료 ≠ 외부 DB 권한 회수 완료**, **정족수 확보 ≠ 모든 요청 성공**을 먼저 설명합니다.
-3. 한 제품을 선택해 7개 강의의 예측 → 최소 fixture → 대조군 → 관측 → 소스 추적을 수행합니다.
-4. 선택 dev 실습 후, 별도 허가된 환경에서만 실제 seal·Raft·TLS·복원으로 확장합니다.
+2. 한 제품의 [격리 dev 실습](shared/labs/README.md)에서 실제 상태·정상/거부 결과를 확인합니다. 인증 token이 있는 환경의 endpoint·권한을 먼저 검토합니다.
+3. [OpenBao](openbao/operations.md) 또는 [Vault](vault/operations.md)의 지표·로그·증상별 진단으로 원인을 좁히고 7개 강의의 내부 원리·소스로 설명합니다. 같은 path의 read/list, lease 만료/외부 회수, quorum/요청 성공의 차이를 실측과 연결합니다.
+4. 기준선·두 문제의 진단·회복 결과를 제출하고, 별도 허가된 환경에서만 seal·Raft·TLS·복원으로 확장합니다. dev 성공으로 HA·암호/운영 보안을 완료하지 않습니다.
 
-저장소 루트, Python 3.10 이상:
-
-```text
-python -B security/shared/labs/offline_lab.py --lab all
-python -B -m unittest discover -s security/shared/labs -p "test_*.py" -v
-```
-
-추가 패키지·계정·API 키·Docker·네트워크가 필요 없습니다. Python 모형은 암호 구현이나 제품 서버가 아닙니다. 정확한 범위와 실제 실행 여부는 [실습 안내](shared/labs/README.md), [검증 기록](shared/labs/validation.md)을 확인합니다.
+Python 원리 모형 4개는 [선택 보조자료](shared/labs/README.md)로 보존합니다. 먼저 수행할 필요가 없으며 암호 구현이나 제품 서버가 아닙니다. 실제 실행 여부는 과거 [검증 기록](shared/labs/validation.md)과 새 운영 보고서를 구분해 확인합니다.
 
 ## 핵심 경계
 

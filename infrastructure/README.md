@@ -6,8 +6,9 @@
 | --- | --- |
 | [Terraform](terraform/README.md) | 28주·14모듈·7강: HCL/unknown, graph, provider, plan/apply, state, 모듈, 테스트·복구 |
 | [Terragrunt](terragrunt/README.md) | 28주·14모듈·7강: include, unit/stack, dependency, 실행 순서, cache/backend, CI·부분 실패 |
-| [CPU 원리 실험](shared/labs/README.md) | Python 표준 라이브러리로 graph·plan-policy·state-CAS·변경 영향 범위 검증 |
 | [실제 CLI 환경](shared/environment.md) | Terraform 1.16.5·Terragrunt 1.1.6, built-in provider만 쓰는 로컬 실습 |
+| [Terraform 진단](terraform/operations.md) / [Terragrunt 진단](terragrunt/operations.md) | plan/state·lock·실행 로그·unit별 실패와 회복 검증 |
+| [선택 원리 부록](shared/labs/README.md) | graph·plan-policy·state-CAS·변경 영향 범위; 실제 CLI의 대체물 아님 |
 | [통합 연구 8주](../capstones/reproducible-infrastructure.md) | 변경 승인·부분 적용·state 소유권·복구·재현성 |
 
 Terraform부터 시작하고 Terragrunt가 그 위에 추가하는 실행·설정 경계를 학습합니다. 두 과정은 각각 주 12시간 가정의 약 336시간이며, 순차 56주에 공통 기초와 선택 캡스톤이 자동 포함되지는 않습니다. 이전 제품 트랙의 전체 학습 기간에도 자동 가산하지 않습니다.

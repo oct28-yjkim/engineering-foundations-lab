@@ -5,7 +5,8 @@
 ## 시작점
 
 - [28주 커리큘럼](sentry/curriculum.md): 14모듈, 원리·실험·내부 추적·운영
-- [준비와 오프라인 실습](sentry/labs/local-lab.md): 원본 분모와 표본, SDK/서버 검증 범위
+- [실제 관측·진단 실습](sentry/operations.md): 오류·trace·release·ingestion 지표, 경쟁 가설과 회복 검증
+- [실습 준비와 선택 원리 부록](sentry/labs/local-lab.md): SDK/서버 준비, 검증 범위, 원본 분모와 표본
 - [소스 지도](sentry/source-reading.md): 컴포넌트별 snapshot과 실제 runtime의 차이
 - [평가](sentry/assessment.md): 오류 정확성·privacy·수집 손실·복구의 필수 관문
 - [보안·관측 앱 캡스톤](../capstones/secure-observable-app.md): Supabase 기반 앱의 권한·상태·관측 검증

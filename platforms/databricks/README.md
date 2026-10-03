@@ -6,7 +6,7 @@ Databricks를 notebook 실행 화면이 아니라 **Spark 실행계층·Delta ta
 
 1. [커리큘럼](curriculum.md)에서 부족한 경계를 고릅니다. SQL·Python·트랜잭션·기본 분산 시스템이 선수 지식입니다.
 2. [Spark 트랙](../../data-processing/spark/README.md)에서 execution plan, shuffle, partition, Structured Streaming의 원리를 보충합니다. 전체 과정을 먼저 마칠 필요는 없습니다.
-3. [실습 안내](labs/README.md)의 CPU 기본 경로로 시작합니다. 로컬 Spark/모델 실험과 실제 managed Databricks 검증을 분리합니다.
+3. [운영 관측·트러블슈팅](operations.md)에서 Query History/Profile·Jobs·compute metrics·pipeline freshness를 읽습니다. [실습 안내](labs/README.md)의 권한·비용 경계를 먼저 확인하며 로컬 Spark/모형으로 managed 검증을 대체하지 않습니다.
 4. [소스와 논문](source-reading.md)을 따라 설명을 구현·측정 가능한 가설로 바꾸고 [평가](assessment.md)에서 반증합니다.
 
 | 강의 | 모듈 | 끝나면 답해야 하는 질문 |
@@ -21,7 +21,7 @@ Databricks를 notebook 실행 화면이 아니라 **Spark 실행계층·Delta ta
 
 ## 실행 범위와 용어
 
-- **CPU-MODEL**: 계정·GPU·API 없이 작은 입력과 독립 정답으로 원리를 시험합니다. 실제 Delta protocol 또는 UC 집행의 검증이라고 하지 않습니다.
+- **CPU-MODEL, 선택 부록**: 필요할 때만 작은 입력과 독립 정답으로 원리를 보충합니다. 선수 과정·수료 조건이 아니며 실제 Delta protocol 또는 UC 집행의 검증이라고 하지 않습니다.
 - **LOCAL-SPARK / LOCAL-DELTA**: 학습자가 고정한 Java/Python/Spark와 호환 Delta 의존성을 설치한 뒤 실행합니다. Delta 확장은 별도 준비가 필요하며 설치·다운로드를 자동 수행하지 않습니다.
 - **MANAGED-OPTIONAL**: 승인된 비운영 workspace, synthetic data, 사용 상한·중지 책임을 정한 뒤에만 수행하는 실제 Databricks 과제입니다. 계정이 없으면 설계로 남기고 실행 gate는 미완료입니다.
 - **DESIGN**: IAM·network·region outage·관리형 내부 구현처럼 로컬에서 입증할 수 없는 범위를 문서와 tabletop으로 분석합니다.

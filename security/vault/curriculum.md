@@ -4,6 +4,8 @@
 
 ## 모듈 지도
 
+기본 실험은 [운영 runbook](operations.md)의 실제 baseline → 지표·감사·소비자 상태 대조 → 경쟁 가설 → 제한 조치 → 회복 검산입니다. VL01–04는 status/인가 baseline, VL05–08은 수명/소비자, VL09–12는 audit/HA/복구, VL13–14는 source·사고 보고서를 누적합니다. 모형은 선택 원리 부록으로 이동하며 28주·14모듈과 깊은 내부 동작 학습은 유지합니다.
+
 | 모듈 / 주 | 선수 조건 | 핵심 질문 | 최소 제출물 |
 | --- | --- | --- | --- |
 | VL01 / 1–2 | HTTP·OS·접근 제어 기초 | [위협 모델·요청 경로](lessons/01-threat-model-seal.md#vl01) | 위협 주체 5종·요청 경로·보호/비보호 자산 |
@@ -48,7 +50,7 @@ snapshot identity / seal-key custody check / isolated restore target / measured 
 - G3, VL09–12: 감사·소비자·HA·복구. dev 서버나 quorum 산술만으로 운영 보안·읽기 일관성·복원 가능성을 증명하지 않습니다.
 - G4, VL13–14: 제품 범위·소스·반증. 다른 edition의 기능이나 이전 방향을 확인 없이 상호 호환으로 표시하지 않습니다.
 
-[평가표](assessment.md)의 정확성·원리/소스·실험/반증·운영/재현성은 각 25점입니다. **80/100 이상, 각 15/25 이상, 필수 gate 전체 통과**가 선언 범위의 완료 조건입니다. OFFLINE과 LOCAL-DEV만 수행했다면 그 범위로 완료 표시하고 AUTH·LIFECYCLE·HA/RESTORE·BUILD는 각각 별도 상태를 남깁니다.
+[평가표](assessment.md)의 정확성·원리/소스·실험/반증·운영/재현성은 각 25점입니다. **80/100 이상, 각 15/25 이상, 필수 gate 전체 통과**가 선언 범위의 완료 조건입니다. 운영 완료에는 baseline·서로 다른 두 사건·회복 증거가 필요합니다. OFFLINE만 수행하면 선택 원리 부록 완료이며 운영 미실행입니다. LOCAL-DEV의 운영 증거는 dev 범위로만 표시하고 AUTH·LIFECYCLE·HA/RESTORE·BUILD는 각각 별도 상태를 남깁니다.
 
 ## 제품별 마지막 4주
 

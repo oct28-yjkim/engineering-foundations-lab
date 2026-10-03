@@ -27,7 +27,7 @@ SELECT @@global.gtid_executed, @@global.gtid_purged;
 1. 세 transaction의 request ID·변경 행·commit 응답과 binlog의 transaction 경계를 매핑합니다. binlog 설정이 꺼졌거나 GTID mode가 OFF라면 미설정 사실부터 기록하고 임의 global 변경 대신 별도 토폴로지를 설계합니다.
 2. row-based event의 table map, before/after image와 schema를 읽습니다. row image 정책 때문에 이벤트 한 개만으로 전체 행을 재구성할 수 있다고 가정하지 않습니다. [Row-based logging](https://dev.mysql.com/doc/refman/8.4/en/replication-rbr-usage.html).
 3. [소스 지도](../source-reading.md)의 binlog group commit→handler prepare/commit→InnoDB 경로에서 정상 순서와 recovery 분기 조건을 찾습니다. 모형의 marker와 실제 구현 상태를 1:1이라고 단정하지 않고 대응/생략 표를 만듭니다.
-4. CPU 모형에서 engine durable prepare가 있고 binlog durable decision이 없는 경우, decision은 있으나 engine 최종 marker가 없는 경우 등을 대조합니다. 실제 엔진의 실패 주입은 BUILD/RESTORE-LAB로 별도 수행해야 합니다.
+4. engine durable prepare와 binlog durable decision의 관계를 실제 설정·소스·복구 로그로 추적합니다. 작은 결정표가 필요하면 선택 모형으로 두 marker가 다른 경우를 대조할 수 있습니다. 실제 엔진의 실패 주입은 BUILD/RESTORE-LAB로 별도 수행해야 합니다.
 5. CDC 소비자는 transaction boundary, source epoch/GTID 또는 log position, schema version, 업무 key/version, sink 성공 원장을 연결합니다. 같은 이벤트 재생·부분 sink 성공·삭제 뒤 오래된 이벤트·schema 변경을 음성 대조군으로 넣습니다.
 
 **통과:** redo/undo/binlog 역할표, 실제 또는 설계로 표시한 commit/crash 시간선, GTID 집합 연산과 source/replica 차이, CDC의 중복/미확정 계약이 필요합니다. GTID를 전역 업무 순서나 임의 sink의 exactly-once 보장으로 부르면 미통과입니다.

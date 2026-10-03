@@ -2,6 +2,8 @@
 
 [환경 준비](../../shared/environment.md) · [CPU 모형](../../shared/labs/README.md) · [검증 기록](../../shared/validation.md)
 
+기본은 아래 실제 두-unit 실행입니다. 이후 [운영·트러블슈팅](../operations.md)에서 정상/실패/조기 종료·unit별 지연·dependency와 state를 진단합니다. Python 원리 모형은 선택 보조자료이며 실행·복구 증거를 대체하지 않습니다.
+
 [root.hcl](local/root.hcl)은 공통 입력·버전 제약이며 실행 unit이 아닙니다. [foundation](local/live/foundation/terragrunt.hcl) → [application](local/live/application/terragrunt.hcl)의 dependency를 사용합니다. 각 unit은 같은 built-in module로 합성 자원 3개를 만들지만 **state 파일과 lineage는 별개**입니다.
 
 `remote_state`라는 block 이름에도 이 fixture의 backend는 **local**입니다. state 경로를 각 unit 디렉터리에 고정해 `.terragrunt-cache` 밖에 보존합니다. cache 삭제가 언제나 안전하다는 일반 보장은 아닙니다. backend가 cache 안을 가리키는 다른 설정이면 state까지 잃을 수 있습니다.

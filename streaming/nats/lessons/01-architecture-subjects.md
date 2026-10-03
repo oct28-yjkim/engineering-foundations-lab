@@ -46,7 +46,7 @@ server의 subject 자료구조에서 token별 탐색, wildcard 경로, matching 
 가설 H2: “`orders.>`는 `orders`까지 포함하며 wildcard를 늘려도 의미와 비용은 같다.”
 
 1. `orders`, `orders.eu`, `orders.eu.created`, `orders.us.created`, `Orders.eu.created`를 고정 입력으로 만들고 `orders.*`, `orders.>`, `orders.*.created`, `>`의 기대 매칭 집합을 손으로 계산합니다. 예를 들어 `orders.*`는 이 목록에서 `orders.eu` 하나만 포함합니다.
-2. [CPU `subject-routing`](../labs/offline.md)을 실행하고 각 subscription ID별 결과를 비교합니다. 같은 client의 서로 다른 matching subscription을 임의로 한 개로 합치지 않습니다.
+2. 실제 subscription ID별 수신 원장을 기대 집합과 비교합니다. 선택 보충인 [원리 모형 `subject-routing`](../labs/offline.md)은 필요할 때만 사용하며 필수 실행이 아닙니다. 같은 client의 서로 다른 matching subscription을 임의로 한 개로 합치지 않습니다.
 3. 실제 서버 추가 실험에서는 동일 pattern의 일반 subscriber 둘, 같은 queue의 worker 둘, 다른 queue의 worker 하나를 구분합니다. 일반 subscription별 수신과 queue별 총수의 oracle을 별도로 만듭니다. worker별 완전한 균등 분배는 합격 조건이 아닙니다.
 4. namespace 변경에서 old/new subject를 동시에 구독하는 기간을 설계합니다. 한 업무 event를 두 subject로 발행하는 migration이 업무 중복을 만드는지 별도 operation key로 확인합니다.
 

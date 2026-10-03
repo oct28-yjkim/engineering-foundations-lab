@@ -1,5 +1,29 @@
 # MySQL 28주 심화 커리큘럼
 
+## 운영 중심 진행과 모듈별 진단 증거
+
+주 실습은 [실제 제품 운영 runbook](operations.md)의 **정상 기준선 → 지표/로그 → 경쟁 가설 → 제한된 재현 → 조치 → 회복 검산**입니다. 기존 28주·14모듈·336시간과 원리/내부 구현의 깊이는 유지합니다. 모듈당 실험 10시간은 정상 관측 2시간, 사건/반례와 진단 5시간, 조치·회복 검산 3시간을 기본 배분으로 삼습니다. 원리 모형은 필요할 때 선택하는 보조 자료이며 필수 선행 조건이 아닙니다.
+
+| 모듈 | 실제 제품에서 추가로 남길 진단 증거 |
+| --- | --- |
+| MY01 | SQL 의미·서버/엔진 fingerprint·정상 기준선 |
+| MY02 | plan 접근 경로·rows examined·인덱스 비용 |
+| MY03 | buffer/redo counter 차이·commit 지연 가설 |
+| MY04 | 긴 read view와 purge·transaction 상태 |
+| MY05 | data_lock_waits·잠금 footprint·cycle 증거 |
+| MY06 | timeout/재시도와 최종 업무 원장 |
+| MY07 | 추정/실제 rows·통계·경쟁 가설 |
+| MY08 | 같은 결과의 plan/latency·쓰기 비용 |
+| MY09 | metadata_locks·DDL 대기·변경 상태 확인 |
+| MY10 | 독립 restore·binlog 경계·RPO/RTO |
+| MY11 | GTID received/executed·적용/가시성 차이 |
+| MY12 | receiver/applier·지연 원인·재합류 검산 |
+| MY13 | 최소 권한·원시 관측·source 책임 경계 |
+| MY14 | 실제 사건 2개·한정 조치·회복 후 원장 |
+
+각 증거에는 버전·관측 지점·지표 단위/형식/창·경쟁 가설·회복 기준을 붙입니다. 별도 복제/복원/보안 환경이 필요한 항목은 설계와 실행을 분리합니다. 단일 노드 운영 관문은 실제 baseline 1개와 실제 사건 2개 이상 및 회복 후 업무 검산입니다. 환경 미준비·모형/단위 테스트만 통과한 상태는 운영 미완료입니다. 기존 개별 모듈의 더 엄격한 요구는 그대로 적용합니다.
+
+
 14모듈 × 2주 × 주 12시간 = 약 336시간입니다. 모듈당 원리·공식 자료 6시간, 실험 10시간, 소스 추적 4시간, 분석·구술 4시간을 기준으로 합니다. SQL 입문자는 [공통 기초](../shared/foundations.md)를 보충하고 C++·Linux debug 환경과 별도 복구/복제 토폴로지 구축 시간은 따로 확보합니다.
 
 ## 모듈 지도
@@ -47,6 +71,6 @@ backup manifest / replay boundaries / restored business ledger / measured RPO+RT
 - G3, MY09–MY12: DDL·복구·복제. replica를 backup으로, source의 GTID를 replica 적용 증명으로, 세미동기 ACK를 replica query 가시성으로 부르면 미통과입니다.
 - G4, MY13–MY14: 관측·권한·소스·연구. 실행하지 않은 복원·장애조치·보안·빌드를 PASS로 표시하지 않습니다.
 
-[평가표](assessment.md)는 정확성 25, 원리·소스 25, 실험·반증 25, 운영·재현성 25점입니다. **총 80점 이상·모든 영역 15점 이상·필수 gate 전부 충족**이 선언한 범위의 완료 기준입니다. OFFLINE과 LOCAL-ENGINE만 했다면 그 범위로 표기하고 RESTORE-LAB·REPLICA-LAB·SECURITY-LAB·BUILD는 각각 별도 상태를 남깁니다.
+[평가표](assessment.md)는 정확성 25, 원리·소스 25, 실험·반증 25, 운영·재현성 25점입니다. **총 80점 이상·모든 영역 15점 이상·필수 gate 전부 충족**이 선언한 범위의 완료 기준입니다. 모형만 했다면 원리 학습으로, 실제 기준선·사건·회복 관문을 통과했다면 단일 노드 운영으로 표기합니다. RESTORE-LAB·REPLICA-LAB·SECURITY-LAB·BUILD는 각각 별도 상태를 남깁니다.
 
 MY14 안에서 새 다중 클러스터·CDC 플랫폼·클라우드를 모두 구축하지 않습니다. 큰 통합은 선택 [8주 캡스톤](../../capstones/mysql-transaction-recovery.md)으로 진행합니다.

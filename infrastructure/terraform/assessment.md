@@ -13,6 +13,8 @@
 
 ## 필수 gate
 
+제품 운영 실습에는 [정상 기준선과 서로 다른 두 문제의 진단·회복](operations.md)을 추가로 요구합니다. 명령 결과·원인 구분·조치 전후 plan/state/ID·미검증 범위를 [운영 보고서](../../operations/incident-report-template.md)에 제출합니다. OFFLINE 평가는 원리 학습에 한정되며 실제 CLI/운영 완료를 의미하지 않습니다.
+
 1. **환경과 권한:** 실행 디렉터리·backend·workspace·principal을 구분하고 대상이 격리 실습 범위임을 확인합니다. CLI workspace 이름만으로 prod 접근이 차단됐다고 주장하지 않습니다.
 2. **값과 변경:** unknown을 null·false·빈 문자열로 처리하지 않습니다. replace의 두 action 순서를 모두 고려하고 `delete` 한 개만 세는 허술한 판정을 반례로 깨뜨립니다.
 3. **상태와 경쟁:** provider lock file과 runtime state lock을 구분합니다. lineage/serial, lock 지원 여부, 외부 API 변경을 각각 설명합니다. CPU CAS 모형을 특정 backend 구현의 실증으로 제출하지 않습니다.

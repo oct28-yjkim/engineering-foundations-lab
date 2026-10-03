@@ -6,6 +6,8 @@
 
 ## 14개 모듈
 
+실험 시간은 [운영 runbook](operations.md)의 실제 baseline·지표/로그/SQL 기반 triage·제한 변경·회복 증거를 우선합니다. SU01–02 연결/lock, SU03–06 Auth/RLS·slow query, SU07–10 Realtime/Storage, SU11–14 변경/복구/사고 보고서를 누적합니다. 기존 28주·14모듈과 원리/소스 심화는 유지합니다. fixture JSON·SQL claim 모사는 기대값 보조 자료이며 실제 제품 운영 gate는 아닙니다.
+
 | 모듈·주차 | 선행 | 원리와 핵심 검증 | 필수 산출물·통과 기준 |
 | --- | --- | --- | --- |
 | SU01 · 1–2 | 공통 SQL/HTTP | PostgreSQL 중심 구성, control/data plane, 각 서비스 trust boundary | [01강](lessons/01-platform-postgres.md#su01)의 6개 요청 경로에 credential·role·상태 저장 위치·실패 책임 표시; component fingerprint 빈칸은 미확인으로 표시 |

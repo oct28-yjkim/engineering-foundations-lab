@@ -6,7 +6,7 @@
 
 공통 선수 과정은 [기초 원리](../shared/foundations.md), 실험 규칙은 [측정 방법](../shared/experiment-method.md), 환경 범위는 [환경 안내](../shared/environment.md)를 먼저 읽습니다. 두 DB를 연결하는 후속 과제는 [8주 통합 연구](../shared/capstone.md)입니다.
 
-1. [전체 커리큘럼과 단계별 통과 기준](curriculum.md): 선수 지식, 14개 모듈, 주간 루틴.
+1. [전체 커리큘럼과 단계별 통과 기준](curriculum.md) 및 [운영 실습](operations.md): 실제 서버 정상 기준선·query/part/merge 지표·장애 진단·회복을 중심으로 14개 모듈을 진행합니다.
 2. [기초·자료형·열 지향 처리](lessons/01-foundations-and-types.md): M01–M02.
 3. [MergeTree 저장 구조와 읽기 범위 선택](lessons/02-storage-and-pruning.md): M03–M04.
 4. [Analyzer·계획·Processor 실행](lessons/03-query-engine.md): M05–M06.
@@ -15,6 +15,8 @@
 7. [집계 상태·MV·backfill·TTL](lessons/06-materialization-and-lifecycle.md): M11–M12.
 8. [분산·Keeper·복구·워크로드 관리](lessons/07-distributed-and-recovery.md): M13–M14.
 9. [버전을 고정한 소스 읽기](source-reading.md), [종합 프로젝트와 구술 평가](assessment.md).
+
+실제 기준선과 운영 사건 2개·회복 검산이 단일 노드 운영의 필수 관문입니다. 원리·소스·손계산은 관측을 해석하는 수단이며 이를 대신하지 않습니다. 환경이 없으면 설계 완료와 실행 미완료를 구분합니다.
 
 ## 실행 범위
 

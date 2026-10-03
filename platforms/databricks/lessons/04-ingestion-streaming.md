@@ -9,7 +9,7 @@ Auto Loader의 `cloudFiles`는 관리형 환경의 증분 파일 수집 경로�
 
 **세 개의 원장:** 입력 파일 목록(path, synthetic checksum, 생성 시각), 파일 안 event 목록(event_id, entity_id, sequence), 최종 업무 state를 각각 만듭니다. 하나의 파일에10개의 event가 있고 다른 파일에 그중2개가 중복되어 있으면 파일 수2, 읽은 row12, unique business event10을 서로 다른 측정값으로 기록합니다.
 
-**CPU 기본:** 제공된 [로컬 실습 안내](../labs/README.md)의 merge/watermark 모델로 중복·역순·지연 경계를 연습합니다. 이것은 Auto Loader의 RocksDB/checkpoint나 file notification을 실행한 결과가 아닙니다. 로컬 Spark file stream도 `cloudFiles` 구현을 재현하지 않습니다.
+**운영 기본:** [운영 가이드](../operations.md)의 source manifest·flow/event log·target freshness로 정상 상태와 지연 원인을 먼저 관측합니다. **선택 원리 부록:** [로컬 실습 안내](../labs/README.md)의 merge/watermark 모델로 중복·역순·지연 경계를 보충할 수 있습니다. 이것은 Auto Loader의 RocksDB/checkpoint나 file notification 실행 결과가 아니며 선수 조건도 아닙니다. 로컬 Spark file stream도 `cloudFiles` 구현을 재현하지 않습니다.
 
 **MANAGED-OPTIONAL 파일 시나리오:** 새 synthetic 전용 volume/location과 신규 checkpoint를 사용합니다. 파일 발견 mode·사용 region·권한·source overwrite 정책을 지문에 포함합니다. cloud event mode는 계정 설정과 외부 자원 비용이 생길 수 있으므로 자동 생성하지 않습니다.
 

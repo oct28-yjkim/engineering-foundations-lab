@@ -7,7 +7,7 @@ SQL 기초에서 InnoDB의 페이지·버퍼·redo·undo·read view를 거쳐 �
 ## 학습 순서
 
 1. [커리큘럼](curriculum.md)과 [공통 선수 지식](../shared/foundations.md)을 읽고 SQL·자료구조·OS·트랜잭션 진입 수준을 확인합니다.
-2. [CPU 실험](labs/offline.md)으로 기대값과 반례를 만든 뒤 [실제 엔진 실습](labs/README.md)을 선택 실행합니다.
+2. [실제 엔진 실습](labs/README.md)에서 단일 서버를 준비하고 [운영 실습](operations.md)의 기준선·잠금/MDL·느린 쿼리 진단을 수행합니다.
 3. 각 강의의 수동 실험에서 세션 순서·결과·오류를 기록하고 [소스 지도](source-reading.md)로 책임 경계를 추적합니다.
 4. [평가 기준](assessment.md)에 범위별 증거를 모읍니다. 실행하지 않은 복구·복제·보안은 미검증으로 남깁니다.
 
@@ -27,23 +27,25 @@ SQL 기초에서 InnoDB의 페이지·버퍼·redo·undo·read view를 거쳐 �
 
 | 표시 | 제공·학습 내용 | 완료 증거 |
 | --- | --- | --- |
-| OFFLINE | `index-lookup`, `read-view`, `deadlock`, `commit-recovery`의 CPU 모형 | 독립 기대값·반례·모형의 생략 조건 |
-| LOCAL-ENGINE | 선택 실행용 단일 MySQL 환경과 기초 엔진 실습 | 실제 서버 출력·정확한 행/값·오류 검산 |
+| LOCAL-ENGINE / OPERATIONS | 주 실습: 단일 MySQL·정상 기준선·운영 사건 진단 | 실제 서버 출력·사건 2개·회복 후 업무 검산 |
 | LOCAL-SESSIONS | 강의의 2–3세션 MVCC·잠금·MDL 수동 과제 | 실행 순서·connection ID·대기·최종 불변식 |
 | RESTORE-LAB | 별도 target의 백업 복원·binlog PITR·실패 주입 설계 | 복원 후 업무 원장·경계·RPO/RTO; 자동 배포 없음 |
 | REPLICA-LAB | 비동기/세미동기·GTID·승격·Group Replication 비교 과제 | 실제 다중 서버·실패 이력·읽기 검산; 자동 배포 없음 |
 | SECURITY-LAB / BUILD | 서로 다른 주체의 권한/TLS 시험, 일치하는 소스의 debug/test 과제 | 실제 자격 증명별 거부·허용, 빌드/테스트 출력 |
+| OFFLINE (선택 보조) | `index-lookup`, `read-view`, `deadlock`, `commit-recovery`의 원리 모형 | 독립 기대값·반례·생략 조건; 운영 통과 증거 아님 |
 
 CPU의 `commit-recovery`는 durable marker를 입력받는 결정 모형입니다. 실제 redo 파일, fsync, binlog 복구, 전원 상실을 구현하지 않습니다. 단일 노드의 성공은 HA·PITR·replica 가시성·운영 보안을 증명하지 않습니다. 현재 검증 상태는 [검증 기록](labs/validation.md)에 따릅니다.
 
-저장소 루트에서 CPU 실험부터 실행할 수 있습니다.
-
-```bash
-python -B databases/mysql/labs/offline_lab.py --lab all
-```
-
-Docker 시작·접속·보존 절차는 [실습 안내](labs/README.md)의 전용 구성을 따릅니다. 기존 PostgreSQL/ClickHouse 볼륨이나 운영 서버를 실험 대상으로 사용하지 않습니다. 강의의 준비 SQL은 개인 실습 schema에서 최초 한 번 실행하며, 재실행은 새 suffix를 사용합니다. `CREATE TABLE IF NOT EXISTS`로 예상과 다른 기존 fixture를 숨기거나 초기화를 위해 전체 schema/volume을 삭제하지 않습니다.
+Docker 시작·접속·보존 절차는 [실습 안내](labs/README.md)의 전용 구성을 따르고 [운영 실습](operations.md)으로 진행합니다. 실제 환경이 없으면 설계·원리 학습만 진행하며 운영 관문은 미완료로 남깁니다. 기존 PostgreSQL/ClickHouse 볼륨이나 운영 서버를 실험 대상으로 사용하지 않습니다. 강의의 준비 SQL은 개인 실습 schema에서 최초 한 번 실행하며, 재실행은 새 suffix를 사용합니다. `CREATE TABLE IF NOT EXISTS`로 예상과 다른 기존 fixture를 숨기거나 초기화를 위해 전체 schema/volume을 삭제하지 않습니다.
 
 DDL은 implicit commit을 일으킬 수 있고, `EXPLAIN ANALYZE`는 대상 쿼리를 실제 실행합니다. `ROLLBACK`은 외부 API·이미 전송한 메시지·이미 발생한 I/O를 취소하지 않습니다. [공통 실험 방법](../shared/experiment-method.md)에 가설·음성 대조군·자원 상한·미검증 경계를 기록합니다.
 
 공식 기준: [MySQL 8.4 매뉴얼](https://dev.mysql.com/doc/refman/8.4/en/), [8.4 릴리스 노트](https://dev.mysql.com/doc/relnotes/mysql/8.4/en/).
+
+## 선택 원리 부록
+
+[오프라인 원리 모형](labs/offline.md)은 인덱스·가시성·대기·commit 경계를 작은 입력으로 검산할 때 사용합니다. 필수 선행 과정이 아니며 코드와 기존 검증 기록은 보존합니다.
+
+```text
+python -B databases/mysql/labs/offline_lab.py --lab all
+```

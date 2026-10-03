@@ -1,6 +1,6 @@
 # IaC 실습 환경과 변경 범위
 
-기본 [CPU 모형](labs/README.md)은 Python 3.10+ 표준 라이브러리만 사용합니다. 아래는 선택적인 **실제 CLI** 경로입니다. 합성 `terraform_data`와 로컬 state만 사용하며 AWS/GCP/Azure 계정·backend·원격 리소스는 만들지 않습니다. 다른 module/provider/hook을 추가하면 이 안전 범위는 더 이상 성립하지 않습니다.
+기본 실습은 아래 **실제 CLI 실행·관측 경로**입니다. 합성 `terraform_data`와 로컬 state만 사용하며 AWS/GCP/Azure 계정·backend·원격 리소스는 만들지 않습니다. [Terraform](../terraform/operations.md)·[Terragrunt](../terragrunt/operations.md)에서 실행 로그·plan/state·실패/회복을 진단합니다. [원리 모형](labs/README.md)은 선택 보조자료이며 실제 CLI 검증을 대신하지 않습니다. 다른 module/provider/hook을 추가하면 이 안전 범위는 더 이상 성립하지 않습니다.
 
 ## 고정 기준
 

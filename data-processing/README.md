@@ -8,7 +8,7 @@
 
 | 경로 | 제공·학습 범위 |
 | --- | --- |
-| [CPU 모형](spark/labs/README.md) | Python 표준 라이브러리, skew·merge·watermark·budget의 작은 계약 |
+| [실제 Spark 관측·진단](spark/operations.md) | SQL/DAG·stage/task·skew·spill·GC·streaming backlog, 원리 모형은 선택 부록 |
 | [Spark 심화](spark/curriculum.md) | 28주·14모듈·7강, 실행 계획·셔플·메모리·스트리밍·운영·소스 |
 | [Databricks 심화](../platforms/databricks/curriculum.md) | 28주·14모듈·7강, Delta·Unity Catalog·Lakeflow·Photon·배포·복구 |
 | [Lakehouse 통합 연구](../capstones/governed-lakehouse.md) | 선택 8주, 정합성·권한·재처리·비용·별도 대상 복원 |

@@ -2,6 +2,8 @@
 
 ## 운영 방식
 
+기본 실습 경로는 [운영 runbook](operations.md)의 실제 project baseline → 지표·event·trace 기반 경쟁 가설 → 제한된 개선 → 회복 검증입니다. 아래 강의의 `OFFLINE` 모형/확률 과제는 선택 원리 부록으로 활용하고 제품의 실제 관측을 대신하지 않습니다. S01–02에 분모/baseline, S03–08에 앱 결함·관측 누락 사건, S09–12에 platform health/복구, S13–14에 source 근거와 사고 보고서를 누적합니다. 14모듈·28주를 유지하며 모듈의 실험 시간은 해당 운영 증거를 우선하는 시간입니다.
+
 한 모듈은 명목상 2주·24시간입니다. 첫 주에 원리·프로토콜·소스를 읽고 가설과 oracle을 작성합니다. 둘째 주에 정상·실패 입력을 비교하고 재현 자료와 운영 결정을 제출합니다. 시간은 조정할 수 있지만 정확성 gate는 생략하지 않습니다. 네 평가 영역은 정확성, 원리·소스, 실험·반증, 운영·재현성 각 25점이며 총 80점 이상·각 15점 이상과 필수 gate를 함께 충족해야 합니다. 세부 사항은 [평가](assessment.md)를 따릅니다.
 
 아래의 통과 수치는 학습용 목표입니다. 벤치마크를 최종 주장할 때는 [공통 실험 방법](../../databases/shared/experiment-method.md)에 따라 warmup 후 최소 20회 측정하고 환경·원시 표본·분산을 공개합니다. 기능 정확성 실험은 반복 횟수보다 독립된 oracle과 모든 fixture의 판정이 우선입니다.
@@ -17,7 +19,7 @@
 | S05 / 9–10주 | S03, 빌드 기초 | fingerprint, grouping, stack frame, Debug ID·symbolication | 6오류 계열 + 맞는/틀린 artifact 비교 | 업무 oracle 대비 false merge/split 판정; 빌드 매핑 불일치 검출 |
 | S06 / 11–12주 | S05 | release·dist·environment·deploy·regression·session health | vA/vB 및 staging/prod의 2×2 합성 행렬 | release별 결함·회귀 조건 설명; crash-free와 error-free를 구별 |
 | S07 / 13–14주 | S03, parent/child 개념 | span lifecycle, async 전파, Sentry/OTel 연결, trust boundary | 3구간 trace와 병렬/지연 실행, 허용·차단 목적지 비교 | trace/parent 관계 oracle 일치; 비허용 목적지 전파 0; 이중 instrumentation 검출 |
-| S08 / 15–16주 | S07, 확률·가중 평균 | head/retention sampling, 포함 확률·선택 편향·metric 추출 경계 | 제공 offline oracle, 조건부 표본과 모집단 비교 | naive 편향을 수치로 설명; 가중 추정 조건·복구 불가능 결측 명시 |
+| S08 / 15–16주 | S07, 확률·가중 평균 | head/retention sampling, 포함 확률·선택 편향·metric 추출 경계 | 실제 프로젝트 sampling/outcomes와 독립 요청 분모 대조; oracle은 선택 보충 | naive 편향·가중 추정 조건·복구 불가능 결측을 설명하고 실제 관측의 모집단 한계 명시 |
 | S09 / 17–18주 | S04, queue 개념 | Relay→Kafka→처리→Snuba/저장→조회, 메타데이터·blob 경계 | 선택 revision의 deployment graph와 event 단계 증거 | 최소 6경계·식별자·실패 상태 매핑; 오류 경로를 모든 신호에 일반화하지 않음 |
 | S10 / 19–20주 | S09 | backlog·lag·freshness, 재처리·중복·retention·일관성 | 장애 시나리오 3종의 원장/대시보드/복구 계획 | ACK와 조회 가시성 분리; 입력 집합 기반 누락/중복 판정; retention 내 복구 계산 |
 | S11 / 21–22주 | S03–S04, S07 | 신호별 개인정보 경로, 키·토큰·DSN, tenant 경계 | 합성 canary 위협 모델 + 전체 egress 검사 행렬 | 금지 canary 외부 payload 0; error hook만으로 전체 보호를 주장하지 않음 |

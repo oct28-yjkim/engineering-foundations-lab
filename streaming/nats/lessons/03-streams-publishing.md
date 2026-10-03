@@ -46,7 +46,7 @@ stream sequence는 수락된 메시지의 순서를 설명하지만 여러 publi
 
 ### 실험
 
-1. [CPU `publish-dedup`](../labs/offline.md)에서 최초 publish, window 내부 재시도, window 이후 재시도를 검산합니다. 모형의 가상 시각과 실제 서버 timer 정밀도를 동일시하지 않습니다.
+1. 실제 PubAck·stream info와 업무 원장으로 최초 publish, window 내부 재시도, window 이후 재시도를 검산합니다. [원리 모형 `publish-dedup`](../labs/offline.md)은 선택 보충이며 가상 시각을 실제 timer 정밀도로 해석하지 않습니다.
 2. 실제 서버에서 같은 ID/같은 body, 같은 ID/다른 body, 다른 ID/같은 body를 따로 발행합니다. PubAck duplicate/sequence와 읽어 온 payload digest를 동시에 비교합니다.
 3. finite window를 명시한 전용 stream에서 충분한 여유를 둔 window 전/후 실험을 반복합니다. 정확한 경계 시각에 대한 claim은 scheduler 오차와 측정 한계를 함께 제출합니다.
 4. 고의 응답 유실 장치를 별도 구축했다면 저장 직후 응답만 차단합니다. 그런 장치 없이 publish timeout만 관측했다면 “응답 유실 주입 성공”이라고 쓰지 않습니다.

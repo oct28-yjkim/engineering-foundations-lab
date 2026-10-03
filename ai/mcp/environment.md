@@ -2,18 +2,18 @@
 
 [실습 안내](labs/README.md) · [호환성](compatibility.md) · [검증 기록](labs/validation.md)
 
-## 기본과 선택 환경
+## 실제 실습과 보조 환경
 
 | 수준 | 제공 환경 | 확인하는 것 | 확인하지 않는 것 |
 | --- | --- | --- | --- |
-| CPU-MODEL | Python 3.10+ 표준 라이브러리 | revision·도구 계약·요청 원장·principal cache의 작은 모형 | 완전한 JSON Schema/MCP·OAuth·실제 네트워크 |
 | SDK-STDIO | 고정 Python SDK, 별도 가상환경, owned child server | 실제 로컬 client/server의 도구·resource·prompt·오류 | HTTP/TLS/OAuth·외부 host·LLM 판단·conformance 전체 |
 | HTTP-AUTH | 학습자가 별도 격리 endpoint/issuer 구성 | header/body·Origin·audience·권한·proxy·재시도 | 전역 cloud/운영 보안 자동 보장 |
 | INTEROP/RESEARCH | 별도 고정 SDK/host·지원 matrix | 실제 교차 구현과 실패·마이그레이션 | 시험하지 않은 revision/extension/host |
+| CPU-MODEL 선택 부록 | Python 3.10+ 표준 라이브러리 | revision·도구 계약·요청 원장·principal cache의 작은 모형 | 완전한 JSON Schema/MCP·OAuth·실제 네트워크 |
 
-기본 CPU는 추가 패키지·Docker·모델·GPU·API 키·네트워크가 필요 없습니다. MCP는 모델 자체나 특정 모델 제공자의 tool-calling API가 아닙니다. 로컬 fixture에서 MCP client/server만 검증하며 LLM 없이도 실행합니다.
+기본은 SDK-STDIO의 실제 client/server·오류 관측이며 아래 별도 패키지 준비가 필요합니다. CPU-MODEL은 설치 없이 원리를 보충하는 선택 부록입니다. MCP는 모델 자체나 특정 모델 제공자의 tool-calling API가 아닙니다. 로컬 fixture는 LLM 없이도 실행하며 [운영 실습](operations.md)에서 요청/오류/종료를 진단합니다.
 
-## 선택 SDK 설치
+## 실제 실습용 SDK 준비
 
 공식 배포 `mcp==2.3.0`, `mcp-types==2.3.0`을 고정합니다. SDK 자체는 Python 3.10+을 요구하며 이 저장소의 실측 환경은 검증 기록에 적습니다. `requirements-sdk.txt`는 직접 의존성 pin이지 모든 전이 의존성·OS·wheel hash를 고정한 universal lockfile은 아닙니다. 실제 보고서에 `pip freeze`, Python/OS/architecture를 함께 보존합니다.
 

@@ -23,6 +23,8 @@
 
 ## 관찰 단위를 먼저 정의하기
 
+[실제 운영·진단](operations.md)을 기본으로 하고 Python 모형은 선택 부록으로 둡니다. 기존 실험 10시간을 실제 unit 실행·관측·오류/회복에 우선 배정합니다. TG01–02 input/engine, 03–04 dependency/실행 큐, 05–06 cache/backend, 07–08 선택 집합, 09–10 retry/권한, 11–12 승인/부분 복구, 13–14 source/반례의 증거를 남깁니다. 실제 기준선 1개·두 종류 문제·조치/회복 검산이 제품 실습 완료 조건이며 모형 PASS는 대체할 수 없습니다.
+
 Terraform의 resource address, Terragrunt unit 경로, backend identity, Git source commit, engine 프로세스, CI job은 서로 대체 가능한 ID가 아닙니다. 한 unit의 성공과 전체 서비스 불변식의 성공도 다릅니다. 아래 원장을 unit별로 남깁니다.
 
 ```text

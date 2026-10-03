@@ -7,7 +7,7 @@ Sentry를 하나의 버전 번호로 고정하지 않습니다. SDK·runtime·bu
 ## 읽는 순서
 
 1. 필요하면 [공통 기초](../../databases/shared/foundations.md)에서 OS·확률·분산 시스템을 복습하고 [실험 방법](../../databases/shared/experiment-method.md)을 적용합니다. HTTP와 JavaScript/runtime의 비동기 실행은 별도로 보충할 선수 지식입니다.
-2. [28주 커리큘럼](curriculum.md)과 [로컬 실습 범위](labs/local-lab.md)를 확인합니다.
+2. [실제 운영 실습](operations.md)에서 오류율 분모·p95·ingestion outcomes의 baseline을 확보하고, [28주 커리큘럼](curriculum.md)과 [환경 준비](labs/local-lab.md)를 연결합니다.
 3. [텔레메트리 계약과 의미](lessons/01-telemetry-contracts.md): S01–S02.
 4. [SDK·Envelope·수집 제어](lessons/02-sdk-ingestion.md): S03–S04.
 5. [그룹화·심볼리케이션·릴리스](lessons/03-grouping-releases.md): S05–S06.
@@ -25,12 +25,13 @@ Kafka나 ClickHouse 전체 과정을 먼저 끝낼 필요는 없습니다. S09�
 
 | 표시 | 범위 | 제공 상태 |
 | --- | --- | --- |
-| `OFFLINE` | 합성 fixture, 계약 검토, 확률 계산 | 실습 안내와 [샘플링 oracle](labs/sampling-oracle.mjs) 제공; 다른 본문 실험은 요구사항에 따라 직접 구현 |
+| `OPS-BASELINE` | 실제 project의 지표·event·trace·수집 상태 triage | [운영 runbook](operations.md) 제공; baseline·두 사건·회복 증거가 실무 gate |
+| `OFFLINE` 선택 부록 | 합성 fixture, 계약 검토, 확률 계산 | [샘플링 oracle](labs/sampling-oracle.mjs)은 원리 보조 자료이며 운영 gate를 대체하지 않음 |
 | `SDK-LAB` | 고정 버전 SDK + 메모리 transport/loopback 수신기, 비동기·Envelope 검사 | harness 구현 과제; 완성 애플리케이션 미제공 |
 | `PROJECT-LAB` | 사용 권한이 있는 별도 시험 프로젝트의 그룹화·조회·알림 검증 | 계정·DSN·토큰·외부 송신·업로드 자동 설정 없음 |
 | `SELF-HOST-DESIGN` | 격리 self-hosted의 파이프라인·장애·백업·업그레이드 | 설계와 검증 기준 제공; 전체 스택 Compose 및 HA 환경 미제공 |
 
-먼저 오프라인 oracle을 실행하고, SDK 실험도 외부 송신이 없는 transport부터 구현합니다. 실제 전송이 필요한 과제는 합성 데이터만 사용하고 대상·보존·비용·권한을 확인한 뒤 수행합니다. README를 읽는 것만으로 계정 생성이나 서비스 전송이 이루어지지 않습니다.
+먼저 기존 승인 프로젝트의 읽기 전용 baseline을 관측합니다. 환경이 없으면 준비/설계 상태로 남기며 CPU 모형의 PASS를 실무 완료로 바꾸지 않습니다. SDK 동작 자체를 연구할 때는 무외부송신 transport를 활용할 수 있습니다. 실제 전송·실패 주입은 합성 데이터와 격리 대상·보존·비용·권한을 확인한 뒤 수동 수행합니다. README를 읽는 것만으로 계정 생성이나 서비스 전송이 이루어지지 않습니다.
 
 ## 반드시 구별할 경계
 

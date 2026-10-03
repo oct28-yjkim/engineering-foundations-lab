@@ -1,6 +1,8 @@
-# IaC CPU 실험실 — 그래프·정책·state·변경 영향 범위
+# IaC 선택 원리 부록 — 그래프·정책·state·변경 영향 범위
 
 [Terraform 과정](../../terraform/README.md) · [Terragrunt 과정](../../terragrunt/README.md) · [저장소](../../../README.md)
+
+기본 실습은 [실제 Terraform](../../terraform/labs/README.md)·[실제 Terragrunt](../../terragrunt/labs/README.md) → [Terraform 진단](../../terraform/operations.md)·[Terragrunt 진단](../../terragrunt/operations.md)입니다. 이 모형은 이해를 위한 선택 보조자료이며 먼저 통과할 필요가 없고, 완료 점수를 운영 실습으로 대체하지 않습니다.
 
 Python 3.10 이상과 표준 라이브러리만 사용한다. Terraform/Terragrunt 설치, 계정, 자격 증명, GPU, API 결제가 필요 없다. 코드는 메모리에서만 계산하고 표준 출력으로 결과를 표시한다. 파일·네트워크·하위 프로세스 접근은 없으며, `-B`는 Python의 바이트코드 캐시 생성도 막는다.
 

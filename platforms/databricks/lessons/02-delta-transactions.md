@@ -7,7 +7,7 @@
 
 Delta의 현재 table은 directory listing의 모든 Parquet 파일이 아닙니다. reader는 protocol·metadata와 log action을 해석해 특정 snapshot의 active file 집합을 구성합니다. writer가 새 파일을 만들었어도 commit되지 않으면 그 snapshot에는 나타나지 않아야 합니다. 체크포인트는 log replay 비용을 줄이는 표현이지 별도 business transaction이나 독립 backup이 아닙니다. 세부 표현은 protocol version에 따라 확장되므로 JSON의 `add`/`remove`만 아는 parser를 범용 Delta reader라고 부르지 않습니다. [고정 protocol](https://github.com/delta-io/delta/blob/6d055c5c8a2e16bbf4458268a1bc271c7afcc4d2/PROTOCOL.md)
 
-**CPU-MODEL 설계 과제:** 학생이 작은 action reducer를 만들고 다음 모델의 expected set을 수기로 먼저 작성합니다. 이는 실제 Delta writer/locking/object store 구현이 아닙니다.
+**선택 원리 부록:** 필요하면 작은 action reducer와 수기 expected set으로 의미를 보충합니다. 필수 선수 과정이 아니며 실제 Delta writer/locking/object store 구현이 아닙니다. 기본 실무 과제는 실제 table history·충돌/retry·commit version과 업무 결과 관측입니다.
 
 | version | 모델 action | active files oracle |
 | --- | --- | --- |

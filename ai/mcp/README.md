@@ -1,14 +1,14 @@
 # MCP: Zero to Hero → Protocol, Trust & Tool Execution Engineering
 
-Model Context Protocol을 함수 연결법에서 출발하여 **프로토콜 계약·권한 경계·장애 후 실행 결과·구현 검증**까지 연구하는 28주·14모듈·7강 과정입니다. “연결 성공”을 “안전한 agent”와 같은 뜻으로 쓰지 않습니다. 기본 과정은 CPU로 진행하며 GPU·모델 API·외부 계정은 필수가 아닙니다.
+Model Context Protocol을 함수 연결법에서 출발하여 **프로토콜 계약·권한 경계·장애 후 실행 결과·구현 검증**까지 연구하는 28주·14모듈·7강 과정입니다. “연결 성공”을 “안전한 agent”와 같은 뜻으로 쓰지 않습니다. 기본은 실제 client/server 실행·요청 관측·오류 진단이며 GPU·모델 API·외부 계정은 필수가 아닙니다.
 
 기준일은 **2026-10-04**, 프로토콜은 **2026-07-28**, 선택 Python SDK는 **2.3.0**입니다. SDK 버전과 프로토콜 revision은 서로 다른 축입니다. 이 revision의 core는 요청별 metadata를 사용하는 stateless 방식이며, 2025-11-25 및 그 이전의 `initialize` 중심 흐름은 별도 비교 대상으로 다룹니다. [공식 버전 규칙](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning), [SDK 릴리스](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.3.0)를 함께 확인합니다.
 
 ## 시작 순서
 
 1. [환경·안전 범위](environment.md)와 [커리큘럼](curriculum.md)을 읽습니다. Python async·프로세스·JSON Schema·HTTP/TLS·OAuth·분산 시스템 기초가 부족하면 별도 보충합니다.
-2. [CPU 실험 4개와 선택 SDK 실습](labs/README.md)에서 손으로 구한 기대값과 잘못된 대조군을 비교합니다.
-3. 강의별 확장 과제를 수행하고 [소스 지도](source-reading.md)에서 규격·구현·시험을 연결합니다. [호환성 지도](compatibility.md)로 현대/이전 규격과 구현별 차이를 대조합니다.
+2. [실제 SDK 실습](labs/README.md)으로 정상/거부 기준선을 확인하고 [운영·트러블슈팅](operations.md)에서 지연·오류 층·timeout·종료를 진단합니다. 원리 모형 4개는 선택 보조자료입니다.
+3. 관측한 실패를 강의·[소스 지도](source-reading.md)의 규격·구현·시험에 연결합니다. [호환성 지도](compatibility.md)로 현대/이전 규격과 구현별 차이를 대조합니다.
 4. [평가표](assessment.md)에 실행한 범위, 설계만 한 범위, 미검증 환경을 구분하여 제출합니다.
 
 | 모듈 | 강의 | 핵심 질문 |

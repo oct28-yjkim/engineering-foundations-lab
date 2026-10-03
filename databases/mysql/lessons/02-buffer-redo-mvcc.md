@@ -72,6 +72,6 @@ INSERT INTO my04_view_run01 VALUES (1,10);
 2. 또 다른 새 fixture에서 RC로 바꾸면 일반 SELECT step 6은 30입니다. `SET SESSION`은 열린 transaction 밖에서 실행하며 종료 후 실습 세션 설정을 기록합니다.
 3. 읽기와 자기 write가 섞이면 “과거의 한 시점 전체”라는 단순 모델로 모든 결과를 설명할 수 없는 반례를 만듭니다. 이를 RR의 모든 읽기가 최신이라는 주장으로 바꾸지 않습니다.
 4. 작은 write 수를 상한으로 장기 view를 유지한 조건과 종료한 조건의 purge/history 지표를 비교합니다. transaction을 열기만 한 상태와 실제 consistent read 후 상태를 구분하고 모든 세션을 COMMIT/ROLLBACK합니다.
-5. 소스에서 read-view 생성/가시성 판정/undo 추적/회수 가능 경계를 찾습니다. CPU `read-view`가 구현한 own write·삭제와, 생략한 실제 undo page·record format·purge·DDL 경계를 대조해 적습니다.
+5. 소스에서 read-view 생성/가시성 판정/undo 추적/회수 가능 경계를 실제 세션 관측과 연결합니다. 선택 부록 `read-view`를 사용했다면 own write·삭제와 생략한 undo page·record format·purge·DDL 경계도 대조합니다.
 
 **통과:** RR/RC/첫 read 이동의 세 시간표, 일반/locking read 기대값, purge 관측과 생략 조건을 제출합니다. RR을 serializable 또는 모든 SELECT/DML에 적용되는 고정 snapshot으로 설명하면 미통과입니다.

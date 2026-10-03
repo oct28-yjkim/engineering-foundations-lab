@@ -4,9 +4,11 @@
 
 ## 환경 수준
 
+학습의 기본 경로는 [제품별 운영 실습](operations.md)의 실제 read-only baseline과 지표 기반 troubleshooting입니다. 아래 S0는 선택 원리 보충이며 환경이 없는 경우 운영 완료를 대신하지 않습니다. 기존 승인 환경부터 관측하고 새 cloud/account·KMS·Enterprise 자원을 자동 생성하지 않습니다.
+
 | 수준 | 제공 여부 | 가능한 증거 | 불가능한 결론 |
 | --- | --- | --- | --- |
-| S0 CPU | Python 표준 라이브러리, 기본 제공 | exact ACL·CAS·시간·정족수의 작은 반례 | 제품 전체 인가·암호·scheduler·Raft 검증 |
+| S0 선택 모형 | Python 표준 라이브러리, 보조 제공 | exact ACL·CAS·시간·정족수의 작은 반례 | 제품 전체 인가·암호·scheduler·Raft·운영 역량 검증 |
 | S1 dev | 두 Compose + 선택 native runner 제공 | 실제 KV v2/CAS·제한 token 허용/403·회수 | seal·내구성·HA·동적 DB 자격 증명·운영 보안 |
 | S2 운영 원리 | 학습자가 격리 환경 구성 | TLS·Shamir/auto-unseal·Raft·audit·복원 | 다른 edition·다른 seal/provider의 동일 보장 |
 | S3 소스 연구 | 고정 source 지도, 빌드 환경 별도 | upstream test·관측·패치·회귀 | 정적 소스 읽기만으로 runtime 통과 주장 |

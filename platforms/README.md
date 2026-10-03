@@ -17,7 +17,7 @@
 ### Databricks
 
 - [28주 커리큘럼](databricks/curriculum.md): 14모듈과 심화 강의 7개
-- [실습 준비와 Delta SQL](databricks/labs/README.md): CPU/로컬 Spark/관리형 workspace의 경계
+- [실습 준비와 Delta SQL](databricks/labs/README.md), [관측·진단](databricks/operations.md): 실제 query/job·권한·비용, 로컬/관리형 환경의 경계
 - [소스·논문](databricks/source-reading.md): 공개 Delta와 비공개/관리형 구성요소의 구분
 - [평가](databricks/assessment.md): 정합성·권한·비용·복구의 필수 게이트
 - [Lakehouse 캡스톤](../capstones/governed-lakehouse.md): 선택 8주 통합 연구

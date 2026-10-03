@@ -7,7 +7,7 @@
 ## 학습 순서
 
 1. [커리큘럼](curriculum.md)의 선수 조건을 점검합니다. Linux 프로세스/권한·HTTP/TLS·JWT·시간·트랜잭션·합의 기초가 부족하면 별도 보충합니다.
-2. [공통 CPU·로컬 실습](../shared/labs/README.md)에서 기대값과 반례를 만듭니다.
+2. [실제 운영 실습](operations.md)에서 status·지표·감사·소비자 baseline을 수집하고 증상별 경쟁 가설을 검증합니다. 환경 준비는 [공통 실습](../shared/labs/README.md)을 따릅니다.
 3. 아래 강의의 추가 수동 실험으로 범위를 넓히고 [소스](source-reading.md)에서 실제 책임 경계를 찾습니다.
 4. [평가표](assessment.md)에 실행한 범위와 미검증 항목을 분리하여 제출합니다.
 
@@ -27,7 +27,8 @@
 
 | 범위 | 제공물 또는 추가 과제 | 통과 증거·한계 |
 | --- | --- | --- |
-| OFFLINE | 공통 CPU 4개: `exact-acl`, `kv-cas`, `lease-clock`, `raft-quorum` | 결정 모형·수작업 oracle. 실제 정책 matcher·암호·Shamir·Raft 구현이 아님 |
+| OPS-BASELINE | [제품별 운영 runbook](operations.md): 실제 상태·핵심 지표·사건 triage | baseline·두 사건·회복 증거가 운영 gate; 실제 환경과 권한 필요 |
+| OFFLINE 선택 부록 | 공통 원리 모형 4개: `exact-acl`, `kv-cas`, `lease-clock`, `raft-quorum` | 결정 모형·수작업 oracle. 실제 제품 운영 gate를 대체하지 않음 |
 | LOCAL-DEV | 선택 실행용 제품별 Compose와 수동 절차 | 격리된 일회용 dev 서버의 API 결과. 자동 unseal·메모리 저장·단일 노드 |
 | AUTH-LAB | 별도 주체·claim·정책·token·TLS 추가 실험 | 허용뿐 아니라 거부 증거. root로 실행한 성공은 일반 주체 권한 증거가 아님 |
 | LIFECYCLE-LAB | DB dynamic secret·Transit·PKI·Agent 추가 실험 | 실제 외부 소비자 검산·만료/회전/재로드 시간선. 자동 환경 제공 없음 |
@@ -36,7 +37,7 @@
 
 실제 dev fixture는 컨테이너 내부 loopback에서만 듣고 host port를 열지 않는 격리 실습입니다. dev 모드에는 운영용 TLS·seal ceremony·영속성·HA 보장이 없습니다. 실제 비밀, 운영 자격 증명, 운영 CA, KMS 계정을 넣지 않습니다. 현재 실행 여부는 [검증 기록](../shared/labs/validation.md)을 확인합니다.
 
-저장소 루트에서 CPU 모형부터 실행합니다.
+학습은 [운영 runbook](operations.md)의 읽기 전용 preflight로 시작합니다. 환경이 없으면 미준비·설계 상태로 남기며 실제 운영 통과로 표시하지 않습니다. 원리 반례를 보충할 때만 아래 선택 모형을 실행합니다.
 
 ```bash
 python -B security/shared/labs/offline_lab.py --lab all

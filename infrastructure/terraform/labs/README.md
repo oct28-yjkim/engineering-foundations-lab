@@ -1,6 +1,8 @@
-# Terraform: CPU 모형에서 실제 로컬 plan/apply까지
+# Terraform: 실제 로컬 plan/apply·관측·진단
 
 [환경 준비](../../shared/environment.md) · [CPU 모형](../../shared/labs/README.md) · [실행 검증 기록](../../shared/validation.md)
+
+실제 CLI 기준선이 기본 시작점입니다. 아래 정상 plan/state를 확보한 뒤 [운영·트러블슈팅](../operations.md)의 exit 분류·replacement·lock·부분 실패 진단으로 확장합니다. 원리 모형은 선택 부록이며 native 실행 전 필수 단계가 아닙니다.
 
 실제 코드 [local/main.tf](local/main.tf)는 [공유 module](../../shared/modules/contract/main.tf)의 built-in `terraform_data` 3개만 사용합니다. `unit`과 `component["ingest"]`, `component["serve"]`의 주소·의존성을 관찰합니다. 외부 provider, cloud, provisioner는 없습니다.
 

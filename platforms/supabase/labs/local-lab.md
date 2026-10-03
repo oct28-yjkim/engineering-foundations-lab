@@ -4,6 +4,8 @@
 
 ## 1. 세 환경을 구분한다
 
+기존 승인 환경이 있으면 설치부터 반복하지 말고 [운영 실습](../operations.md)의 read-only 연결/lock/query baseline으로 시작합니다. 실제 지표·로그·Auth/RLS·Realtime/Storage 증상과 회복 검증이 기본이며 JSON/모형 검사는 보조 자료입니다. 새 환경이 필요할 때만 아래 준비를 수동 수행합니다.
+
 | 환경 | 준비 방법 | 확인할 범위 |
 | --- | --- | --- |
 | 기존 PostgreSQL lab | 루트 DB Compose | SQL·MVCC·WAL·일반 role/RLS 원리. Supabase Auth/API는 없음 |

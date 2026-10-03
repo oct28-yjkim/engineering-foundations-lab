@@ -17,6 +17,8 @@
 
 ## 필수 gate
 
+**추가 기본 운영 gate:** [운영 가이드](operations.md)의 실제 baseline 1개·상이한 증상 2개·경쟁 가설 배제·완화/원복·업무 결과와 지표 회복 증거가 필요합니다. `num_redelivered`를 누적 counter로 계산하거나 healthz만으로 업무 복구를 선언하면 미통과입니다. CPU 모형은 선택 원리 부록이며 필수 선수 조건이 아닙니다. OFFLINE/mock 또는 native 10개 정확성 검사만으로 운영 트랙을 수료하지 않습니다. 환경 부재 시 자료 분석과 실제 실행 미완료를 분리합니다.
+
 1. **라우팅:** `*`는 한 token, 마지막 `>`는 한 개 이상입니다. `orders.>`가 `orders`를 포함한다고 설명하지 않습니다. publish wildcard, 여러 matching subscription, 서로 다른 queue group을 구별합니다.
 2. **Core 경계:** queue group은 전달 선택이지 업무 commit이나 영속 보관이 아닙니다. `flush`·request reply·drain 성공을 외부 부작용의 정확히 한 번 완료라고 표시하지 않습니다.
 3. **보관·중복:** Limits/Interest/WorkQueue, stream 한계, finite dedup window를 분리합니다. 잘못 재사용한 message ID와 늦은 retry의 위험을 설명합니다.

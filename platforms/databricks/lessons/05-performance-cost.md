@@ -7,7 +7,7 @@
 
 query latency는 planning, queue/startup, scan, shuffle, compute, spill, output transfer가 합쳐진 값입니다. Photon은 native vectorized 실행을 제공하지만 모든 operator를 Photon으로 실행한다고 보장하지 않습니다. query profile의 실제 operator/fallback 증거와 정답을 함께 봅니다. 공개 Photon 논문은 설계 근거이지 실행 binary의 소스 코드가 아니며, 로컬 Spark 성능을 Photon 성능이라고 부르지 않습니다. [Photon](https://docs.databricks.com/aws/en/compute/photon)
 
-**CPU/LOCAL-SPARK 기본:** [Spark 실습](../../../data-processing/spark/labs/README.md)의 CPU hash-partition 모델로 key skew를 이해하고, 선택 Spark runner의6행 batch로 NULL·duplicate·aggregation 정답을 확인합니다. 제공 runner는 실제 task skew 성능 benchmark가 아닙니다. task partition·shuffle·skew의 실측 비교는 더 큰 synthetic fixture와 metrics 수집을 학습자가 추가 구현하는 과제입니다. 작은 CPU 모델의 처리량이나1회 wall time을 production node 수 산정에 사용하지 않습니다.
+**운영 기본:** [운영 가이드](../operations.md)의 Query History/Profile에서 queue·scan·shuffle·skew·cache와 비용을 연결합니다. **선택 보충:** [Spark 실습](../../../data-processing/spark/labs/README.md)의 hash-partition 모형과 6행 실제 batch runner로 원리·정답을 보충할 수 있지만 필수 선수 과정이 아닙니다. 제공 runner는 실제 task skew 성능 benchmark가 아닙니다. task partition·shuffle·skew의 실측 비교는 bounded synthetic fixture와 metrics 수집을 추가하는 과제입니다. 작은 모형 처리량이나 1회 wall time을 production node 수 산정에 사용하지 않습니다.
 
 **MANAGED-OPTIONAL 실험 설계:** 동일한 synthetic 데이터와 정답, 지정한 compute budget 아래에서 아래 비교를 한 번에 하나씩 수행합니다. 환경에서 Photon off가 지원되지 않으면 조작했다고 쓰지 말고 해당 비교를 미실행으로 둡니다.
 
@@ -32,7 +32,7 @@ query latency는 planning, queue/startup, scan, shuffle, compute, spill, output 
 
 DBU 사용량, list-price 계산값, 계약 할인 반영 청구액, cloud VM/storage/network/egress, 실패·idle·retry 비용은 서로 다른 값입니다. serverless와 classic의 청구 구성도 cloud/상품에 따라 달라지므로 같은 항목을 두 번 더하거나 빠뜨리지 않도록 포함 범위를 씁니다. GPU/API는 선택 확장이고 기본 실습에 필요하지 않습니다.
 
-**CPU 원장 과제:** 제공된 budget 모델은 driver/worker 시간과 attempt를 가상 unit price로 계산하는 작은 모델이며, 실행법은 [실습 안내](../labs/README.md)를 따릅니다. 아래 billing correction과 price 유효기간 join은 **별도 추가 구현 과제**이며 제공 runner가 구현·검증했다는 뜻이 아닙니다. 모두 실가격·요금 예측과 구분합니다.
+**선택 비용 원리 부록:** 제공된 budget 모델은 driver/worker 시간과 attempt를 가상 unit price로 계산하며 필수 선수 과제가 아닙니다. 기본 실무 증거는 실제 사용량·SKU·업무량·billing correction 분석입니다. 아래 price 유효기간 join은 **별도 추가 구현 과제**이며 제공 runner가 구현·검증했다는 뜻이 아닙니다. 가상 계산은 실가격·요금 예측과 구분합니다.
 
 - usage 기록의 ORIGINAL + RETRACTION + RESTATEMENT를 signed quantity로 합산해 수정 후 사용량을 계산합니다. ORIGINAL만 고르면 오차가 나는 fixture를 만듭니다.
 - SKU/cloud/currency/usage unit과 유효기간이 맞는 price를 붙입니다. 가격 경계를 가로지르는 interval은 명시적 분할/정책으로 처리하며 무조건 시작 시점 하나만으로 곱하지 않습니다.

@@ -9,7 +9,7 @@ notebook을 Git에 넣는 일과 재현 가능한 job 배포는 다릅니다. so
 
 현재 명칭은 **Declarative Automation Bundles**이며 이전 이름은 Databricks Asset Bundles입니다. CLI·bundle engine·설정 schema는 실제 version을 고정합니다. `validate`, `plan`, `deploy`, `run`은 각각 검증·변경 계획·원격 상태 변경·실행이며 서로 대체하지 않습니다. 특히 bundle 정의에서 resource가 사라지는 변화는 단순 파일 정리가 아니라 원격 제거로 이어질 수 있습니다. [명령 참조](https://docs.databricks.com/aws/en/dev-tools/cli/bundle-commands), [run identity](https://docs.databricks.com/aws/en/dev-tools/bundles/run-as)
 
-**CPU/DESIGN 기본:** 실제 token/host 없이 bundle 초안을 검토합니다. 아래 체크리스트를 사람 두 명이 독립 확인하고, 실제 CLI validation을 수행하지 않았다면 YAML 리뷰로만 기록합니다. bundle의 script/artifact build가 명령을 실행할 수 있으므로 외부 template를 신뢰 없이 실행하지 않습니다.
+**배포 전 설계 리뷰:** 실제 token/host 없이 bundle 초안을 검토합니다. 이는 CPU 성능 실험이 아니라 변경 안전성 검토입니다. 아래 체크리스트를 사람 두 명이 독립 확인하고, 실제 CLI validation을 수행하지 않았다면 YAML 리뷰로만 기록합니다. 이후 [운영 가이드](../operations.md)의 job/task timeline·run identity·오류·rollback 증거로 실제 배포를 검증합니다. bundle의 script/artifact build가 명령을 실행할 수 있으므로 외부 template를 신뢰 없이 실행하지 않습니다.
 
 1. 대상은 새 sandbox workspace/schema이며 prod/default target로 묵시 선택되지 않는가?
 2. bundle name·target·deployer·state path·resource ID가 기존 배포와 충돌하지 않는가?

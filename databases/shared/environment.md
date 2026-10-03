@@ -13,9 +13,11 @@
 
 각 강의의 “다중 노드”, “별도 환경”, “구현 과제” 표시는 E0만으로 완료되지 않습니다. 상위 환경의 IaC·Compose·설정·운영 명령 작성 자체가 평가 결과물입니다.
 
+제품 트랙의 기본 실습은 실제 실행·관측·트러블슈팅입니다. [PostgreSQL 진단](../postgresql/operations.md), [ClickHouse 진단](../clickhouse/operations.md), [공통 운영 학습](../../operations/README.md)을 연결합니다. 원리 모형은 선택 보조자료이고 실제 기준선/진단/회복 증거를 대체하지 않습니다.
+
 Kafka는 [별도 Compose](../../streaming/kafka/compose.yaml)와 [로컬 실습 안내](../../streaming/kafka/labs/local-lab.md)를 제공합니다. 이 문서의 `docker compose` 명령은 루트의 두 DB에만 적용됩니다. Kafka는 `docker compose -f streaming/kafka/compose.yaml ...`로 관리하며 프로젝트·네트워크·volume을 분리합니다. 기본 상태에서는 PostgreSQL → Kafka → ClickHouse 파이프라인이 만들어지지 않습니다. connector와 네트워크 연결은 [통합 연구](capstone.md)의 구현 과제입니다.
 
-[NATS 실습](../../streaming/nats/labs/README.md)은 독립 CPU 모형과 선택 고정 서버/SDK fixture를 제공합니다. 실제 runner는 공식 서버 바이너리와 별도 Python venv 준비 후 opt-in으로 새 loopback 서버·임시 저장소를 생성하고 자신이 만든 자원만 정리합니다. DB/Kafka Compose나 기존 NATS 서버에 연결하지 않습니다. Core/JetStream 단일 서버 정확성 결과와 quorum·TLS·복원·DB 업무 통합은 별도 증거로 구분합니다. [환경 안내](../../streaming/nats/environment.md)를 먼저 읽습니다.
+[NATS 실습](../../streaming/nats/labs/README.md)은 고정 서버/SDK fixture와 [운영 진단](../../streaming/nats/operations.md)이 기본이며 원리 모형은 보조입니다. 실제 runner는 공식 서버 바이너리와 별도 Python venv 준비 후 opt-in으로 새 loopback 서버·임시 저장소를 생성하고 자신이 만든 자원만 정리합니다. DB/Kafka Compose나 기존 NATS 서버에 연결하지 않습니다. Core/JetStream 단일 서버 정확성 결과와 quorum·TLS·복원·DB 업무 통합은 별도 증거로 구분합니다. [환경 안내](../../streaming/nats/environment.md)를 먼저 읽습니다.
 
 MySQL은 [전용 환경](../mysql/labs/README.md)과 `databases/mysql/compose.yaml`을 사용합니다. 기존 root Compose에 세 번째 DB를 추가하지 않으며 MySQL만 학습할 때 두 DB를 먼저 시작할 필요가 없습니다. 호스트 포트 없이 로컬 Docker exec·container socket으로 접속하고 project/network/volume을 분리합니다. CPU 모형과 실제 SQL fixture, 별도 다중 세션·복제·PITR 실험을 구분합니다.
 
@@ -23,9 +25,9 @@ MySQL은 [전용 환경](../mysql/labs/README.md)과 `databases/mysql/compose.ya
 
 [LLM 논문 실험](../../ai/llm-paper-lab/environment.md)의 CPU 기본 경로는 Python 표준 라이브러리만 사용하며 이 DB Compose와 독립적입니다. GPU·모델 다운로드·외부 API 호출은 별도 선택 확장이고 기본 실험에서 자동 수행하지 않습니다.
 
-[Spark 실습](../../data-processing/spark/labs/README.md)은 CPU 모형과 별도 Java/PySpark 4.0.4 기반 로컬 runner를 구분합니다. [Databricks 실습](../../platforms/databricks/labs/README.md)은 허가된 관리형 대상과 비용 계약이 필요한 별도 단계입니다. 이 DB Compose가 Spark cluster·Delta·Unity Catalog·Databricks를 제공하지 않습니다.
+[Spark 실습](../../data-processing/spark/labs/README.md)은 Java/PySpark 4.0.4 로컬 runner·UI 관측을 중심으로 하고 원리 모형은 보조입니다. [Databricks 실습](../../platforms/databricks/labs/README.md)은 허가된 관리형 대상과 비용 계약이 필요한 별도 단계입니다. 이 DB Compose가 Spark cluster·Delta·Unity Catalog·Databricks를 제공하지 않습니다.
 
-[OpenSearch 실습](../../search/opensearch/labs/README.md)은 독립 CPU 모형과 별도 `search/opensearch/compose.yaml`을 사용합니다. 단일 노드·합성 데이터·보안 플러그인 off·loopback HTTP 전용이며 운영·권한·HA 검증용이 아닙니다. DB/Kafka와 network·volume·수명 주기를 공유하지 않고 connector·CDC·embedding 모델을 자동 구성하지 않습니다. [검증 기록](../../search/opensearch/labs/validation.md)의 CPU/mock/실제 엔진 구분을 확인합니다.
+[OpenSearch 실습](../../search/opensearch/labs/README.md)은 별도 `search/opensearch/compose.yaml`의 실제 엔진·REST 관측을 기본으로 하고 원리 모형은 보조입니다. 단일 노드·합성 데이터·보안 플러그인 off·loopback HTTP 전용이며 운영 보안·권한·HA 검증용이 아닙니다. DB/Kafka와 network·volume·수명 주기를 공유하지 않고 connector·CDC·embedding 모델을 자동 구성하지 않습니다. [검증 기록](../../search/opensearch/labs/validation.md)의 모형/mock/실제 엔진 구분을 확인합니다.
 
 트랙별 표기는 PostgreSQL의 S가 E0, E가 선택 확장을 포함한 E1, T가 E2, B가 E3에 대응합니다. ClickHouse의 LOCAL은 E0, CLUSTER-DESIGN은 E2에 해당하며 OPS-DESIGN은 과제에 따라 E1/E2가 필요합니다. SOURCE의 정적 읽기는 파일 탐색으로 가능하지만 직접 빌드·디버깅은 E3 준비가 필요합니다.
 

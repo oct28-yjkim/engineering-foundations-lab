@@ -10,7 +10,7 @@
 
 [KV v2 문서](https://openbao.org/docs/secrets/kv/kv-v2/)를 읽고 최신 버전, 명시적 과거 버전, CAS, metadata, 삭제 상태를 구분합니다. soft delete는 해당 버전의 읽기를 막는 상태이며 undelete와 짝을 이루지만 destroy는 복원할 원문을 없애는 별도 동작입니다. 파괴 실험은 새 합성 key에만 제한합니다.
 
-### CPU → 실제 엔진 실험
+### 실제 엔진 실험과 선택 원리 모형
 
 1. `kv-cas`의 v1을 두 writer가 읽는 시간표를 손으로 만듭니다. A가 CAS=1로 v2를 만든 뒤 B의 CAS=1이 실패해야 한다는 oracle를 제출합니다.
 2. 실제 dev fixture에서는 두 독립 호출의 version metadata와 오류를 기록합니다. count나 “HTTP가 왔다”만으로 성공 판정하지 않습니다.
@@ -28,7 +28,7 @@
 
 **불변식:** 만료된 권한을 “아직 서버가 바쁘니 유효할 것”이라고 사용하지 않아야 하며, backend 폐기 완료는 별도 관측해야 합니다. TTL은 client가 요청한 숫자 자체가 아닙니다. server가 발급·갱신한 실제 값과 role/mount/system 제약을 확인합니다. [Lease 문서](https://openbao.org/docs/concepts/lease/)
 
-### CPU와 LIFECYCLE-LAB의 경계
+### 선택 모형과 실제 LIFECYCLE-LAB의 경계
 
 `lease-clock`은 결정적인 시계 입력을 받는 수명 모형입니다. 실제 scheduler, network latency, clock skew, DB plugin의 revocation 재시도를 구현하지 않습니다. CPU의 expired 표식을 DB 계정 삭제로 해석하지 않습니다.
 

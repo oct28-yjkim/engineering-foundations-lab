@@ -1,5 +1,7 @@
 # 로컬 Kafka 실습: 실행한 범위와 보장 경계
 
+실무 시작점은 [운영 관측·트러블슈팅](../operations.md)의 실제 baseline입니다. 아래 smoke는 환경·정확성 준비 확인이며 수료 기준이 아닙니다. 준비 후 lag·ISR·요청 지연의 읽기 전용 관측, 격리된 증상 재현, 원복과 업무 복구 증거를 남깁니다.
+
 이 환경은 **Apache Kafka 4.3.1 JVM 이미지의 단일 combined KRaft 노드**입니다. broker와 controller가 같은 프로세스에서 동작하며, topic·key·partition·offset·클라이언트 요청을 작은 입력으로 관찰합니다. 복제 가용성, controller 다수결 상실, 호스트 장애 내구성을 검증하는 환경은 아닙니다. Kafka Connect/CDC connector, Streams 애플리케이션, Schema Registry, 모니터링 서버는 포함하지 않습니다.
 
 모든 명령은 `engineering-foundations-lab` **저장소 루트**에서 실행합니다. 이 페이지의 `docker ...` 명령은 PowerShell/Bash에서 한 줄씩 사용할 수 있습니다. shell script는 호스트가 아닌 컨테이너의 Bash에서 실행하므로 Windows에 WSL이나 로컬 Java를 설치할 필요가 없습니다.

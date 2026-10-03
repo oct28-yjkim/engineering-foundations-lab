@@ -9,7 +9,7 @@ Kafka를 설정하거나 연결하는 수준에서 출발해, **한 이벤트가
 공통 기초가 필요하면 [자료구조·OS·분산 원리](../../databases/shared/foundations.md)부터 시작하고, [공통 실험 방법](../../databases/shared/experiment-method.md)을 적용합니다.
 
 1. [28주 커리큘럼](curriculum.md): K01–K14의 선수 조건·산출물·통과 기준.
-2. [로컬 실습 안내](labs/local-lab.md): 제공 환경의 실제 명령과 검증 범위.
+2. [운영 관측·트러블슈팅](operations.md): 정상 baseline → lag·ISR·latency 진단 → 복구 증거. [로컬 실습 안내](labs/local-lab.md)에서 실제 명령과 검증 범위를 확인합니다.
 3. [로그·저장 구조](lessons/01-log-storage.md): K01–K02.
 4. [Producer·복제](lessons/02-producer-replication.md): K03–K04.
 5. [Consumer·그룹 프로토콜](lessons/03-consumer-groups.md): K05–K06.

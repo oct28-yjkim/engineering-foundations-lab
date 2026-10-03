@@ -7,7 +7,7 @@ Supabase를 빠른 CRUD 도구로만 다루지 않고 **PostgreSQL 권한·트�
 14개 모듈 × 2주, 주 12시간의 **명목 28주·336시간**입니다. 처음에는 [공통 기반](../../databases/shared/foundations.md)의 SQL·OS·분산 시스템을 복습합니다. PostgreSQL 전체 과정을 먼저 끝낼 필요는 없지만 JOIN, NULL, index, MVCC, role/grant, HTTP, 비동기 JavaScript, 기본 테스트 작성은 필요합니다. HTTP·JavaScript는 별도로 보충할 선수 지식이며, 트랜잭션·권한 심화는 [PostgreSQL 트랙](../../databases/postgresql/README.md)을 참조합니다. 이해가 부족하면 다음 주차로 넘어가는 대신 해당 통과 기준을 반복합니다.
 
 1. [상세 커리큘럼](curriculum.md)에서 진입 모듈과 증거물을 정합니다.
-2. [로컬 준비 및 안전 범위](labs/local-lab.md)를 읽습니다. 이 저장소가 완성된 Supabase 전체 스택이나 프런트엔드 앱을 제공하는 것은 아닙니다.
+2. [실제 운영 실습](operations.md)에서 연결·lock·query·Auth/RLS·Realtime/Storage baseline을 관측하고 [로컬 준비 및 안전 범위](labs/local-lab.md)를 확인합니다. 이 저장소가 완성된 Supabase 전체 스택이나 프런트엔드 앱을 제공하는 것은 아닙니다.
 3. [공통 실험 방법](../../databases/shared/experiment-method.md)에 따라 가설·독립 oracle·실패 주입·복원 결과를 남깁니다.
 4. [소스 읽기](source-reading.md)와 [평가](assessment.md)로 구현 추적 및 필수 gate를 검증합니다.
 
@@ -22,6 +22,8 @@ Supabase를 빠른 CRUD 도구로만 다루지 않고 **PostgreSQL 권한·트�
 | [소스 연구·미니 캡스톤](lessons/07-research-capstone.md) | SU13–14 | 모르는 동작을 최소 재현하고 안전한 변경으로 연결할 수 있는가? |
 
 ## 실행 범위와 버전 규칙
+
+기본은 실제 제품의 **지표·로그·SQL을 통한 진단과 회복**입니다. baseline 1개+서로 다른 사건 2개+회복 증거를 운영 gate로 제출하며 권한 oracle JSON/SQL 모형 검사만으로 대체하지 않습니다. 환경이 없다면 환경 미준비·설계 완료로 남깁니다. 새 클라우드 프로젝트나 유료 기능 구매를 요구하지 않습니다.
 
 - **LOCAL-PREP**: 학습자가 CLI·Docker·독립 로컬 프로젝트를 준비한 뒤 실행하는 SQL/API 실험입니다. 환경이 준비되지 않았다면 실행 완료가 아니라 미실행으로 표시합니다.
 - **BUILD**: 작은 client, 서버, 테스트 harness를 학습자가 구현하는 과제입니다. 코드 조각은 완성 앱·자동 채점기의 제공을 뜻하지 않습니다.

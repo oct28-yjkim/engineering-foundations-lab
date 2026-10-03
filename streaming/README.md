@@ -10,7 +10,7 @@
 | 기본 전달/재처리 | 보존 log와 consumer 위치, 설정별 ACK/transaction 경계 | best-effort at-most-once; 서버 영속 replay 없음 | 보존 정책·ACK·재전달·dedup 조건을 설계 |
 | 소비자 분배 | partition ownership 기반 기본 consumer 모델 | queue group 안에서 matching subscriber 선택 | pull/push consumer와 delivery/ACK 상태; Core queue와 동일하지 않음 |
 | 업무 결과 확정 | 외부 DB transaction까지 자동 원자화하지 않음 | request reply/flush가 업무 성공을 자동 보장하지 않음 | PubAck/double ACK가 외부 업무 exactly-once를 자동 보장하지 않음 |
-| 실습 시작 | 독립 단일 KRaft Compose | NATS CPU 모형 또는 owned loopback server | 같은 NATS server에서 JetStream을 켠 선택 fixture |
+| 실습 시작 | 독립 단일 KRaft Compose와 실제 지표 | owned loopback server와 client 관측 | 같은 서버의 stream/consumer 관측·ACK/재전달 진단 |
 
 이 비교는 동일한 durability·replication·payload 조건의 성능 순위가 아닙니다. NATS의 subject를 Kafka partition으로, consumer ACK를 committed offset과 같은 상태 구조로 치환하지 않습니다. 제품별 보장은 고정 버전·설정·실패 모델에서 검증합니다. [Core 개념](https://docs.nats.io/learn/core-nats/), [JetStream 개념](https://docs.nats.io/concepts/jetstream).
 
@@ -19,7 +19,7 @@
 NATS는 **28주·14모듈·7강·336시간**의 선택 과정입니다. 아래 기존 PG/Kafka/CH 100주 경로에 자동 추가하지 않습니다. 공통 기초가 있다면 NATS만 먼저 진행할 수 있습니다.
 
 - [시작 안내](nats/README.md), [커리큘럼](nats/curriculum.md), [평가표](nats/assessment.md)
-- [CPU 모형 4개와 실제 서버 실습](nats/labs/README.md), [환경·안전 경계](nats/environment.md), [검증 기록](nats/labs/validation.md)
+- [실제 서버 실습과 선택 원리 부록](nats/labs/README.md), [운영·트러블슈팅](nats/operations.md), [환경·안전 경계](nats/environment.md), [검증 기록](nats/labs/validation.md)
 - [고정 소스·Raft 원전](nats/source-reading.md), [별도 선택 8주 전달·업무 복구 연구](../capstones/nats-delivery-recovery.md)
 
 실제 fixture는 기존 NATS에 접속하지 않고 새 임시 저장소의 loopback 프로세스를 소유·종료합니다. Kafka/DB Compose를 시작할 필요가 없으며 자동 bridge·connector·CDC는 없습니다. NATS Streaming(STAN)은 이 과정의 JetStream과 다른 legacy 시스템입니다.

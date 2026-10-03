@@ -1,26 +1,10 @@
-# MySQL 실습 — CPU 원리와 실제 SQL을 구분하기
+# MySQL 실습 — 실제 엔진 관측과 트러블슈팅
 
-[트랙](../README.md) · [CPU 상세](offline.md) · [검증 기록](validation.md)
+[트랙](../README.md) · [운영 runbook](../operations.md) · [선택 원리 부록](offline.md) · [검증 기록](validation.md)
 
-기본은 Python 3.10 이상 표준 라이브러리만 사용하는 CPU 실험입니다. MySQL 설치·Docker·계정·API·네트워크가 필요 없습니다. 실제 엔진은 별도 선택 경로이며 모든 명령은 저장소 루트에서 실행합니다.
+기본은 실제 MySQL을 준비해 정상 상태를 측정하고 [운영 runbook](../operations.md)의 잠금·MDL·느린 쿼리 사건을 진단하는 경로입니다. 모든 명령은 저장소 루트에서 실행합니다. 환경이 없으면 설계/원리 학습만 수행하고 운영 완료는 보류합니다. 모형 코드는 마지막 선택 부록에 보존합니다.
 
-## 1. CPU부터 시작
-
-```text
-python -B databases/mysql/labs/offline_lab.py --lab all
-python -B -m unittest discover -s databases/mysql/labs -p "test_*.py" -v
-```
-
-| 실험 | 검산할 질문 | 증명하지 않는 것 |
-| --- | --- | --- |
-| `index-lookup` | secondary key에서 PK로 찾는 과정, covering/noncovering의 논리적 작업 차이 | B-tree page layout·실제 I/O·cache·MVCC·optimizer 비용 |
-| `read-view` | creator·watermark·active ID, view 재사용/갱신과 version 가시성 | 전체 InnoDB·current read·잠금·직렬 가능성·purge 구현 |
-| `deadlock` | record resource의 S/X 호환성·wait-for graph·cycle | gap/next-key/insert-intention·MDL·page latch·실제 victim 선택 |
-| `commit-recovery` | durable prepare·완전한 durable binlog XID·commit 증거와 ACK 불확실성 | log 파일·fsync·실제 crash recovery·PITR·분산 commit |
-
-covering 조건에서 lookup을 생략하는 CPU 결과는 정적 모형의 계약입니다. 실제 InnoDB secondary index의 consistent read는 가시성 때문에 clustered record를 확인할 수 있습니다. 네트워크와 SQL을 흉내 낸 테스트도 실제 MySQL을 실행한 증거가 아닙니다.
-
-## 2. 선택: MySQL 8.4.11 단일 노드
+## 1. MySQL 8.4.11 단일 노드 준비
 
 [Compose](../compose.yaml)는 Docker Official Image `mysql:8.4.11`을 사용합니다. 별도 Docker 엔진·Compose v2·이미지 다운로드 네트워크와 디스크가 필요합니다. Python SQL connector나 호스트의 `mysql` client 설치는 필요하지 않고, Docker CLI가 PATH에서 실행 가능해야 합니다.
 
@@ -42,7 +26,7 @@ python -B databases/mysql/labs/engine_lab.py --run-local
 
 Compose에는 memory 1GB·CPU 2개·buffer pool 128MiB·최대 연결 30개를 작은 fixture의 출발 예산으로 둡니다. 이는 production sizing 권장값이나 최소 실행 보장이 아닙니다. 초기화/OOM 실패는 로그와 Docker VM 예산을 먼저 확인합니다. 엔진이 꺼져 있으면 중단하고 사용자가 환경을 준비합니다. runner는 Docker Desktop을 시작하거나 host 설정을 바꾸지 않습니다.
 
-## 3. runner의 대상·쓰기 제한
+## 2. runner의 대상·쓰기 제한
 
 `--help`와 인자 없는 실행은 subprocess를 시작하지 않습니다. `--run-local`에서만 다음을 수행합니다.
 
@@ -58,7 +42,7 @@ client는 option/login 파일·재접속·local infile·대화형 system command
 
 실패하면 stage·신규 DB·생성 시도/확인 여부만 남기고 원시 stderr·SQL·비밀번호를 출력하지 않습니다. 실패/성공 DB 모두 보존하며 자동 cleanup은 없습니다. 재실행은 또 다른 DB를 생성하므로 namespace·용량·결과를 원장에 기록합니다. DDL은 implicit commit이 생길 수 있으므로 실패한 schema 초기화 전체가 transaction rollback된다고 가정하지 않습니다.
 
-## 4. 합성 fixture와 SQL oracle
+## 3. 합성 fixture와 SQL oracle
 
 두 계정의 초기 잔액은 최소 단위 정수로 alpha=10000, beta=5000입니다. 주문은 다음과 같습니다.
 
@@ -86,7 +70,7 @@ client는 option/login 파일·재접속·local infile·대화형 system command
 
 작은 fixture는 optimizer가 scan 또는 다른 index를 고를 수 있으므로 특정 plan·estimated cost·latency를 성공 조건으로 고정하지 않습니다. EXPLAIN JSON이 파싱된다는 사실도 성능 개선 증거가 아닙니다. 두 session이 아닌 단일 session transaction 검산만으로 MVCC·deadlock·실제 동시성 검증을 주장하지 않습니다.
 
-## 5. 수동 다중 세션·관측으로 확장
+## 4. 필수 운영 실습: 다중 세션·관측·회복
 
 ```text
 docker compose -f databases/mysql/compose.yaml exec mysql mysql --no-defaults --no-login-paths --protocol=socket --socket=/var/run/mysqld/mysqld.sock -uroot -p
@@ -96,7 +80,9 @@ docker compose -f databases/mysql/compose.yaml exec mysql mysql --no-defaults --
 
 두 터미널의 connection ID·isolation·autocommit·사건 순서를 기록합니다. [28주 커리큘럼](../curriculum.md)의 LOCAL-SESSIONS는 학습자가 직접 수행하는 과제입니다. 기다림은 sleep 시간 추측만으로 판정하지 않고 Performance Schema의 data_locks/data_lock_waits·metadata_locks와 session 상태를 대조합니다. 다른 세션을 임의 KILL하거나 공유 설정을 바꾸지 않습니다.
 
-## 6. 보존과 재현
+[운영 runbook](../operations.md)에 따라 정상 기준선과 서로 다른 사건 2개를 수행하고 지표의 단위/창·경쟁 가설·제한된 조치·회복 후 원장을 제출합니다. 정상 fixture runner의 PASS와 실제 진단 완료는 다른 관문입니다.
+
+## 5. 보존과 재현
 
 ```text
 docker compose -f databases/mysql/compose.yaml images
@@ -110,3 +96,21 @@ stop/start는 named volume을 보존합니다. 기존 volume에는 환경변수 
 엄밀한 재현에는 git commit·image digest·서버/OS/아키텍처·SQL mode·charset/collation·isolation·durability/binlog·데이터 fingerprint를 기록합니다. `sync_binlog=1`과 `innodb_flush_log_at_trx_commit=1` 설정 확인은 장치의 실제 fsync 내구성이나 backup 존재를 증명하지 않습니다. GTID가 켜져 있어도 replica는 생성되지 않습니다.
 
 기본 환경에는 다중 노드, replication channel, Group Replication/Router, CDC, backup 보관소, 실제 PITR, TLS/역할 기반 앱이 없습니다. [8주 연구](../../../capstones/mysql-transaction-recovery.md)에서 별도 구성하고 미검증 경계를 줄입니다. MariaDB·Aurora·관리형 MySQL에 그대로 적용하지 않습니다.
+
+## 부록: 선택 오프라인 원리 모형
+
+Python 3.10 이상 표준 라이브러리만 사용하며 서버·네트워크가 필요 없습니다. 필수 선행 과정이 아니고 실제 운영 검증을 대체하지 않습니다.
+
+```text
+python -B databases/mysql/labs/offline_lab.py --lab all
+python -B -m unittest discover -s databases/mysql/labs -p "test_*.py" -v
+```
+
+| 실험 | 검산할 질문 | 증명하지 않는 것 |
+| --- | --- | --- |
+| `index-lookup` | secondary key→PK, covering 논리 작업 | 실제 page·I/O·cache·optimizer 비용 |
+| `read-view` | watermark·active ID·view별 가시성 | 전체 InnoDB·current read·purge 구현 |
+| `deadlock` | record S/X·wait-for cycle | gap/next-key·MDL·victim 선택 |
+| `commit-recovery` | durable marker·ACK 불확실성 | fsync·crash recovery·PITR |
+
+covering lookup 생략은 정적 모형의 계약이며 실제 secondary index 읽기는 visibility 때문에 clustered record를 확인할 수 있습니다. runner mock도 실제 MySQL 실행 증거가 아닙니다. 기존 [검증 기록](validation.md)은 코드 검증의 과거 기록으로 유지합니다.

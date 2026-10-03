@@ -57,7 +57,7 @@ S01–S13 산출물을 재사용합니다. 목표는 전체 self-hosted 운영 �
 
 둘째 장애는 **category 제한**입니다. fake clock/loopback 응답으로 특정 신호 category의 제한을 전달하고, 해당 기간의 시도·폐기·유지 및 다른 category 영향을 S04 oracle과 비교합니다. 실제 quota를 소모하거나 서비스에 부하를 가하지 않습니다. 이것을 Kafka 장애·네트워크 ACK 유실·서버 장애 복구라고 이름 붙이지 않습니다.
 
-두 장애 모두 입력 원장이 정답이며 SDK 결과로 정답을 다시 쓰지 않습니다. sampling은 연결성/격리 기준선에서 끄거나 전량 유지하도록 지원 설정을 명시한 뒤 별도 단계로 바꿉니다. S08 [오프라인 샘플링 oracle](../labs/sampling-oracle.mjs)을 첨부하여 관측 subset과 모집단 집계의 차이를 설명합니다.
+두 장애 모두 입력 원장이 정답이며 SDK 결과로 정답을 다시 쓰지 않습니다. sampling은 연결성/격리 기준선에서 끄거나 전량 유지하도록 지원 설정을 명시한 뒤 별도 단계로 바꿉니다. 관측 subset과 모집단 집계의 차이는 실제 project의 sampling/outcomes와 독립 원장으로 설명하고, S08 [오프라인 샘플링 oracle](../labs/sampling-oracle.mjs)은 필요할 때만 보조합니다. SDK 연구만 수행한 결과와 [운영 gate](../operations.md)의 실제 baseline·두 사건·회복 완료를 구분합니다.
 
 ### 제출 evidence 묶음
 

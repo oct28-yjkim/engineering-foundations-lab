@@ -1,5 +1,12 @@
 # MySQL 심화 과정 평가 기준
 
+## 공통 필수 운영 관문
+
+[운영 runbook](operations.md)의 실제 서버 정상 기준선 1개, 서로 다른 사건 최소 2개, 각 사건의 경쟁 가설 2개 이상·원시 지표/로그·제한된 조치·되돌림/회복 후 업무 검산을 제출합니다. 지표는 gauge/counter/event, 단위·집계 창·reset 여부를 표시합니다. 임계값 암기나 dashboard 화면만으로는 통과하지 않습니다.
+
+원리 모형·손계산·mock/단위 테스트는 선택 보조 증거입니다. 이를 생략했다고 운영 과정 진입을 막지 않으며, 성공했다고 실제 운영 점수를 주지도 않습니다. 기존 점수 기준 및 제품별 정확성·복원·권한 관문은 유지합니다. 환경이 없으면 설계/원리 학습 완료와 운영 미완료를 구별하고, 실제 baseline/사건 증거 없이 전체 운영 완료를 선언하지 않습니다.
+
+
 [커리큘럼](curriculum.md) · [실습 범위](labs/README.md) · [소스 지도](source-reading.md)
 
 평가의 대상은 **SQL 의미·물리 구조·동시성·내구성·복구 경계를 증거로 설명하는 능력**입니다. OFFLINE, LOCAL-ENGINE, LOCAL-SESSIONS, RESTORE-LAB, REPLICA-LAB, SECURITY-LAB, BUILD를 구분합니다. 작은 모형의 성공은 실제 fsync나 다중 서버 보장의 증거가 아닙니다.
@@ -27,7 +34,7 @@
 
 | 범위 | 제출물 | 별도 미검증 경계 |
 | --- | --- | --- |
-| OFFLINE | 4개 CPU 모형·수작업 기대값·의도적으로 틀린 대조군·단순화 목록 | 실제 InnoDB B-tree, MVCC, lock manager, WAL/복구 |
+| OFFLINE (선택 보조) | 선택한 모형·수작업 기대값·반례·단순화 목록; 운영 과정 필수 아님 | 실제 InnoDB B-tree, MVCC, lock manager, WAL/복구 |
 | LOCAL-ENGINE | 고정 단일 서버·합성 fixture·정확한 값/오류 검산 | 경합·replica·PITR·전원 상실·운영 권한 |
 | LOCAL-SESSIONS | 2–3세션 시간표·connection ID·대기/오류·최종 ledger | 다른 계획/격리 설정/대규모 workload |
 | RESTORE-LAB | 독립 target·backup+log manifest·복원 경계·행/값/권한·RPO/RTO | 실행하지 않은 region/account/storage 실패 |

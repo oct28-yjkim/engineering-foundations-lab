@@ -4,6 +4,8 @@
 
 ## 모듈 지도
 
+기본 실험은 [실제 SDK 실행·운영 진단](operations.md)입니다. 실험 10시간은 요청 기준선·오류 층·지연/종료·회복 관측에 우선 사용하고 원리 모형은 선택 보충으로 둡니다. MC01–02 process/revision, 03–04 schema/cache, 05–06 transport, 07–08 auth, 09–10 timeout/retry, 11–12 계측/운영, 13–14 호환성/source 결과를 실제 증거와 연결합니다. 학습자가 추가할 계측·HTTP 환경은 제공 SDK smoke와 구분합니다.
+
 | 모듈 / 주 | 선수 조건 | 핵심 질문 | 최소 제출물 |
 | --- | --- | --- | --- |
 | MC01 / 1–2 | Python·HTTP·프로세스 기초 | [host/client/server·신뢰 경계](lessons/01-architecture-revisions.md#mc01) | 자산·주체·데이터 이동·실행 권한 지도 |

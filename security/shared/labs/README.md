@@ -2,27 +2,9 @@
 
 [보안 트랙](../../README.md) · [OpenBao](../../openbao/README.md) · [Vault](../../vault/README.md) · [환경 경계](../environment.md) · [검증 기록](validation.md)
 
-기본은 Python 3.10+ 표준 라이브러리 CPU 실험입니다. 실제 제품 실행은 아래의 **선택 dev 단계**로 분리합니다. 모든 명령은 저장소 루트에서 한 줄씩 실행합니다.
+기본은 [OpenBao 운영 실습](../../openbao/operations.md) 또는 [Vault 운영 실습](../../vault/operations.md)의 실제 baseline·지표·로그·경쟁 가설·회복 검증입니다. 기존 승인 환경의 read-only 관측부터 시작합니다. 환경이 없다면 아래 격리 dev 준비를 선택하거나 환경 미준비로 남깁니다. CPU 모형은 선택 원리 부록이며 제품 운영 통과를 대신하지 않습니다. 모든 명령은 저장소 루트에서 한 줄씩 실행합니다.
 
-## 1. 설치·과금 없는 CPU 모형
-
-```text
-python -B security/shared/labs/offline_lab.py --list
-python -B security/shared/labs/offline_lab.py --lab all
-python -B -m unittest discover -s security/shared/labs -p "test_*.py" -v
-python -B -O -m unittest discover -s security/shared/labs -p "test_*.py" -v
-```
-
-| 모형 | 검산할 것 | 구현하지 않는 것 |
-| --- | --- | --- |
-| `exact-acl` | 동일 exact path capability 합집합·deny·data/metadata 분리 | 실제 wildcard selector 우선순위·auth·root·namespace |
-| `kv-cas` | CAS 경쟁·version·soft delete/undelete/destroy | storage/HTTP·자동 pruning·실제 메모리 삭제 |
-| `lease-clock` | 일반 lease 갱신 상한·만료·backend revoke 실패/재시도 | 실제 clock/scheduler·periodic/batch·DB session 종료 |
-| `raft-quorum` | 고정 voter membership의 과반수·partition·nonvoter | leader 선출·log·read consistency·membership 변경 |
-
-정답·반례·단계별 해설은 [offline.md](offline.md)에 있습니다. 이 모형은 암호 구현이나 OpenBao/Vault/Raft 서버가 아닙니다. 단위 테스트의 native 부분도 Docker subprocess **mock**이며 컨테이너를 시작하지 않습니다. 일반/`-O` 양쪽에서 같은 oracle이 유지되는지 확인합니다.
-
-## 2. 선택: 실제 dev 엔진 준비
+## 1. 환경이 없을 때: 실제 dev 엔진 준비
 
 먼저 [환경 문서](../environment.md)를 읽습니다. 이 fixture는 공개 dummy root token, 자동 초기화/unseal, in-memory storage, 컨테이너 내부 HTTP를 사용하며 **운영용이 아닙니다**. 실제 키·계정·운영 데이터를 넣지 않습니다. 외부 통신·host port·bind mount·영속 volume은 없습니다. Docker 관리자/host 침해를 방어하는 sandbox는 아닙니다.
 
@@ -58,7 +40,7 @@ python -B security/shared/labs/engine_lab.py --product vault --run-local
 
 제품 image에 노출 port 메타데이터가 있어도 host에 publish되지는 않습니다. native runner는 실제 binding·network mode·mount·command·project label·root identity를 검사합니다. 이 검사는 우발적 오대상 방지이며 악의적인 Docker host를 인증하는 기능은 아닙니다. Vault의 image-declared 두 volume은 tmpfs로 덮어야 guard를 통과합니다.
 
-## 3. 실제 runner의 검증 계약
+## 2. 실제 runner의 검증 계약
 
 `--product`와 `--run-local`을 모두 지정해야 subprocess를 실행합니다. 도움말이나 인자 없는 실행은 mutation 없이 종료합니다.
 
@@ -79,7 +61,7 @@ python -B security/shared/labs/engine_lab.py --product vault --run-local
 
 fixture는 audit·transit·PKI·auth provider·외부 DB를 구성하지 않습니다. 실제 seal, 키 보관, Raft, TLS, 복원, dynamic credential, 운영 격리는 **미검증**입니다. 다음 단계는 제품별 강의와 [선택 8주 연구](../../../capstones/secrets-identity-recovery.md)의 별도 허가된 환경입니다.
 
-## 4. 학습 종료와 폐기
+## 3. 학습 종료와 폐기
 
 실측 결과에서 비밀을 제거하고 image digest/version·stage·기대값·실제값·미검증 경계만 남깁니다. image digest 조회는 원문 secret을 포함하지 않는 다음 명령을 사용합니다.
 
@@ -96,3 +78,21 @@ docker --host npipe:////./pipe/dockerDesktopLinuxEngine compose -f security/vaul
 ```
 
 logging driver `none`은 dev bootstrap 키가 console log로 보존되는 것을 줄이기 위한 선택입니다. `docker logs`를 감사 증거로 사용할 수 없습니다. 실제 audit logging·장애 대응은 S2에서 비밀 비노출·retention·가용성을 함께 설계합니다.
+
+## 선택 원리 부록: 설치·과금 없는 모형
+
+```text
+python -B security/shared/labs/offline_lab.py --list
+python -B security/shared/labs/offline_lab.py --lab all
+python -B -m unittest discover -s security/shared/labs -p "test_*.py" -v
+python -B -O -m unittest discover -s security/shared/labs -p "test_*.py" -v
+```
+
+| 모형 | 검산할 것 | 구현하지 않는 것 |
+| --- | --- | --- |
+| `exact-acl` | 동일 exact path capability 합집합·deny·data/metadata 분리 | 실제 wildcard selector 우선순위·auth·root·namespace |
+| `kv-cas` | CAS 경쟁·version·soft delete/undelete/destroy | storage/HTTP·자동 pruning·실제 메모리 삭제 |
+| `lease-clock` | 일반 lease 갱신 상한·만료·backend revoke 실패/재시도 | 실제 clock/scheduler·periodic/batch·DB session 종료 |
+| `raft-quorum` | 고정 voter membership의 과반수·partition·nonvoter | leader 선출·log·read consistency·membership 변경 |
+
+정답·반례·단계별 해설은 [offline.md](offline.md)에 있습니다. 이 모형은 암호 구현이나 OpenBao/Vault/Raft 서버가 아닙니다. 단위 테스트의 native 부분도 Docker subprocess **mock**이며 컨테이너를 시작하지 않습니다. 일반/`-O` 양쪽에서 같은 oracle이 유지되는지 확인합니다. 실행 결과는 선택 원리 부록의 회귀 검증으로만 보고하며 실제 운영 gate와 구분합니다.

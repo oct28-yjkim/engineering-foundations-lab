@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | [PostgreSQL](postgresql/README.md) | heap·MVCC·SSI·planner·WAL·vacuum·복구 | [공통 DB 환경](shared/environment.md) |
 | [ClickHouse](clickhouse/README.md) | MergeTree·column/pipeline·집계·분산 | [공통 DB 환경](shared/environment.md) |
-| [MySQL](mysql/README.md) | InnoDB·read view·next-key lock·optimizer·redo/binlog·GTID·복구 | [CPU 및 별도 MySQL 환경](mysql/labs/README.md) |
+| [MySQL](mysql/README.md) | InnoDB·read view·next-key lock·optimizer·redo/binlog·GTID·복구 | [실제 MySQL·SQL 진단 환경](mysql/labs/README.md) |
 
 각 제품은 **28주·14모듈·336시간** 선택 과정입니다. 아래 72주 표는 기존 PostgreSQL+ClickHouse 경로이며 MySQL을 자동 가산하지 않습니다. MySQL 중심이면 공통 8주 + MySQL 28주를 먼저 진행하고 [선택 연구 8주](../capstones/mysql-transaction-recovery.md)를 추가합니다. 세 DB를 모두 순차 이수할 때는 공통 8주 + 트랙 84주 + 선택 연구 8주 = **100주·약 1,200시간**입니다. 모든 DB 이수가 실무 적용의 전제는 아닙니다.
 

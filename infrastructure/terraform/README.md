@@ -7,15 +7,11 @@ Terraform은 구성·관측 상태·provider를 연결하는 엔진입니다. [T
 ## 시작 순서
 
 1. Git diff·프로세스 환경 변수·JSON·파일 권한·HTTP 오류·DAG를 진단합니다. 처음이면 [공통 기초](../../databases/shared/foundations.md)의 OS·분산 실패 모델과 함께 보충합니다.
-2. [공통 CPU 실험](../shared/labs/README.md)에서 그래프·계획 정책·상태 경쟁·변경 영향 범위를 관찰합니다.
-3. [Terraform 로컬 실습](labs/README.md)의 격리 조건을 확인하고, 설치된 CLI가 있을 때만 native 실험을 선택합니다.
+2. [Terraform 로컬 실습](labs/README.md)의 격리 조건을 확인하고 실제 CLI에서 정상 plan/state 기준선을 수집합니다.
+3. [운영·트러블슈팅](operations.md)에서 계획 결과·lock·provider 지연·부분 실패를 진단하고 조치 전후를 비교합니다.
 4. [28주 과정](curriculum.md), 7개 강의, [소스 지도](source-reading.md), [평가표](assessment.md)를 연결합니다.
 
-저장소 루트에서 Python 표준 라이브러리만으로 시작할 수 있습니다. 아래 명령은 Terraform 실행이 아닌 교육용 모형입니다.
-
-```text
-python -B infrastructure/shared/labs/offline_lab.py --lab all
-```
+[공통 원리 모형](../shared/labs/README.md)은 그래프·상태 원리를 보충하는 선택 부록입니다. 기본은 실제 CLI·실행 증거이며 CPU 모형이나 단위 테스트만으로 운영 실습을 완료하지 않습니다. CLI 준비가 안 됐다면 원리 학습/진단 설계로 기록하고 실측과 구분합니다.
 
 ## 고정 기준과 실습 경계
 

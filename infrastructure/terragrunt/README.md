@@ -2,7 +2,7 @@
 
 Terragrunt를 설정 중복 제거 도구로만 배우지 않습니다. **HCL 평가 → unit 발견 → 의존성 그래프 → 실행 큐 → 여러 state의 부분 성공 → 복구**를 설명하고, 변경 영향 범위와 승인 경계를 검증하는 28주 심화 과정입니다. 과정 수료는 모든 운영 환경의 전문성을 보장하지 않으며 제출한 증거 범위만 인증합니다.
 
-[28주 커리큘럼](curriculum.md) · [평가 기준](assessment.md) · [고정 소스 지도](source-reading.md) · [로컬 실습](labs/README.md) · [공통 CPU 모형](../shared/labs/README.md)
+[28주 커리큘럼](curriculum.md) · [평가 기준](assessment.md) · [운영·트러블슈팅](operations.md) · [고정 소스 지도](source-reading.md) · [로컬 실습](labs/README.md) · [선택 원리 모형](../shared/labs/README.md)
 
 ## 시작 조건과 버전
 
@@ -31,8 +31,8 @@ Terragrunt를 설정 중복 제거 도구로만 배우지 않습니다. **HCL �
 
 ## 제공 코드와 학습자 확장
 
-저장소 루트에서 외부 패키지·계정 없이 [공통 CPU 실습](../shared/labs/README.md)을 실행할 수 있습니다. 제공 모형은 그래프 순서, plan policy, state CAS, 변경 영향 범위를 다루며 실제 Terragrunt parser/queue/backend의 구현이 아닙니다.
+[로컬 Terragrunt fixture](labs/README.md)에서 실제 engine·CLI를 준비하여 두 unit의 정상 결과를 확인한 뒤, [운영 실습](operations.md)에서 unit별 시간·선택/실행/실패 집합·dependency·state를 진단합니다. 7개 강의의 확장 실험은 학습자가 구현·수행할 과제이며 모두 완성된 executable로 제공되지는 않습니다. 기본 환경은 cloud 자원을 만들지 않습니다.
 
-[로컬 Terragrunt fixture](labs/README.md)는 별도 engine·CLI 준비 후의 선택 경로입니다. 7개 강의에 있는 확장 실험은 학습자가 구현·수행할 과제이며 모두 완성된 executable로 제공되는 것은 아닙니다. 기본 과정에서 운영 계정·클라우드 리소스를 만들지 않습니다.
+[공통 원리 모형](../shared/labs/README.md)은 graph·plan policy·state CAS·변경 영향 범위를 보충하는 선택 부록입니다. 실제 Terragrunt parser/queue/backend가 아니며 운영 실습의 선수 조건이나 완료 증거가 아닙니다.
 
 완료 상태는 `OFFLINE`, `LOCAL-TERRAGRUNT`, `CLOUD-DESIGN`, `CLOUD-VERIFIED`로 구분합니다. CPU 테스트 성공을 실 engine·클라우드의 lock 내구성, IAM 거부, 복구 성공이라고 보고하지 않습니다. 14모듈 × 2주, 주 12시간으로 약 336시간이며 [8주 인프라 통합 캡스톤](../../capstones/reproducible-infrastructure.md)은 별도 선택 과정입니다.

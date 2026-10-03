@@ -46,7 +46,7 @@ explicit ACK를 기본 비교 대상으로 사용합니다. AckAll의 누적 범
 
 ### 실험
 
-1. [CPU `ack-redelivery`](../labs/offline.md)에서 ACK 누락·재전달·업무 dedup의 차이를 검산합니다. 가상 timer와 메모리 업무 원장을 실제 server/DB 내구성으로 일반화하지 않습니다.
+1. 실제 ConsumerInfo·delivery metadata·업무 원장으로 ACK 누락·재전달·업무 dedup의 차이를 검산합니다. [원리 모형 `ack-redelivery`](../labs/offline.md)은 선택 보충이며 가상 timer·메모리 원장을 실제 server/DB 내구성으로 일반화하지 않습니다.
 2. 합성 ID 10건에 대해 ACK-before-work, work-before-ACK 두 잘못/불완전 설계의 crash 지점을 표로 만듭니다. 업무 commit 직후 종료와 ACK 응답 지연을 각각 독립 조건으로 사용합니다.
 3. 실제 업무 DB 확장에서는 operation key의 unique constraint와 업무 변경을 같은 transaction에 묶고, 같은 key/다른 digest를 거부합니다. [PostgreSQL](../../../databases/postgresql/README.md)의 transaction/장애 실습과 연결하되 메모리 ledger 성공을 DB crash 검증으로 표시하지 않습니다.
 4. AckWait보다 오래 처리하는 worker, bounded in-progress, 지연 NAK, BackOff를 각각 비교합니다. timer 경계의 delivery 횟수와 실제 업무 횟수를 분리하고 늦은 ACK 경합의 허용 결과를 먼저 적습니다.

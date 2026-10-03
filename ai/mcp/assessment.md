@@ -17,6 +17,8 @@
 
 ## 필수 gate
 
+[실제 SDK 기준선·서로 다른 두 문제의 진단·회복](operations.md)을 제품 실습 완료에 추가로 요구합니다. 오류 층·지연/종료·업무 결과를 조치 전후로 비교하여 [운영 보고서](../../operations/incident-report-template.md)를 제출합니다. 원리 모형/mock PASS는 보조 학습 결과이며 실제 운영 완료가 아닙니다. 제공 stdio smoke와 추가 계측·HTTP/권한 과제의 수행 범위를 구분합니다.
+
 1. **신뢰:** tool/resource/prompt 내용과 사용자의 실행 권한을 분리합니다. annotation·roots·모델의 응답을 보안 경계로 사용하지 않습니다.
 2. **revision:** modern 2026-07-28과 legacy 2025-11-25의 계약을 섞지 않습니다. SDK 2.3.0이라는 이름만으로 모든 protocol·extension·host 조합 지원을 주장하지 않습니다.
 3. **계약:** HTTP 오류·JSON-RPC 오류·`isError`·schema 적합·업무 결과를 각각 검산합니다. CPU 부분 validator를 JSON Schema 전체 구현이라고 하지 않습니다.

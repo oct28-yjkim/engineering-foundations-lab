@@ -1,24 +1,24 @@
 # NATS: Zero to Hero → Messaging, JetStream & Recovery Engineering
 
-Core NATS와 JetStream을 **라우팅·전달 보장·저장·복제·업무 부작용의 서로 다른 경계**로 분석하는 28주·14모듈·7강 과정입니다. API 사용에서 시작해 wire protocol, subject matching, consumer 상태 기계, 저장 엔진, Raft, 복구와 보안까지 소스와 실험으로 연결합니다. CPU 실험이 기본이며 GPU·모델 API·클라우드 계정은 필요하지 않습니다.
+Core NATS와 JetStream을 **라우팅·전달 보장·저장·복제·업무 부작용의 서로 다른 경계**로 분석하는 28주·14모듈·7강 과정입니다. 실제 서버의 정상 상태를 관측하고, 지표로 장애 가설을 검증한 뒤 wire protocol, 저장 엔진, consumer 상태 기계, Raft 소스로 원인을 설명합니다. GPU·모델 API는 필요하지 않으며 CPU 모형은 선택 원리 보충 자료입니다.
 
 기준일은 **2026-10-04**, 서버는 **nats-server 2.15.0**, 선택 Python client는 **nats-py 2.16.0**입니다. 서버·client·CLI·문서 revision은 별도로 기록합니다. rolling 문서의 최신 기능을 고정 버전이 모두 제공한다고 가정하지 않습니다. [서버 릴리스](https://github.com/nats-io/nats-server/releases/tag/v2.15.0), [Python client 릴리스](https://github.com/nats-io/nats.py/releases/tag/v2.16.0)
 
 ## 시작 순서
 
 1. [환경·안전 경계](environment.md), [커리큘럼](curriculum.md), [평가 기준](assessment.md)을 읽습니다. TCP·비동기 처리·트랜잭션·기초 합의 알고리즘이 부족하면 별도 보충합니다.
-2. [CPU 실험](labs/offline.md)에서 수작업 기대값과 잘못된 설계를 비교합니다. 이것은 NATS 서버의 축소 구현이나 성능 측정 도구가 아닙니다.
-3. [선택 실제 서버 실습](labs/README.md)을 진행하고, 강의별 추가 실험의 실행 범위를 구분합니다. 한 서버의 성공으로 다중 노드 내구성을 판정하지 않습니다.
+2. [운영 관측·트러블슈팅](operations.md)에서 실제 서버의 정상 baseline과 consumer·stream·접속 상태를 읽습니다. 환경이 없으면 정제된 실측 자료로 분석 연습을 하고 실행 gate는 미완료로 남깁니다.
+3. [실제 서버 실습](labs/README.md)을 준비하고, 소유한 격리 환경에서만 장애를 재현→진단→완화→복구 검증합니다. 한 서버의 성공으로 다중 노드 내구성을 판정하지 않습니다.
 4. [소스 지도](source-reading.md)를 따라 가설→자료구조→상태 전이→회귀 시험을 연결하고 [검증 기록](labs/validation.md)에 실행 증거와 미검증 항목을 남깁니다.
 
-저장소 루트에서 Python 표준 라이브러리만으로 시작합니다.
+선택 부록인 [원리 모형](labs/offline.md)이 필요할 때만 아래 명령을 사용합니다. 필수 선수 과정이나 운영 수료 조건이 아닙니다.
 
 ```powershell
 python -B streaming/nats/labs/offline_lab.py --lab all
 python -B -m unittest discover -s streaming/nats/labs -p 'test_*.py'
 ```
 
-선택 실습의 의존성 설치와 실행 명령은 [실습 안내](labs/README.md)를 따릅니다. 기본 실행이 외부 broker, 조직 자격 증명, 클라우드 자원에 연결되도록 바꾸지 않습니다.
+실제 실습의 의존성 설치와 실행 명령은 [실습 안내](labs/README.md)를 따릅니다. 외부 broker, 조직 자격 증명, 클라우드 자원에 자동 연결하지 않습니다.
 
 | 모듈 | 강의 | 핵심 질문 |
 | --- | --- | --- |
