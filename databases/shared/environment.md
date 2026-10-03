@@ -101,6 +101,10 @@ docker compose up -d
 
 답안과 강의마다 별도 실습 테이블 이름을 사용하며, 정리 명령은 그 테이블만 대상으로 합니다. 기존 volume을 유지한 경우 `03_internals.sql`의 검증 결과가 새 seed의 기대값과 다른지 먼저 확인합니다.
 
+## OpenBao / Vault 별도 환경
+
+[비밀·신원 보안 실습](../../security/shared/labs/README.md)은 CPU 모형 4개와 제품별 선택 dev Compose를 사용합니다. 기존 DB Compose와 독립이며, 컨테이너 외부 네트워크·host port·영속 volume을 제공하지 않습니다. dev는 자동 unseal·공개 dummy root·인메모리 구성이므로 stop/start 시 실습 상태가 사라집니다. 실제 DB 동적 자격 증명·TLS·Raft·snapshot 복원은 별도 격리 환경을 준비하는 [선택 연구](../../capstones/secrets-identity-recovery.md)입니다. DB나 cloud 계정을 자동 생성·연결하지 않습니다.
+
 ## 검증 상태의 해석
 
 Terraform·Terragrunt의 선택 실습은 [IaC 전용 환경](../../infrastructure/shared/environment.md)에서 진행합니다. DB/Kafka Compose와 state/cache의 수명 주기를 공유하지 않습니다. CPU 모형과 실제 로컬 CLI 검증, 미검증 cloud backend를 구분합니다.

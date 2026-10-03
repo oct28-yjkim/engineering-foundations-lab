@@ -1,0 +1,27 @@
+name: engineering-foundations-vault-lab
+
+services:
+  vault:
+    image: hashicorp/vault:2.1.1
+    environment:
+      VAULT_ADDR: http://127.0.0.1:8200
+      # Public dummy token for this disposable synthetic-only dev fixture.
+      VAULT_TOKEN: efl-local-vault-root-not-for-production
+    command:
+      - server
+      - -dev
+      - -dev-no-store-token
+      - -dev-root-token-id=efl-local-vault-root-not-for-production
+      - -dev-listen-address=127.0.0.1:8200
+    network_mode: none
+    # Override image VOLUME declarations; never create persistent anonymous volumes.
+    tmpfs:
+      - /vault/logs:rw,noexec,nosuid,size=16m
+      - /vault/file:rw,noexec,nosuid,size=16m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: none
+    stop_grace_period: 20s

@@ -1,0 +1,25 @@
+name: engineering-foundations-openbao-lab
+
+services:
+  openbao:
+    image: openbao/openbao:2.7.1
+    environment:
+      BAO_ADDR: http://127.0.0.1:8200
+      # Public dummy token for this disposable synthetic-only dev fixture.
+      BAO_TOKEN: efl-local-openbao-root-not-for-production
+    command:
+      - server
+      - -dev
+      - -dev-no-store-token
+      - -dev-root-token-id=efl-local-openbao-root-not-for-production
+      - -dev-listen-address=127.0.0.1:8200
+    # Docker exec reaches the CLI; no external/host network or storage access.
+    network_mode: none
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      # Dev bootstrap prints credentials. Do not persist its console log.
+      driver: none
+    stop_grace_period: 20s
