@@ -1,6 +1,6 @@
 # Engineering Foundations Lab — Zero to Hero
 
-데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, MySQL, Apache Kafka, Sentry, Supabase, Apache Spark, Databricks, Terraform, Terragrunt, OpenSearch, OpenBao, HashiCorp Vault, MCP(Model Context Protocol)와 LLM 논문 실험 트랙을 제공합니다.
+데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, MySQL, Apache Kafka, NATS, Sentry, Supabase, Apache Spark, Databricks, Terraform, Terragrunt, OpenSearch, OpenBao, HashiCorp Vault, MCP(Model Context Protocol)와 LLM 논문 실험 트랙을 제공합니다.
 
 SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 스트리밍, 관측, 인증·인가, 성능 측정, 소스 코드 분석을 연결합니다. 가장 높은 단계의 완료 기준은 낯선 현상을 최소 재현으로 줄이고, 원인을 코드와 측정값으로 설명하며, 수정안의 회귀를 검증하는 것입니다.
 
@@ -9,12 +9,13 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | 문서 | 역할 |
 | --- | --- |
 | [데이터베이스 교육 과정](databases/README.md) | 수준 진단, PG+CH 72주 경로와 MySQL 선택 과정, 통과 기준 |
-| [이벤트 스트리밍 교육 과정](streaming/README.md) | Kafka 트랙과 세 기술 통합 100주 경로 |
+| [이벤트 스트리밍 교육 과정](streaming/README.md) | Kafka·NATS 선택 트랙과 PG/Kafka/CH 통합 100주 경로 |
 | [공통 기초 8주](databases/shared/foundations.md) | SQL·자료구조·OS·확률·분산 시스템의 연결 |
 | [PostgreSQL](databases/postgresql/README.md) | 14개 모듈, 저장·MVCC·planner·WAL·운영 |
 | [ClickHouse](databases/clickhouse/README.md) | 14개 모듈, MergeTree·실행 pipeline·집계·분산 |
 | [MySQL](databases/mysql/README.md) | 14개 모듈, InnoDB·MVCC·잠금·optimizer·redo/binlog·GTID·복구 |
 | [Apache Kafka](streaming/kafka/README.md) | 14개 모듈, log·producer·consumer·KRaft·transaction·Streams·Connect |
+| [NATS](streaming/nats/README.md) | 14개 모듈, Core·subject·JetStream·ACK/재전달·retention·Raft·보안·복구 |
 | [Sentry](observability/sentry/README.md) | 14개 모듈, SDK·ingestion·grouping·tracing·sampling·개인정보·운영 |
 | [Supabase](platforms/supabase/README.md) | 14개 모듈, PostgreSQL·Auth/JWT·RLS·Realtime·Storage·Functions·복구 |
 | [Apache Spark](data-processing/spark/README.md) | 14개 모듈, 실행 엔진·Catalyst·shuffle·AQE·memory·Structured Streaming |
@@ -36,6 +37,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | [MySQL 트랜잭션·복구 연구 8주](capstones/mysql-transaction-recovery.md) | 불변식·재시도·동시 실행·복제 지연·독립 복원 |
 | [비밀·신원·복구 연구 8주](capstones/secrets-identity-recovery.md) | OpenBao 또는 Vault, 권한·동적 계정 회수·키 수명·감사·독립 복원 |
 | [MCP 도구 경계·장애 연구 8주](capstones/mcp-tool-boundary-recovery.md) | principal 격리·schema·cache·취소·업무 idempotency·호환성 |
+| [NATS 전달·업무 복구 연구 8주](capstones/nats-delivery-recovery.md) | dedup·업무 원장·ACK 경계·tenant·quorum·독립 복원 |
 | [환경과 실행 범위](databases/shared/environment.md) | 실행 명령, 버전 고정, 제공/미제공 환경 |
 
 ## 시간 계획
@@ -61,6 +63,8 @@ MySQL도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. InnoDB�
 OpenBao와 HashiCorp Vault도 각각 **28주·14모듈·7강·336시간**의 선택 트랙입니다. 두 제품을 순차 이수하면 56주이며 [공통 원리·제품 차이](security/shared/comparison.md)를 함께 학습합니다. 기본 모형은 공유하지만 제품별 구현과 검증은 분리합니다. 마지막 2주 미니 연구와 별도 선택 캡스톤 8주는 다르며 기존 경로에 자동 합산하지 않습니다.
 
 MCP도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. protocol 2026-07-28의 stateless core와 2025-11-25 classic 방식을 비교하고, SDK 구현과 앱의 권한/승인을 분리합니다. LLM 논문 경로에 자동 가산하지 않으며 기본 실습에 모델·유료 API가 필요하지 않습니다.
+
+NATS도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. Core NATS와 JetStream의 전달·보존·복구 경계를 구분하고 Kafka와 비교합니다. 기존 100주 PG/Kafka/CH 경로에 자동 가산하지 않으며, 마지막 2주 미니 연구와 별도 8주 캡스톤은 구분합니다.
 
 ## 첫 실습
 
@@ -91,6 +95,15 @@ docker compose -f streaming/kafka/compose.yaml exec -T kafka bash /lab/scripts/0
 ```
 
 Smoke 실습은 매번 새 학습용 topic을 만들고 기록·조회 결과를 검사합니다. 보존 데이터와 실행 범위는 [Kafka 로컬 실습](streaming/kafka/labs/local-lab.md)을 확인합니다. 컨테이너가 정상이라는 것과 복제·exactly-once가 검증됐다는 것은 다릅니다.
+
+NATS는 [CPU 모형 4개](streaming/nats/labs/README.md)로 시작하며 Python 표준 라이브러리만 사용합니다.
+
+```text
+python -B streaming/nats/labs/offline_lab.py --lab all
+python -B -m unittest discover -s streaming/nats/labs -p "test_*.py" -v
+```
+
+선택 실습은 NATS 서버 2.15.0과 nats-py 2.16.0으로 새 loopback 서버를 시작해 Core 수신·no responder·JetStream dedup·NAK 재전달·ACK를 검사합니다. 공식 바이너리와 격리 venv 준비 후 opt-in하며 기존 서버·DB·Docker에 자동 연결하지 않습니다. [환경 안내](streaming/nats/environment.md)와 [실제 검증 범위](streaming/nats/labs/validation.md)를 확인합니다.
 
 Sentry는 외부 계정 없이 [오프라인 sampling 실험](observability/sentry/labs/local-lab.md)부터 시작할 수 있습니다. 이것은 SDK나 서버 실행이 아닌 원리 검증입니다.
 
@@ -167,6 +180,7 @@ python -B -m unittest discover -s ai/mcp/labs -p "test_*.py" -v
 
 - 단일 노드 PostgreSQL 18 및 ClickHouse 26.8 Compose 구성과 결정적으로 생성되는 합성 데이터
 - Apache Kafka 4.3.1 단일 broker/controller KRaft Compose, 상태 관측 및 정확성 smoke 실습
+- NATS 심화 과정, CPU 모형 4개, 선택 고정 서버/SDK 정확성 fixture, Core/JetStream 소스·Raft 원전·전달/업무 복구 연구
 - Sentry의 네트워크 없는 sampling 모델, Supabase의 18개 권한 기대 결과 fixture와 제품별 준비 지침
 - LLM 핵심 논문 20편의 읽기·실험 지도, CPU 실험 6개와 단위 테스트, GPU/API 확장·재현 보고서 지침
 - Spark/Databricks 심화 과정, CPU 계약 모형 4개, 선택 실행용 실제 Spark 배치·스트리밍 코드와 관리형 Delta SQL fixture
