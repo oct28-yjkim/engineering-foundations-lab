@@ -18,7 +18,7 @@
 
 기존 `offline_lab.py`·테스트·과거 `validation.md`는 삭제하지 않습니다. 코드 경로와 기록을 보존하되 **선택 원리 보조자료/회귀 테스트**로 재분류합니다. 테스트 수가 많다는 사실로 관측·운영·트러블슈팅 과제를 대체하지 않습니다.
 
-이전 운영 문서 개편의 검사 결과는 [기존 검증 기록](validation.md)에 보존합니다. 기본 LAB 규격·제품별 카드·OpenSearch 실행형 추가의 검사는 [OpenSearch 검증 기록](../search/opensearch/labs/incident-validation.md)에, 웹·모바일 SDK 중심 제품 분석 트랙의 검사는 [Amplitude 검증 기록](../observability/amplitude/labs/validation.md)에 분리합니다.
+이전 운영 문서 개편의 검사 결과는 [기존 검증 기록](validation.md)에 보존합니다. 기본 LAB 규격·제품별 카드·OpenSearch 실행형 추가의 검사는 [OpenSearch 검증 기록](../search/opensearch/labs/incident-validation.md)에, 웹·모바일 SDK 중심 제품 분석 트랙의 검사는 [Amplitude 검증 기록](../observability/amplitude/labs/validation.md)에 분리합니다. 벡터 검색·복제·복구 트랙의 코드/구성과 실제 엔진 검증 경계는 [Qdrant 검증 기록](../search/qdrant/labs/validation.md)에서 확인합니다.
 
 ## 제품별 시작점
 
@@ -30,6 +30,7 @@
 | [ClickHouse](../databases/clickhouse/operations.md) | query log·parts/merges·memory·replication queue·Keeper |
 | [MySQL](../databases/mysql/operations.md) | Performance Schema·lock·InnoDB·statement digest·복제 |
 | [OpenSearch](../search/opensearch/operations.md) | shard allocation·heap/GC·rejection·index/search latency |
+| [Qdrant](../search/qdrant/operations.md) | query/filter 계약·index/optimizer·메모리/IO·replica/consistency·snapshot 복구 |
 | [Kafka](../streaming/kafka/operations.md) | lag·ISR·offline partition·request latency·producer 오류 |
 | [NATS](../streaming/nats/operations.md) | consumer pending/ACK·redelivery·slow consumer·stream/storage·quorum |
 | [Spark](../data-processing/spark/operations.md) | SQL/DAG/Stage·task skew·shuffle/spill·GC·streaming backlog |

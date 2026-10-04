@@ -1,6 +1,6 @@
 # Engineering Foundations Lab — Zero to Hero
 
-데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, MySQL, Apache Kafka, NATS, Sentry, Amplitude, Supabase, Apache Spark, Databricks, Terraform, Terragrunt, OpenSearch, OpenBao, HashiCorp Vault, MCP(Model Context Protocol)와 LLM 논문 실험 트랙을 제공합니다.
+데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, MySQL, Apache Kafka, NATS, Sentry, Amplitude, Supabase, Apache Spark, Databricks, Terraform, Terragrunt, OpenSearch, Qdrant, OpenBao, HashiCorp Vault, MCP(Model Context Protocol)와 LLM 논문 실험 트랙을 제공합니다.
 
 SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 스트리밍, 관측, 인증·인가, 성능 측정, 소스 코드 분석을 연결합니다. 가장 높은 단계의 완료 기준은 낯선 현상을 최소 재현으로 줄이고, 원인을 코드와 측정값으로 설명하며, 수정안의 회귀를 검증하는 것입니다.
 
@@ -13,7 +13,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | 문서 | 역할 |
 | --- | --- |
 | [기본 LAB 진행 규격](operations/lab-contract.md) | 정상 동작·원리·관측·제약을 먼저 배우고 대표 사건을 진단·복구하는 공통 순서 |
-| [운영·모니터링·트러블슈팅](operations/README.md) | 16개 제품·도구의 핵심 지표·진단 순서·회복 검증·보고서 |
+| [운영·모니터링·트러블슈팅](operations/README.md) | 17개 제품·도구의 핵심 지표·진단 순서·회복 검증·보고서 |
 | [데이터베이스 교육 과정](databases/README.md) | 수준 진단, PG+CH 72주 경로와 MySQL 선택 과정, 통과 기준 |
 | [이벤트 스트리밍 교육 과정](streaming/README.md) | Kafka·NATS 선택 트랙과 PG/Kafka/CH 통합 100주 경로 |
 | [공통 기초 8주](databases/shared/foundations.md) | SQL·자료구조·OS·확률·분산 시스템의 연결 |
@@ -30,6 +30,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | [Terraform](infrastructure/terraform/README.md) | 14개 모듈, HCL·graph·provider·plan/apply·state·모듈·복구 |
 | [Terragrunt](infrastructure/terragrunt/README.md) | 14개 모듈, include·dependency·unit/stack·실행 순서·CI·부분 실패 |
 | [OpenSearch](search/opensearch/README.md) | 14개 모듈, Lucene·색인/refresh·BM25·분산 검색·복제·권한·벡터/하이브리드 |
+| [Qdrant](search/qdrant/README.md) | 14개 모듈, dense/sparse/multivector·filter/HNSW·hybrid·quantization·복제·복구와 기능별 제약 |
 | [OpenBao](security/openbao/README.md) | 14개 모듈, barrier·seal·identity·policy·KV·lease·transit·PKI·audit·Raft·복구 |
 | [HashiCorp Vault](security/vault/README.md) | 14개 모듈, 비밀 수명·workload 인증·최소 권한·암호 서비스·HA·플러그인·edition 경계 |
 | [비밀·신원 보안 경로](security/README.md) | 제품 비교, 격리 dev 환경과 상태·권한·lease·audit 진단 |
@@ -50,9 +51,9 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 
 ## 실습 환경과 Compose 위치
 
-**제품별 기본 `compose.yaml` 7개가 각각 한 제품을 담당합니다.** 프로젝트·기본 network·volume의 수명 주기를 분리하며 필요한 제품만 실행합니다. PG·ClickHouse에는 기존 데이터 연결용 선택 override가 각각 하나씩 별도로 있습니다. 아래 목록은 기본 실행 구성의 위치이며 이미지 다운로드·엔진 기동·운영 검증이 완료됐다는 뜻은 아닙니다.
+**제품별 기본 `compose.yaml` 8개가 각각 한 제품을 담당합니다.** 프로젝트·기본 network·volume의 수명 주기를 분리하며 필요한 제품만 실행합니다. PG·ClickHouse에는 기존 데이터 연결용 선택 override가 각각 하나씩 별도로 있습니다. 아래 목록은 기본 실행 구성의 위치이며 이미지 다운로드·엔진 기동·운영 검증이 완료됐다는 뜻은 아닙니다.
 
-OpenSearch에는 기본 단일 노드와 **별도 프로젝트인 선택 [3→4노드 Compose](search/opensearch/compose.cluster.yaml)**도 있습니다. [확장 LAB의 자원·보안·실행 조건](search/opensearch/labs/scaling-incidents.md)을 확인해 따로 실행합니다. 제품별 기본 파일 7개와 선택 topology/override를 구분하며 서로 합치지 않습니다.
+OpenSearch에는 **선택 [3→4노드 Compose](search/opensearch/compose.cluster.yaml)**, Qdrant에는 **선택 [3노드 Compose](search/qdrant/compose.cluster.yaml)**가 별도 프로젝트로 있습니다. 각각 [OpenSearch 확장 조건](search/opensearch/labs/scaling-incidents.md)과 [Qdrant 복제·일관성 LAB](search/qdrant/labs/cluster.md)을 확인해 따로 실행합니다. 제품별 기본 파일 8개와 선택 topology/override를 구분하며 서로 합치지 않습니다.
 
 | 제품 | 현재 Compose 파일 | 제공 범위 |
 | --- | --- | --- |
@@ -61,6 +62,7 @@ OpenSearch에는 기본 단일 노드와 **별도 프로젝트인 선택 [3→4�
 | MySQL | [databases/mysql/compose.yaml](databases/mysql/compose.yaml) | 단일 노드, 전용 volume, host 포트 없이 container 내부 접속 |
 | Kafka | [streaming/kafka/compose.yaml](streaming/kafka/compose.yaml) | 단일 broker/controller KRaft, 전용 volume; HA 아님 |
 | OpenSearch | [search/opensearch/compose.yaml](search/opensearch/compose.yaml) | 단일 노드, loopback HTTP, 보안 플러그인 off인 합성 데이터 전용 환경 |
+| Qdrant | [search/qdrant/compose.yaml](search/qdrant/compose.yaml) | 단일 노드, loopback REST, 전용 data/snapshot volume; 합성 벡터·무인증 학습 환경 |
 | OpenBao | [security/openbao/compose.yaml](security/openbao/compose.yaml) | 비영속 dev, network none, Docker exec로 접근; TLS·Raft 없음 |
 | Vault | [security/vault/compose.yaml](security/vault/compose.yaml) | 비영속 dev, network none, Docker exec로 접근; TLS·Raft 없음 |
 
@@ -90,7 +92,7 @@ docker compose -f streaming/kafka/compose.yaml config --services
 - **Databricks:** [허가된 관리형 환경](platforms/databricks/labs/README.md)을 별도로 준비합니다. 계정·compute·Unity Catalog는 제공하지 않으며 로컬 Spark가 이를 대신하지 않습니다.
 - **LLM 논문:** [CPU 기본 경로](ai/llm-paper-lab/environment.md)는 Python으로 실행합니다. GPU/API는 선택 확장이며 DB Compose와 독립적입니다.
 
-**운영 지침이 있다는 것과 관측 환경이 준비됐다는 것은 다릅니다.** exporter·dashboard·Prometheus/Grafana·지속 부하는 일괄 제공하지 않습니다. 다중 노드는 OpenSearch 선택 LAB 외에는 해당 트랙에서 추가 구성해야 합니다. 각 트랙의 실제 실행 기록과 미검증 범위를 확인하고, 별도 준비가 필요한 실습은 준비 전까지 실행 완료로 표시하지 않습니다. 특히 NATS 지속 관측과 Spark UI는 위 기본 runner 실행만으로 제공되지 않습니다.
+**운영 지침이 있다는 것과 관측 환경이 준비됐다는 것은 다릅니다.** exporter·dashboard·Prometheus/Grafana·지속 부하는 일괄 제공하지 않습니다. 다중 노드는 OpenSearch·Qdrant 선택 LAB 외에는 해당 트랙에서 추가 구성해야 합니다. 각 트랙의 실제 실행 기록과 미검증 범위를 확인하고, 별도 준비가 필요한 실습은 준비 전까지 실행 완료로 표시하지 않습니다. 특히 NATS 지속 관측과 Spark UI는 위 기본 runner 실행만으로 제공되지 않습니다.
 
 ## 시간 계획
 
@@ -122,6 +124,8 @@ NATS도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. Core NAT
 
 Amplitude도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. [웹·모바일 SDK 기본 LAB](observability/amplitude/labs/README.md)에서 합성 행동 → 수집 → identity → 분석 결과를 먼저 검산한 뒤, 공개 SDK 내부 동작과 데이터 품질·분석 정의·운영 연구로 확장합니다. 다른 트랙 기간에 자동 가산하지 않습니다.
 
+Qdrant도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. [기능 지도](search/qdrant/feature-map.md)에서 사용 여부와 학습 필요를 구분하고, 실제 벡터 검색·필터·hybrid·복구 기본 LAB에서 고급 기능과 분산 제약으로 확장합니다. 모델 학습/embedding API는 기본 실습에 필요하지 않으며 다른 트랙 기간에 자동 가산하지 않습니다.
+
 ## 첫 실습: 제품 관측과 트러블슈팅
 
 제품별로 **정상 기능 → 동작 원리 → 정상 관측 → 제약 → 증상 재현·진단 → 조치·회복 확인**을 기본 경로로 사용합니다. [기본 LAB 규격](operations/lab-contract.md)과 [기록 양식](operations/incident-report-template.md)을 먼저 봅니다. 각 제품 README와 운영 문서의 기본 LAB 카드에서 실제 제공 코드·수동 절차·추가 환경을 구분합니다. 원리 모형은 선택 보조자료이며 실제 실습의 선수 조건이나 완료 증거가 아닙니다.
@@ -133,6 +137,7 @@ Amplitude도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. [�
 | Kafka | [KRaft Compose·로컬 실습](streaming/kafka/labs/local-lab.md) | [lag·ISR·request latency·장애 대응](streaming/kafka/operations.md) |
 | NATS | [격리 서버·SDK](streaming/nats/labs/README.md) | [consumer·ACK·slow consumer·stream 상태](streaming/nats/operations.md) |
 | OpenSearch | [정상 기능·원리·관측부터](search/opensearch/labs/README.md) | [5개 단계형 사건](search/opensearch/labs/incidents.md), [query 관측](search/opensearch/labs/observation.md), [3→4노드 확장](search/opensearch/labs/scaling-incidents.md) |
+| Qdrant | [고정 벡터·실제 REST](search/qdrant/labs/README.md) | [필터·hybrid·오류 복구](search/qdrant/operations.md), [고급 기능](search/qdrant/labs/advanced.md), [3노드 복제](search/qdrant/labs/cluster.md) |
 | Spark / Databricks | [실제 Spark](data-processing/spark/labs/README.md), [관리형 환경 준비](platforms/databricks/labs/README.md) | [Spark UI·skew·spill](data-processing/spark/operations.md), [query/job·권한·비용](platforms/databricks/operations.md) |
 | Sentry / Supabase | [Sentry 준비](observability/sentry/labs/local-lab.md), [Supabase 준비](platforms/supabase/labs/local-lab.md) | [오류·trace·ingestion](observability/sentry/operations.md), [DB/pool·Auth/RLS·서비스별 오류](platforms/supabase/operations.md) |
 | Amplitude | [웹 SDK 앱·모바일 실습](observability/amplitude/labs/README.md), [테스트 프로젝트 준비](observability/amplitude/environment.md) | [수집 누락·중복·identity·분석 수치 불일치·확장 제약](observability/amplitude/operations.md) |
@@ -163,6 +168,7 @@ python -B -m unittest discover -s ai/llm-paper-lab/labs -p test_lab.py -v
 - Databricks의 관리형 환경 준비 지침·Delta SQL fixture·query/job·비용 진단 과제; 실행 환경 자체는 미제공
 - Terraform/Terragrunt built-in 실제 테스트·로컬 2-unit 실습, plan/state·실행 로그·부분 실패 진단과 선택 원리 모형
 - OpenSearch 정상 REST fixture·5개 단계형 사건 runner·query/지표 관측 runner, 별도 3→4노드 Compose·수동 확장/복구 카드; 실제 엔진 신규 시나리오 실행은 미검증
+- Qdrant 단일/선택 3노드 Compose·실제 REST runner, 기능별 지도·nested/multivector/strict/alias/snapshot 수동 LAB·복제/일관성 사건; 실제 엔진 실행은 미검증
 - MySQL 단일 노드 Compose·SQL fixture, Performance Schema/InnoDB 진단·소스·복구 연구와 선택 원리 모형
 - OpenBao/Vault 격리 dev Compose·KV/ACL fixture, 제품별 health·lease·audit·Raft 진단·소스·선택 원리 모형
 - MCP 공식 SDK stdio fixture, 요청·오류·timeout 진단·명세/SDK 소스·호환성·선택 원리 모형
@@ -170,7 +176,7 @@ python -B -m unittest discover -s ai/llm-paper-lab/labs -p test_lab.py -v
 - 기초 SQL 문제/답안, 읽기 전용 내부 상태 관찰 SQL
 - 실험 기록 양식과 통합 연구 프로젝트 요구사항
 
-OpenSearch 선택 복제 LAB 외의 복제 클러스터, Keeper, 다중 controller KRaft, CDC connector, Streams 애플리케이션, 지속 부하 생성기, 디버그 빌드, 모니터링 스택은 심화 단계에서 학습자가 구성할 과제입니다. 제품별 기본 Compose만으로 이 구성들이 만들어지지는 않습니다. DB와 Kafka Compose 사이에도 네트워크·connector가 자동 연결되지는 않습니다. 문서에 기재한 기대 관찰값과 실행 계획은 실측 결과와 구분합니다.
+OpenSearch·Qdrant 선택 복제 LAB 외의 복제 클러스터, Keeper, 다중 controller KRaft, CDC connector, Streams 애플리케이션, 지속 부하 생성기, 디버그 빌드, 모니터링 스택은 심화 단계에서 학습자가 구성할 과제입니다. 제품별 기본 Compose만으로 이 구성들이 만들어지지는 않습니다. DB와 Kafka Compose 사이에도 네트워크·connector가 자동 연결되지는 않습니다. 문서에 기재한 기대 관찰값과 실행 계획은 실측 결과와 구분합니다.
 
 Sentry/Supabase의 hosted와 self-hosted 기능·버전·운영 책임은 동일하지 않습니다. 소스 읽기 snapshot과 실제 실행 이미지·SDK·CLI 버전을 분리해 기록합니다. 클라우드 계정·프로젝트 생성, 외부 telemetry 전송, 원격 migration·배포는 자동 수행하지 않습니다. 합성 데이터만 사용하고 실제 토큰·사용자 payload·실습에서 생성한 secret은 커밋하지 않습니다. Compose의 공개 dummy 자격 증명은 폐기 가능한 로컬 fixture용이며 실제 인증 정보로 재사용하지 않습니다.
 

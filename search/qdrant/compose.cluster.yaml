@@ -1,0 +1,48 @@
+name: engineering-foundations-qdrant-cluster-lab
+
+x-common: &common
+  image: qdrant/qdrant:v1.19.1
+  environment:
+    QDRANT__TELEMETRY_DISABLED: "true"
+    QDRANT__SERVICE__ENABLE_CORS: "false"
+    QDRANT__CLUSTER__ENABLED: "true"
+  mem_limit: 1g
+  cpus: 1.0
+  stop_grace_period: 60s
+
+services:
+  qdrant1:
+    <<: *common
+    command: ["./entrypoint.sh", "--uri", "http://qdrant1:6335"]
+    ports: ["127.0.0.1:16343:6333"]
+    volumes:
+      - qdrant1-data:/qdrant/storage
+      - qdrant1-snapshots:/qdrant/snapshots
+  qdrant2:
+    <<: *common
+    command: ["./entrypoint.sh", "--bootstrap", "http://qdrant1:6335", "--uri", "http://qdrant2:6335"]
+    depends_on: [qdrant1]
+    ports: ["127.0.0.1:16344:6333"]
+    volumes:
+      - qdrant2-data:/qdrant/storage
+      - qdrant2-snapshots:/qdrant/snapshots
+  qdrant3:
+    <<: *common
+    command: ["./entrypoint.sh", "--bootstrap", "http://qdrant1:6335", "--uri", "http://qdrant3:6335"]
+    depends_on: [qdrant1]
+    ports: ["127.0.0.1:16345:6333"]
+    volumes:
+      - qdrant3-data:/qdrant/storage
+      - qdrant3-snapshots:/qdrant/snapshots
+
+volumes:
+  qdrant1-data:
+  qdrant1-snapshots:
+  qdrant2-data:
+  qdrant2-snapshots:
+  qdrant3-data:
+  qdrant3-snapshots:
+
+networks:
+  default:
+    internal: true
