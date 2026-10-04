@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "fixture_id": "efl-amplitude-basic-v1",
+  "source": "efl-http-v2",
+  "events": [
+    {"user": "a", "event_type": "Product Viewed", "offset_ms": 0},
+    {"user": "a", "event_type": "Product Viewed", "offset_ms": 1000},
+    {"user": "a", "event_type": "Checkout Started", "offset_ms": 2000},
+    {"user": "a", "event_type": "Purchase Completed", "offset_ms": 3000},
+    {"user": "b", "event_type": "Product Viewed", "offset_ms": 4000},
+    {"user": "b", "event_type": "Checkout Started", "offset_ms": 5000},
+    {"user": "b", "event_type": "Purchase Completed", "offset_ms": 6000},
+    {"user": "c", "event_type": "Product Viewed", "offset_ms": 7000},
+    {"user": "c", "event_type": "Checkout Started", "offset_ms": 8000},
+    {"user": "d", "event_type": "Product Viewed", "offset_ms": 9000}
+  ],
+  "expected": {
+    "total_events": 10,
+    "unique_users": 4,
+    "event_counts": {"Product Viewed": 5, "Checkout Started": 3, "Purchase Completed": 2},
+    "unique_users_by_event": {"Product Viewed": 4, "Checkout Started": 3, "Purchase Completed": 2},
+    "ordered_funnel_users": [4, 3, 2],
+    "ordered_funnel_conversion": 0.5,
+    "converted_user_aliases": ["a", "b"]
+  }
+}

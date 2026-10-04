@@ -12,13 +12,13 @@
 | --- | --- | --- |
 | LLM 논문 | 기존 CPU 수학·알고리즘 실험과 독립 평가 | GPU/API 재현은 선택 확장, 기존 선호 유지 |
 | DB·검색·메시징·처리 엔진 | 실제 엔진, 실행 계획·상태·로그·지표, 장애·복구 | 메모리 원리 모형은 이해가 막힐 때만 |
-| 관리형 플랫폼·관측 제품 | 허가된 환경의 UI/API/SQL, 제품별 운영 신호 | 계정/비용 없으면 정제된 기존 기록으로 진단 연습; 실측 완료와 구분 |
+| 관리형 플랫폼·관측·제품 분석 | 허가된 환경의 UI/API/SQL, 제품별 운영 신호 | 계정/비용 없으면 정제된 기존 기록으로 진단 연습; 실측 완료와 구분 |
 | Terraform·Terragrunt | 실제 CLI, plan/state·대상/승인·실행 로그·부분 실패 | 그래프/CAS 모형은 보조, 클라우드 생성은 별도 선택 |
 | MCP | 실제 client/server, 요청 단위 계측·오류 층·권한·복구 | 합성 계약 모형 보조; 모델/GPU/API 불필요 |
 
 기존 `offline_lab.py`·테스트·과거 `validation.md`는 삭제하지 않습니다. 코드 경로와 기록을 보존하되 **선택 원리 보조자료/회귀 테스트**로 재분류합니다. 테스트 수가 많다는 사실로 관측·운영·트러블슈팅 과제를 대체하지 않습니다.
 
-이전 운영 문서 개편의 검사 결과는 [기존 검증 기록](validation.md)에 보존합니다. 이번 기본 LAB 규격·제품별 카드·OpenSearch 실행형 추가의 검사는 [신규 검증 기록](../search/opensearch/labs/incident-validation.md)에 분리합니다.
+이전 운영 문서 개편의 검사 결과는 [기존 검증 기록](validation.md)에 보존합니다. 기본 LAB 규격·제품별 카드·OpenSearch 실행형 추가의 검사는 [OpenSearch 검증 기록](../search/opensearch/labs/incident-validation.md)에, 웹·모바일 SDK 중심 제품 분석 트랙의 검사는 [Amplitude 검증 기록](../observability/amplitude/labs/validation.md)에 분리합니다.
 
 ## 제품별 시작점
 
@@ -35,6 +35,7 @@
 | [Spark](../data-processing/spark/operations.md) | SQL/DAG/Stage·task skew·shuffle/spill·GC·streaming backlog |
 | [Databricks](../platforms/databricks/operations.md) | query profile·job timeline·권한·compute·freshness·비용 |
 | [Sentry](../observability/sentry/operations.md) | 사용자 영향·오류·trace·release·ingestion/drop·sampling |
+| [Amplitude](../observability/amplitude/operations.md) | 앱 행동 원장·SDK queue/전송·수집 오류·identity·funnel/retention·schema/volume |
 | [Supabase](../platforms/supabase/operations.md) | DB/pool·Auth·RLS·Realtime·Storage별 실패 층 |
 | [OpenBao](../security/openbao/operations.md) | seal/health·auth·lease·audit·storage/Raft |
 | [Vault](../security/vault/operations.md) | seal/standby·policy·lease·audit·storage/Raft·edition |

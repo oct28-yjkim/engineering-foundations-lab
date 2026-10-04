@@ -1,6 +1,6 @@
 # Engineering Foundations Lab — Zero to Hero
 
-데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, MySQL, Apache Kafka, NATS, Sentry, Supabase, Apache Spark, Databricks, Terraform, Terragrunt, OpenSearch, OpenBao, HashiCorp Vault, MCP(Model Context Protocol)와 LLM 논문 실험 트랙을 제공합니다.
+데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, MySQL, Apache Kafka, NATS, Sentry, Amplitude, Supabase, Apache Spark, Databricks, Terraform, Terragrunt, OpenSearch, OpenBao, HashiCorp Vault, MCP(Model Context Protocol)와 LLM 논문 실험 트랙을 제공합니다.
 
 SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 스트리밍, 관측, 인증·인가, 성능 측정, 소스 코드 분석을 연결합니다. 가장 높은 단계의 완료 기준은 낯선 현상을 최소 재현으로 줄이고, 원인을 코드와 측정값으로 설명하며, 수정안의 회귀를 검증하는 것입니다.
 
@@ -13,7 +13,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | 문서 | 역할 |
 | --- | --- |
 | [기본 LAB 진행 규격](operations/lab-contract.md) | 정상 동작·원리·관측·제약을 먼저 배우고 대표 사건을 진단·복구하는 공통 순서 |
-| [운영·모니터링·트러블슈팅](operations/README.md) | 15개 제품의 핵심 지표·진단 순서·회복 검증·보고서 |
+| [운영·모니터링·트러블슈팅](operations/README.md) | 16개 제품·도구의 핵심 지표·진단 순서·회복 검증·보고서 |
 | [데이터베이스 교육 과정](databases/README.md) | 수준 진단, PG+CH 72주 경로와 MySQL 선택 과정, 통과 기준 |
 | [이벤트 스트리밍 교육 과정](streaming/README.md) | Kafka·NATS 선택 트랙과 PG/Kafka/CH 통합 100주 경로 |
 | [공통 기초 8주](databases/shared/foundations.md) | SQL·자료구조·OS·확률·분산 시스템의 연결 |
@@ -23,6 +23,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | [Apache Kafka](streaming/kafka/README.md) | 14개 모듈, log·producer·consumer·KRaft·transaction·Streams·Connect |
 | [NATS](streaming/nats/README.md) | 14개 모듈, Core·subject·JetStream·ACK/재전달·retention·Raft·보안·복구 |
 | [Sentry](observability/sentry/README.md) | 14개 모듈, SDK·ingestion·grouping·tracing·sampling·개인정보·운영 |
+| [Amplitude](observability/amplitude/README.md) | 14개 모듈, 웹·모바일 SDK·이벤트 계약·identity·funnel/retention·품질·운영 |
 | [Supabase](platforms/supabase/README.md) | 14개 모듈, PostgreSQL·Auth/JWT·RLS·Realtime·Storage·Functions·복구 |
 | [Apache Spark](data-processing/spark/README.md) | 14개 모듈, 실행 엔진·Catalyst·shuffle·AQE·memory·Structured Streaming |
 | [Databricks](platforms/databricks/README.md) | 14개 모듈, Delta·Unity Catalog·Lakeflow·Photon·배포·비용·복구 |
@@ -85,6 +86,7 @@ docker compose -f streaming/kafka/compose.yaml config --services
 - **Spark:** [PySpark + JVM 로컬 runner](data-processing/spark/labs/README.md)를 제공합니다. 기본 runner는 UI를 끄므로 [UI·event log·History Server 관측](data-processing/spark/operations.md)은 추가 구성이 필요합니다.
 - **MCP / Terraform / Terragrunt:** [MCP SDK stdio](ai/mcp/labs/README.md), [실제 IaC CLI·로컬 state](infrastructure/shared/environment.md)를 사용합니다. 이 기본 경로에는 Compose가 필요하지 않습니다.
 - **Sentry / Supabase:** [Sentry 준비 지침](observability/sentry/labs/local-lab.md), [Supabase CLI local 준비 지침](platforms/supabase/labs/local-lab.md)과 일부 학습 fixture를 제공합니다. 전체 스택·완성 SDK 앱은 포함하지 않으며 다른 트랙의 DB를 두 제품의 내부 서비스로 재사용하는 구성이 아닙니다.
+- **Amplitude:** [웹 SDK 앱과 모바일 수동 LAB](observability/amplitude/labs/README.md)을 제공합니다. 로컬 웹 앱은 허가된 테스트 프로젝트를 명시적으로 선택해야 SDK를 로드합니다. Amplitude 서버·계정·native 모바일 앱은 제공하지 않으며 Compose로 SaaS를 대신하지 않습니다. HTTP V2 fixture는 SDK 경로와 비교하는 보조 도구입니다.
 - **Databricks:** [허가된 관리형 환경](platforms/databricks/labs/README.md)을 별도로 준비합니다. 계정·compute·Unity Catalog는 제공하지 않으며 로컬 Spark가 이를 대신하지 않습니다.
 - **LLM 논문:** [CPU 기본 경로](ai/llm-paper-lab/environment.md)는 Python으로 실행합니다. GPU/API는 선택 확장이며 DB Compose와 독립적입니다.
 
@@ -118,6 +120,8 @@ MCP도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. protocol 
 
 NATS도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. Core NATS와 JetStream의 전달·보존·복구 경계를 구분하고 Kafka와 비교합니다. 기존 100주 PG/Kafka/CH 경로에 자동 가산하지 않으며, 마지막 2주 미니 연구와 별도 8주 캡스톤은 구분합니다.
 
+Amplitude도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. [웹·모바일 SDK 기본 LAB](observability/amplitude/labs/README.md)에서 합성 행동 → 수집 → identity → 분석 결과를 먼저 검산한 뒤, 공개 SDK 내부 동작과 데이터 품질·분석 정의·운영 연구로 확장합니다. 다른 트랙 기간에 자동 가산하지 않습니다.
+
 ## 첫 실습: 제품 관측과 트러블슈팅
 
 제품별로 **정상 기능 → 동작 원리 → 정상 관측 → 제약 → 증상 재현·진단 → 조치·회복 확인**을 기본 경로로 사용합니다. [기본 LAB 규격](operations/lab-contract.md)과 [기록 양식](operations/incident-report-template.md)을 먼저 봅니다. 각 제품 README와 운영 문서의 기본 LAB 카드에서 실제 제공 코드·수동 절차·추가 환경을 구분합니다. 원리 모형은 선택 보조자료이며 실제 실습의 선수 조건이나 완료 증거가 아닙니다.
@@ -131,6 +135,7 @@ NATS도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. Core NAT
 | OpenSearch | [정상 기능·원리·관측부터](search/opensearch/labs/README.md) | [5개 단계형 사건](search/opensearch/labs/incidents.md), [query 관측](search/opensearch/labs/observation.md), [3→4노드 확장](search/opensearch/labs/scaling-incidents.md) |
 | Spark / Databricks | [실제 Spark](data-processing/spark/labs/README.md), [관리형 환경 준비](platforms/databricks/labs/README.md) | [Spark UI·skew·spill](data-processing/spark/operations.md), [query/job·권한·비용](platforms/databricks/operations.md) |
 | Sentry / Supabase | [Sentry 준비](observability/sentry/labs/local-lab.md), [Supabase 준비](platforms/supabase/labs/local-lab.md) | [오류·trace·ingestion](observability/sentry/operations.md), [DB/pool·Auth/RLS·서비스별 오류](platforms/supabase/operations.md) |
+| Amplitude | [웹 SDK 앱·모바일 실습](observability/amplitude/labs/README.md), [테스트 프로젝트 준비](observability/amplitude/environment.md) | [수집 누락·중복·identity·분석 수치 불일치·확장 제약](observability/amplitude/operations.md) |
 | Terraform / Terragrunt | [격리 local CLI 환경](infrastructure/shared/environment.md) | [plan/state·lock·부분 적용](infrastructure/terraform/operations.md), [unit·dependency·실행 원장](infrastructure/terragrunt/operations.md) |
 | OpenBao / Vault | [격리 dev 환경](security/shared/environment.md) | [OpenBao 상태·lease·audit](security/openbao/operations.md), [Vault health·권한·Raft](security/vault/operations.md) |
 | MCP | [실제 SDK stdio](ai/mcp/labs/README.md) | [요청 지연·오류 층·timeout·권한 경계](ai/mcp/operations.md) |
@@ -152,6 +157,7 @@ python -B -m unittest discover -s ai/llm-paper-lab/labs -p test_lab.py -v
 - Apache Kafka 4.3.1 단일 broker/controller KRaft Compose, 상태 관측 및 정확성 smoke 실습
 - NATS 심화 과정, 고정 서버/SDK fixture와 운영 진단 지침, Core/JetStream 소스·Raft 원전·선택 원리 모형
 - Sentry의 네트워크 없는 sampling 모델, Supabase의 18개 권한 기대 결과 fixture와 제품별 준비 지침
+- Amplitude의 고정 버전 웹 SDK 앱·모바일 수동 실습·HTTP V2 진단 fixture, 수집/identity/차트 정합성 관측·사건별 복구 지침; 실제 SaaS·모바일 실행은 미검증
 - LLM 핵심 논문 20편의 읽기·실험 지도, CPU 실험 6개와 단위 테스트, GPU/API 확장·재현 보고서 지침
 - Spark의 로컬 배치·스트리밍 runner, 별도 UI·event log 준비 및 실행 계획 진단 지침과 선택 원리 모형
 - Databricks의 관리형 환경 준비 지침·Delta SQL fixture·query/job·비용 진단 과제; 실행 환경 자체는 미제공

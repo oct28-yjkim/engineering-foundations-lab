@@ -1,0 +1,10 @@
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #152838; background: #eef3f6; }
+body { margin: 0; } main { max-width: 960px; margin: 36px auto; padding: 0 20px 40px; }
+.eyebrow { color: #326f80; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+h1 { font-size: 30px; } h2 { font-size: 20px; } p { line-height: 1.7; }
+section { background: white; padding: 22px; margin: 20px 0; border: 1px solid #d7e2e8; border-radius: 10px; }
+label { display: block; margin: 12px 0; } input:not([type=checkbox]), select { display: block; box-sizing: border-box; width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #a6bdc9; border-radius: 5px; font: inherit; }
+.check { line-height: 1.7; } button { padding: 10px 14px; border: 1px solid #16617a; border-radius: 5px; color: #124c61; background: #eaf5fa; cursor: pointer; font: inherit; }
+button:disabled { opacity: .4; cursor: not-allowed; } button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #47a5cc; }
+.controls { display: flex; gap: 9px; flex-wrap: wrap; margin: 16px 0; } .note { color: #4f6472; font-size: 13px; }
+pre { background: #152838; color: #dceaf2; padding: 16px; overflow-wrap: anywhere; white-space: pre-wrap; line-height: 1.5; max-height: 500px; overflow-y: auto; }

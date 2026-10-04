@@ -1,8 +1,8 @@
-# Observability Engineering
+# 관측과 제품 분석 학습
 
-관측의 목표는 대시보드가 많은 상태가 아니라 **사용자가 겪은 문제와 수집 시스템 자체의 한계를 분리해서 설명하는 것**입니다. 첫 트랙인 [Sentry](sentry/README.md)는 앱의 capture부터 오류 분류·trace·저장·검색·알림·복구까지 추적합니다.
+이 경로는 **앱에서 일어난 일과 수집·분석 시스템이 보여 주는 결과의 차이**를 설명하는 학습입니다. [Sentry](sentry/README.md)는 오류·trace·사용자 영향을, [Amplitude](amplitude/README.md)는 행동 이벤트·사용자 식별·전환·유지를 다룹니다. 같은 SDK 수집 문제가 있어도 목적과 지표는 다르며 Amplitude를 서버/APM 모니터링 제품으로 취급하지 않습니다.
 
-## 시작점
+## Sentry 시작점
 
 - [28주 커리큘럼](sentry/curriculum.md): 14모듈, 원리·실험·내부 추적·운영
 - [실제 관측·진단 실습](sentry/operations.md): 오류·trace·release·ingestion 지표, 경쟁 가설과 회복 검증
@@ -12,6 +12,18 @@
 - [보안·관측 앱 캡스톤](../capstones/secure-observable-app.md): Supabase 기반 앱의 권한·상태·관측 검증
 
 공통 [실험 방법](../databases/shared/experiment-method.md)과 [보고서 양식](../databases/shared/templates/experiment-report.md)을 재사용합니다. Sentry는 “에러가 있으면 알림이 온다”로만 배우지 않습니다. 이벤트가 없어도 앱에 오류가 없었다고 단정하지 않고, 입력 원장→수집 시도→처리/제외→가시성→사용자 조치의 경계를 분리합니다.
+
+## Amplitude 시작점
+
+회사의 웹·모바일 SDK 경로에 맞춰 **정상 행동 → SDK 전송 → 수집 확인 → identity와 차트 검산 → 누락·중복·수치 불일치의 진단·복구**를 기본으로 합니다. CPU 원리 모형이나 HTTP 직접 전송이 SDK의 lifecycle·queue·storage 검증을 대신하지 않습니다.
+
+- [기본 LAB](amplitude/labs/README.md): 고정 버전 웹 SDK 앱과 단계별 사건, 모바일 수동 실습
+- [환경 준비](amplitude/environment.md): 허가된 합성 데이터 테스트 프로젝트·region·버전·관측 범위
+- [운영 지침](amplitude/operations.md): 수집 오류·identity·funnel/retention·품질·확장 제약
+- [28주 커리큘럼](amplitude/curriculum.md): 14모듈·7강, 공개 SDK 내부 동작과 분석 계약 연구
+- [소스 지도](amplitude/source-reading.md) · [평가](amplitude/assessment.md) · [실제 검증 범위](amplitude/labs/validation.md)
+
+실행 앱·절차를 제공했다는 것과 실제 SaaS 검증을 마쳤다는 것은 다릅니다. 회사 계정·키·사용자 데이터에는 접근하지 않으며, native 모바일 앱과 Amplitude 서버는 포함하지 않습니다. 웹 LAB도 승인한 테스트 프로젝트를 사용자가 명시적으로 선택하기 전에는 SDK를 로드하지 않습니다.
 
 ## 다른 트랙과 연결
 
