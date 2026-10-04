@@ -4,6 +4,12 @@
 
 Sentry를 하나의 버전 번호로 고정하지 않습니다. SDK·runtime·bundler·OpenTelemetry 설정, Sentry/self-hosted·Relay·Snuba·Symbolicator, Kafka·ClickHouse·PostgreSQL 및 이미지 digest가 각각 다를 수 있습니다. 실험 시점의 버전과 기능 설정을 manifest에 기록하고 같은 revision의 구현을 읽습니다. SaaS의 배포 revision을 알 수 없다면 관측 날짜·SDK 버전·프로젝트 설정·API 응답 계약을 기록하고 서버 내부 구현은 확인 불가로 남깁니다. [소스 읽기와 버전 정책](source-reading.md)
 
+## 기본 LAB 입구
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서로 시작합니다. 합성 요청·오류 하나가 SDK에서 화면까지 도착하는 정상 흐름을 먼저 확인하고 수집 누락과 실제 앱 결함을 나눕니다. [제품별 기본 LAB 카드](operations.md#basic-lab)에서 정상 결과·직접 볼 지표·자주 만나는 사건 2개·회복 검산과 환경 제공 범위를 확인합니다.
+
+[공통 LAB 계약](../../operations/lab-contract.md)을 적용하며 **28주 심화 과정을 먼저 마칠 필요는 없습니다.** 실행 환경이나 수동 준비가 필요한 단계는 준비/미실행으로 구분하고, 아래 심화 커리큘럼은 기본 LAB 이후 필요한 부분부터 확장합니다.
+
 ## 읽는 순서
 
 1. 필요하면 [공통 기초](../../databases/shared/foundations.md)에서 OS·확률·분산 시스템을 복습하고 [실험 방법](../../databases/shared/experiment-method.md)을 적용합니다. HTTP와 JavaScript/runtime의 비동기 실행은 별도로 보충할 선수 지식입니다.

@@ -4,6 +4,12 @@ HCL을 처음 읽는 단계에서 시작해 **어떤 주소의 객체가 왜 변
 
 Terraform은 구성·관측 상태·provider를 연결하는 엔진입니다. [Terragrunt](../terragrunt/README.md)는 여러 root module의 실행·구성 재사용을 조정하는 별도 도구이며, Terraform의 resource graph와 Terragrunt의 unit graph는 같은 그래프가 아닙니다. OpenTofu도 별도 프로젝트이므로 한 도구의 통과 결과를 다른 도구로 자동 일반화하지 않습니다.
 
+## 기본 LAB 입구
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서로 시작합니다. 실제 로컬 fixture의 plan→검토→apply→no-op를 먼저 익히고 입력·주소·state·오류를 연결합니다. [제품별 기본 LAB 카드](operations.md#basic-lab)에서 정상 결과·직접 볼 지표·자주 만나는 사건 2개·회복 검산과 환경 제공 범위를 확인합니다.
+
+[공통 LAB 계약](../../operations/lab-contract.md)을 적용하며 **28주 심화 과정을 먼저 마칠 필요는 없습니다.** 실행 환경이나 수동 준비가 필요한 단계는 준비/미실행으로 구분하고, 아래 심화 커리큘럼은 기본 LAB 이후 필요한 부분부터 확장합니다.
+
 ## 시작 순서
 
 1. Git diff·프로세스 환경 변수·JSON·파일 권한·HTTP 오류·DAG를 진단합니다. 처음이면 [공통 기초](../../databases/shared/foundations.md)의 OS·분산 실패 모델과 함께 보충합니다.

@@ -2,6 +2,24 @@
 
 MCP는 모델 학습이 아니라 프로토콜·통합 경계입니다. 기본은 [실제 SDK stdio client/server](labs/README.md)를 실행하고 요청·오류·종료를 관측하는 경로입니다. GPU/모델 API 없이 가능합니다. 기준 **protocol 2026-07-28 / SDK 2.3.0**이며 다른 revision이나 SDK 지원을 자동 가정하지 않습니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. 실제 SDK의 목록·tool·resource 정상 요청부터 익히고 schema·오류 층·timeout·프로세스 수명을 관측합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [실제 SDK 실습](labs/README.md)의 별도 venv에서 `--check` 후 `--run-local`을 실행합니다. 목록/schema→정상 tool A=7/B=0→resource→오류 뒤 정상 호출→child 종료를 기대표와 대조합니다. 모델/API 호출은 필요하지 않습니다. |
+| 동작 원리 | client/server·transport·RPC envelope·tool 결과·업무 효과를 나눕니다. schema 거부와 handler 오류, 요청 완료와 process 종료가 다른 경계임을 설명한 뒤 정상 요청의 입력/출력 계약을 고정합니다. |
+| 직접 볼 지표·방법 | 현재 runner의 기대값/오류 종류/종료 상태를 먼저 읽습니다. 요청별 monotonic latency·in-flight·timeout·retry/업무 key 원장은 아래 지침대로 별도 client wrapper/handler에 수동 계측합니다. stdout에는 protocol 외 로그를 쓰지 않습니다. |
+| 먼저 확인할 제약 | 기본은 합성 child와 stdio이며 latency histogram/exporter·HTTP/auth server가 없습니다. logical metric 이름은 MCP 표준 지표가 아닙니다. 계측/지연 사건은 검토한 사본·최대 5요청·15초·외부 부작용 없음 범위를 지킵니다. |
+| 자주 마주치는 사건 2개 | 기존 fixture의 잘못된 인자/schema 오류 뒤 정상 요청 회복을 먼저 봅니다. 아래 수동 timeout 카드에서는 bounded handler 지연과 client deadline을 비교해 단순 입력 오류와 지연/취소를 구분합니다. 지연 wrapper를 준비하지 않았다면 둘째 사건은 미실행입니다. |
+| 조치와 회복 oracle | schema를 약화하지 않고 올바른 입력으로 복귀합니다. 지연 변경을 원복해 정상 A/B 결과·오류 입력 거부·child 정리와 timeout 후 잔존 작업/중복 효과를 검산합니다. timeout 증대나 무조건 retry가 복구는 아닙니다. |
+| 제공물·추가 준비 | SDK stdio runner와 정확성 검사는 제공하고 계측·bounded delay는 수동 준비 과제입니다. HTTP 200/RPC/tool 오류 비교·OAuth·tenant/cache는 별도 transport/인가 환경 LAB입니다. LLM 논문 CPU 과정과 독립적입니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 실제 기준선
 
 [별도 venv](environment.md)를 준비한 뒤 저장소 루트에서 다음을 실행합니다. 기존 앱에 등록된 MCP 서버나 조직 자산에는 연결하지 않습니다.

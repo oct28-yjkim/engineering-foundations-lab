@@ -4,6 +4,24 @@
 
 고정 서버 2.15.0의 실제 상태를 관측하는 기본 실무 경로입니다. 원리 모형은 선택 부록이고 운영 gate의 대체물이 아닙니다. 기존 native runner의 10개 정확성 검사는 보존하되 모니터링·장애 회복을 검증한 것으로 확대하지 않습니다. 아래 실습은 신규 실행 결과가 아닌 수행 지침입니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. Core 전달과 JetStream의 저장·수신·ACK를 실제 서버에서 먼저 구분한 뒤 pending·재전달을 읽습니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [native 실습](labs/README.md)의 합성 subject/stream/consumer에서 Core publish/subscribe와 JetStream PubAck→fetch→처리→ACK를 관찰합니다. accepted ID와 업무 처리 ID가 일치하는 정상 원장을 먼저 만듭니다. |
+| 동작 원리 | Core 전달과 JetStream 보존을 구분하고 PubAck·consumer delivery·업무 commit·ACK를 시간순으로 그립니다. ACK를 늦췄을 때 저장 메시지 수와 pending/ack_pending이 각각 어떻게 변할지 예측합니다. |
+| 직접 볼 지표·방법 | 준비된 지속 서버의 loopback `/varz`, `/connz`, `/jsz`와 소유 stream/consumer info를 §1대로 읽습니다. num_pending·num_ack_pending·delivery count·업무/ACK 시각을 묶습니다. num_redelivered는 누적 counter가 아닌 gauge입니다. |
+| 먼저 확인할 제약 | 기본 native runner는 자신의 서버를 잠시 실행 후 종료하며 지속 monitoring 환경을 만들지 않습니다. CLI와 loopback monitoring 준비가 별도 필요합니다. 최대 100개·1KiB, 5분이며 Core 유실이 JetStream처럼 자동 복구된다고 가정하지 않습니다. |
+| 자주 마주치는 사건 2개 | §3의 pending 카드: 자기 worker에 bounded 처리 지연을 넣습니다. 재전달 카드: 합성 메시지 한 개의 ACK만 한 번 늦춰 AckWait·ACK 실패·worker 재시작 가설을 구분합니다. ACK를 생략한 운영 consumer에는 적용하지 않습니다. |
+| 조치와 회복 oracle | 지연과 pull 설정을 원복하고 정상 처리 뒤 ACK합니다. pending 감소와 별도로 accepted ID 누락 0·같은 business ID 부작용 1회·ACK 대기/오류 회복을 확인합니다. 재전달을 막기 위해 처리 전에 강제 ACK하지 않습니다. |
+| 제공물·추가 준비 | 고정 서버/SDK 정확성 fixture와 아래 수동 카드를 제공합니다. 지속 서버·지연 제어 worker·업무 멱등 원장은 학습자 준비입니다. slow consumer·stream limit은 후속 카드, Raft quorum·독립 restore는 별도 cluster LAB입니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 정상 baseline과 읽기 전용 진입점
 
 [환경](environment.md)의 server/client 버전, process/cluster/account/stream/consumer 소유자와 topology, retention·replicas·consumer policy를 먼저 기록합니다. 준비된 소유 환경이 없으면 정제된 실제 상태 JSON·로그로 분석만 수행합니다. CLI는 별도 의존성이며 이 저장소의 Python runner가 설치하지 않습니다.

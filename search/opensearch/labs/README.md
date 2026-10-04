@@ -1,8 +1,18 @@
 # OpenSearch 실습 — 실제 엔진 관측과 트러블슈팅
 
-[트랙](../README.md) · [운영 runbook](../operations.md) · [선택 원리 부록](offline.md) · [검증 기록](validation.md)
+[트랙](../README.md) · [운영 runbook](../operations.md) · [선택 원리 부록](offline.md) · [신규 검증 기록](incident-validation.md) · [과거 기록](validation.md)
 
-기본은 실제 OpenSearch의 요청·node/cluster 지표·검색 결과를 연결해 진단하는 경로입니다. 아래 환경과 [운영 runbook](../operations.md)을 사용합니다. 환경이 없으면 설계/원리 학습으로 진행하고 운영 관문은 미완료로 남깁니다. 모든 명령은 저장소 루트에서 실행합니다.
+기본은 **정상 기능 → 동작 원리 → 모니터링 → 제약 → 흔한 문제의 진단·복구**입니다. 기능이 왜 정상인지와 어디를 봐야 하는지부터 익히며, 장애부터 주입하지 않습니다. 모든 명령은 저장소 루트에서 실행합니다. 28주 전체 과정은 선수 조건이 아닙니다.
+
+| 순서 | 실습 | 직접 확인하는 것 |
+| --- | --- | --- |
+| 1 | 아래 환경 + `engine_lab.py` | 정상 색인·검색·정렬·집계의 정확한 ID/값; text/keyword, refresh, OCC 경계 |
+| 2 | [원리와 API 조사](../lessons/02-write-state.md), [관측 LAB](observation.md) | ACK/GET/search 차이, query 경로, node/index 지표와 측정 한계 |
+| 3 | [단계형 사건 LAB](incidents.md) | 5개 문제의 prepare → 읽기 관측 → 선택 조치 → 정확성 검산 |
+| 4 (선택) | [확장·복제 LAB](scaling-incidents.md) | 별도 3→4노드에서 replica 배치·red·노드 이탈·routing 편중 |
+| 이후 | [심화 커리큘럼](../curriculum.md) | PIT·보안·ANN·복원·소스 연구 등 확인하지 못한 영역 |
+
+제공 코드·수동 절차와 실제 실행 기록은 다릅니다. 현재 신규 장애/관측/cluster 시나리오의 실제 실행은 미검증입니다. 환경이 없으면 조사·설계 학습으로 진행하고 실측 관문은 미완료로 남깁니다.
 
 ## 1. 실제 로컬 OpenSearch 3.9.0 준비
 
@@ -66,7 +76,14 @@ python -B search/opensearch/labs/engine_lab.py --run-local
 
 ## 2. 필수 운영 진단
 
-[운영 runbook](../operations.md)에서 실제 정상 기준선과 가시성·mapping 오류·allocation 중 최소 두 사건을 수행합니다. 각 사건의 경쟁 가설, HTTP/item 오류, gauge/counter 차이, 조치·되돌림·정확한 문서 검산을 제출합니다. 위 runner의 정상 fixture PASS만으로 이 관문은 통과하지 않습니다.
+위 정상 기능을 확인한 다음 [관측 LAB](observation.md)에서 query와 수집 방법·제약을 배우고, [단계형 사건](incidents.md) 중 서로 다른 계층의 최소 두 사건을 수행합니다. [운영 runbook](../operations.md)은 직접 API로 원인을 더 좁히는 자료입니다. 각 사건의 경쟁 가설, HTTP/item 오류, gauge/counter 차이, 조치·되돌림·정확한 문서 검산을 제출합니다. 정상 fixture PASS만으로 이 관문은 통과하지 않습니다.
+
+```text
+python -B search/opensearch/labs/observe_lab.py --plan
+python -B search/opensearch/labs/incident_lab.py --list
+```
+
+위 명령은 네트워크 호출 없이 범위만 보여줍니다. 실제 호출은 각 문서의 `--run-local`을 별도로 선택합니다. 사건의 `prepare`는 증상 상태를 남기며 자동 복구하지 않습니다. `recover`와 `verify`를 구분해 원인 설명과 회복 검산을 수행합니다.
 
 ## 3. 보존·중지·재현
 
@@ -81,7 +98,7 @@ docker compose -f search/opensearch/compose.yaml start
 
 ## 4. 다음 실험
 
-OS01–04는 analyzer·mapping·visibility, OS05–06은 explain/profile·정답 집합, OS07–10은 별도 복제/보안/복원 환경, OS11–12는 실제 vector index와 exact baseline을 구성합니다. 기본 runner는 k-NN index, multi-node cluster, snapshot repository, AWS OpenSearch Service, embedding 모델을 생성하지 않습니다. 세부 과제는 [커리큘럼](../curriculum.md)과 [선택 연구](../../../capstones/search-quality-recovery.md)를 따릅니다.
+OS01–04는 analyzer·mapping·visibility, OS05–06은 explain/profile·정답 집합을 더 깊게 다룹니다. OS07–08의 첫 확장 경험은 제공된 [별도 cluster Compose와 수동 카드](scaling-incidents.md)로 진행합니다. 단일 노드 runner가 cluster를 자동 기동하지는 않습니다. OS09–12의 실제 포화·보안·snapshot·ANN, AWS OpenSearch Service와 embedding은 별도 구성 과제입니다. 세부 내용은 [커리큘럼](../curriculum.md)과 [선택 연구](../../../capstones/search-quality-recovery.md)를 따릅니다.
 
 ## 부록: 선택 오프라인 원리 모형
 

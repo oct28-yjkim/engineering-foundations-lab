@@ -4,6 +4,12 @@ Terragrunt를 설정 중복 제거 도구로만 배우지 않습니다. **HCL �
 
 [28주 커리큘럼](curriculum.md) · [평가 기준](assessment.md) · [운영·트러블슈팅](operations.md) · [고정 소스 지도](source-reading.md) · [로컬 실습](labs/README.md) · [선택 원리 모형](../shared/labs/README.md)
 
+## 기본 LAB 입구
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서로 시작합니다. foundation/application 두 unit의 정상 의존성과 no-op부터 익힌 뒤 mock·입력·실행/미실행을 구분합니다. [제품별 기본 LAB 카드](operations.md#basic-lab)에서 정상 결과·직접 볼 지표·자주 만나는 사건 2개·회복 검산과 환경 제공 범위를 확인합니다.
+
+[공통 LAB 계약](../../operations/lab-contract.md)을 적용하며 **28주 심화 과정을 먼저 마칠 필요는 없습니다.** 실행 환경이나 수동 준비가 필요한 단계는 준비/미실행으로 구분하고, 아래 심화 커리큘럼은 기본 LAB 이후 필요한 부분부터 확장합니다.
+
 ## 시작 조건과 버전
 
 - Git, shell, 디렉터리·프로세스·환경 변수, JSON/HCL의 기본 문법을 알아야 합니다. Terraform plan/state/module을 먼저 [Terraform 과정](../terraform/README.md)에서 학습합니다.

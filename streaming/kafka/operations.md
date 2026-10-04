@@ -4,6 +4,24 @@
 
 기준은 저장소의 Kafka 4.3.1입니다. 기본 경로는 **실제 정상 상태 → 제한된 증상 재현 → 가설 비교 → 완화·원복 → 업무 복구 확인 → 내부 구현 추적**입니다. 알고리즘 모형은 보충 자료이며 실제 운영 관문을 대체하지 않습니다. 이 문서는 실행할 runbook이고 이번 문서 개편에서 장애를 실행한 결과는 아닙니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. topic의 정상 produce/consume과 ID 원장을 만든 다음 offset·lag·요청 지연으로 처리 경계를 확인합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [로컬 실습](labs/local-lab.md)의 소유 topic/group으로 합성 이벤트를 produce하고 consume합니다. event ID·key·partition·offset·처리 결과를 대조해 정상 전달 집합과 committed offset을 먼저 기록합니다. |
+| 동작 원리 | partition 순서, producer 수락, consumer 처리, offset commit이 서로 다른 시점임을 한 이벤트로 추적합니다. 같은 key 분포·partition 수에서 consumer 병렬성이 어떻게 제한되는지 예상한 뒤 실제 assignment를 봅니다. |
+| 직접 볼 지표·방법 | §1의 group describe로 partition별 CURRENT-OFFSET/LOG-END-OFFSET/LAG와 assignment를 관측합니다. client의 callback/handler 시간·오류·업무 완료를 같은 5분 창에 붙입니다. 요청 latency와 ISR JMX는 별도 수집 경로가 준비된 경우만 읽습니다. |
+| 먼저 확인할 제약 | 제공 Compose는 RF=1 단일 broker/controller이며 HA·ISR 축소 실습이 아닙니다. JMX exporter와 지연/부하를 제어할 완성 client는 미제공입니다. 최대 1,000개·1KiB 메시지, 5분, 소유 topic/group 경계를 지킵니다. |
+| 자주 마주치는 사건 2개 | §3의 group lag 카드: 학습 consumer에만 bounded 처리 지연을 넣어 유입 증가/hot partition/downstream 가설을 나눕니다. produce 지연 카드: 같은 총량에서 producer concurrency 한 변수만 바꿉니다. 관측 경로·client 준비 전이면 해당 사건은 미실행입니다. |
+| 조치와 회복 oracle | 지연/발생기를 원래대로 복원한 뒤 lag 추세·handler/callback 시간·오류가 baseline으로 돌아오는지 확인합니다. 입력 ID→업무 결과 누락/중복, 성공/실패/불확실 요청을 검산합니다. lag 0만으로 처리 완료를 판정하지 않습니다. |
+| 제공물·추가 준비 | 기본 CLI·Compose·정확성 smoke는 제공하고 사건은 아래 수동 실행학습 과제입니다. 별도 bounded client/계측 준비가 필요합니다. RF=3·controller quorum·CDC/Streams는 확장 LAB이며 28주 전체 수료를 요구하지 않습니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 사전 조건과 정상 baseline
 
 [로컬 환경](labs/local-lab.md)의 소유한 단일 노드만 사용합니다. 먼저 Docker context·Compose project·cluster ID·topic/group 소유자·Kafka/client 버전·관측 시간을 기록합니다. 제공 단일 broker의 RF=1은 ISR 장애나 HA 실습 환경이 아닙니다. 운영 접속 정보·인증 파일·원문 payload를 수집하지 않습니다.

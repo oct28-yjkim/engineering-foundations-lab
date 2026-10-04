@@ -4,6 +4,24 @@
 
 고정 기준은 Spark/PySpark 4.0.4입니다. 기본 실무 경로는 실제 job의 정상 baseline → stage/task 병목 → 한 변인 재현 → 결과·복구 확인입니다. CPU 원리 모형은 선택 부록입니다. 이 문서의 장애 사례는 실행 지침이며 실제 클러스터에서 통과한 결과가 아닙니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. 정상 DataFrame 결과와 실행 계획을 만든 뒤 task·shuffle·spill·checkpoint를 같은 실행 ID로 연결합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [로컬 runner](labs/README.md)의 합성 배치 입력에서 filter/join/aggregation 결과를 ID·합계로 검산합니다. 스트리밍은 제공 범위의 정상 stop→같은 checkpoint 재시작 후 결과 원장을 먼저 확인합니다. |
+| 동작 원리 | lazy transformation→action→job/stage/task와 shuffle 경계를 실행 계획에 표시합니다. batch 결과와 Structured Streaming query/run ID·checkpoint·sink commit은 구분합니다. 정상 restart를 crash recovery로 부르지 않습니다. |
+| 직접 볼 지표·방법 | UI를 준비한 뒤 Jobs/Stages의 task max/median, SQL initial/final plan, shuffle read/write, spill·GC를 같은 attempt 기준으로 읽습니다. 종료 후에는 미리 켜둔 event log/History Server가 필요합니다. 스트리밍은 batch progress와 source/sink ID 원장을 대조합니다. |
+| 먼저 확인할 제약 | 기본 runner는 UI를 끄며 UI·event log·History Server는 별도 준비입니다. `local[2]`는 다중 호스트가 아닙니다. 아래 최대 100,000행/100MiB·5분·job 1개의 상한을 지키고 checkpoint를 삭제해 고치지 않습니다. |
+| 자주 마주치는 사건 2개 | §3의 긴 task 카드: 같은 행 수에서 key 분포만 hot key로 바꿉니다. spill/GC 카드: bounded 입력의 partition 배치만 비교합니다. tiny input에서 skew/spill이 나타나지 않으면 미재현으로 남기며 OOM을 목표로 하지 않습니다. |
+| 조치와 회복 oracle | 원래 분포/partition 설정으로 복귀하고 근거가 있을 때만 AQE·projection 등 한 변경을 비교합니다. PK별 값·합계/fingerprint 동일, retry/OOM 없음, task tail·stage wall time의 회복을 확인합니다. spill bytes 합을 현재 디스크 점유로 해석하지 않습니다. |
+| 제공물·추가 준비 | 배치/스트리밍 runner는 제공하며 UI 관측·두 사건의 bounded 입력/설정은 수동 준비 과제입니다. 다중 executor host loss·외부 sink failure는 추가 환경 LAB입니다. 28주 심화는 이 입문의 선수 과정이 아닙니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 실제 관측 준비
 
 [실습 안내](labs/README.md)의 Java·PySpark·소유한 output/checkpoint 경계를 먼저 확인합니다. application ID, job/stage/task attempt, SQL execution ID, query ID/run ID를 연결하고 version·master·driver/executor 자원·입력 fingerprint·AQE 설정·시간대를 기록합니다. `local[2]`는 실제 Spark지만 다중 호스트 장애 환경이 아닙니다.

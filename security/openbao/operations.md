@@ -4,6 +4,24 @@
 
 기본은 **OpenBao 2.7.1의 실제 baseline과 troubleshooting**입니다. CPU 모형은 선택 부록이며 Vault 측정치를 OpenBao 증거로 대체하지 않습니다. read-only부터 시작하고 이 문서를 읽는 것만으로 서버·계정·키가 생성되지는 않습니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. 최소 권한 child로 정상 KV 읽기를 확인한 뒤 capability·서버 상태·TTL과 소비자 동작을 연결합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [공통 LOCAL-DEV 실습](../shared/labs/README.md)의 자기 UUID KV v2/policy를 준비합니다. 허용된 `data/item` 읽기의 합성 값/버전과 금지 metadata/list의 거부를 확인합니다. root가 아니라 준비한 최소 권한 child를 기준으로 정상 계약을 기록합니다. |
+| 동작 원리 | 인증 주체→policy capability→KV 경로/버전→token/lease 수명을 연결합니다. 서버 unsealed 상태와 개별 요청의 권한·유효기간은 다른 경계이며 만료 token의 복구는 과거 값을 되살리는 작업이 아닙니다. |
+| 직접 볼 지표·방법 | 아래 `bao status`, capability 조회·응답 종류·TTL/client 시간선을 관측합니다. 승인된 경우에만 sys/metrics/audit/Raft를 읽고 원명·실제 sink/TYPE을 확인합니다. OpenBao의 실제 metric prefix 설정을 확인하며 비밀 원문은 남기지 않습니다. |
+| 먼저 확인할 제약 | dev는 in-memory·단일 노드·자동 unseal이며 TLS/감사/Raft 복구를 제공하지 않습니다. 수동 사건은 새 child/auth flow와 안전한 token 전달을 준비해야 합니다. 5분·20요청·동시 1·실제 응답 TTL 30–60초 상한을 지킵니다. |
+| 자주 마주치는 사건 2개 | 아래 권한 거부 사건: 정상 status와 허용/금지 path capability·403을 비교해 서버 불가와 ACL을 나눕니다. TTL 사건: 별도 child의 만료 전/후 같은 허용 요청을 비교해 만료·client cache·대상 오류를 구분합니다. |
+| 조치와 회복 oracle | 권한을 넓히지 않고 원래 허용 요청으로 복귀합니다. 만료 후에는 같은 최소 권한 정상 auth flow로 새 child를 얻어 합성 값/버전 일치·금지 path 거부·실제 client 사용을 검산합니다. 공유 token revoke나 root 대체는 하지 않습니다. |
+| 제공물·추가 준비 | 격리 dev Compose·KV/ACL fixture·아래 수동 지침을 제공합니다. 자동 runner가 폐기한 child를 재사용하지 않습니다. TTL auth 준비가 없으면 미실행이며 audit 장애·Raft·독립 restore는 별도 영속 환경 LAB입니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 대상 확인과 읽기 전용 명령
 
 기존 승인된 환경의 endpoint·CA·CLI 인증 세션과 제품 version을 먼저 확인합니다. `BAO_ADDR` 같은 환경 설정의 **이름과 대상 별칭**을 검토하되 환경 전체와 token 값을 출력하지 않습니다. 아래 명령은 그 사전 확인 이후에만 실행합니다.

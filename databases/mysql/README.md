@@ -4,6 +4,12 @@ SQL 기초에서 InnoDB의 페이지·버퍼·redo·undo·read view를 거쳐 �
 
 기준은 **MySQL Community Server 8.4 LTS / InnoDB**, 재현용 이미지는 `mysql:8.4.11`입니다. 이 번호를 MySQL 전체 배포판의 최신 버전이라는 의미로 사용하지 않습니다. 실제 서버 버전·이미지 digest·설정은 매 실행에 기록하고, 소스 기준은 [읽기 지도](source-reading.md)에서 확인합니다. MariaDB, Aurora MySQL, HeatWave, NDB의 내부 동작·운영 보장을 이 트랙의 결과로 대체하지 않습니다.
 
+## 기본 LAB 입구
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서로 시작합니다. 정상 InnoDB 트랜잭션과 SELECT를 먼저 실행하고 row lock·MDL·계획 변화의 차이를 배웁니다. [제품별 기본 LAB 카드](operations.md#basic-lab)에서 정상 결과·직접 볼 지표·자주 만나는 사건 2개·회복 검산과 환경 제공 범위를 확인합니다.
+
+[공통 LAB 계약](../../operations/lab-contract.md)을 적용하며 **28주 심화 과정을 먼저 마칠 필요는 없습니다.** 실행 환경이나 수동 준비가 필요한 단계는 준비/미실행으로 구분하고, 아래 심화 커리큘럼은 기본 LAB 이후 필요한 부분부터 확장합니다.
+
 ## 학습 순서
 
 1. [커리큘럼](curriculum.md)과 [공통 선수 지식](../shared/foundations.md)을 읽고 SQL·자료구조·OS·트랜잭션 진입 수준을 확인합니다.

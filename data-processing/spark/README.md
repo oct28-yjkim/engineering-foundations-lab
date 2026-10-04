@@ -4,6 +4,12 @@ DataFrame을 작성하는 수준에서 출발해 **왜 이 계획이 선택됐�
 
 Spark는 실행 엔진입니다. Parquet은 파일 형식이고 Delta Lake는 별도의 테이블 계층이며, Databricks는 Spark를 포함하는 관리형 플랫폼입니다. 이 트랙을 이수했다고 Photon·Unity Catalog·Databricks 권한이나 관리형 서비스 복구까지 검증한 것은 아닙니다. 플랫폼 확장은 [Databricks 과정](../../platforms/databricks/README.md)에서 구분합니다.
 
+## 기본 LAB 입구
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서로 시작합니다. 정상 DataFrame 결과와 실행 계획을 만든 뒤 task·shuffle·spill·checkpoint를 같은 실행 ID로 연결합니다. [제품별 기본 LAB 카드](operations.md#basic-lab)에서 정상 결과·직접 볼 지표·자주 만나는 사건 2개·회복 검산과 환경 제공 범위를 확인합니다.
+
+[공통 LAB 계약](../../operations/lab-contract.md)을 적용하며 **28주 심화 과정을 먼저 마칠 필요는 없습니다.** 실행 환경이나 수동 준비가 필요한 단계는 준비/미실행으로 구분하고, 아래 심화 커리큘럼은 기본 LAB 이후 필요한 부분부터 확장합니다.
+
 ## 시작 순서
 
 1. [공통 기초](../../databases/shared/foundations.md)의 SQL·OS·분산 실패 모델을 진단합니다. Python iterator·예외·가상환경, JVM heap/GC, Scala case class·pattern matching은 필요에 따라 별도 보충합니다.

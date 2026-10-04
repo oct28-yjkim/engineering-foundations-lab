@@ -4,6 +4,24 @@
 
 기본 경로는 실제 환경에서 **정상 baseline → 병목/권한 증상 → 경쟁 가설 → SQL·서비스 로그·업무 상태 대조 → 제한된 수정 → 회복 검증**입니다. 권한 oracle JSON은 기대값이지 제품 실행이나 운영 완료 증거가 아닙니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. 두 합성 사용자의 정상 데이터 접근부터 시작해 Auth·RLS·DB transaction·Realtime 화면의 경계를 확인합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [로컬 준비](labs/local-lab.md)의 자기 프로젝트와 합성 사용자 A/B를 준비합니다. A의 정상 CRUD와 B의 교차 tenant 거부·signed-out 거부를 [권한 기대값](labs/authorization-oracle.json)에 대조하고 원래 PK/업무 version을 기록합니다. Realtime client가 있다면 정상 DB commit→화면 반영도 확인합니다. |
+| 동작 원리 | Auth 로그인/JWT·API 역할·RLS 정책·DB commit·Realtime 전달을 순서대로 연결합니다. 관리자 SQL 성공은 사용자 API 성공이 아니며 열린 WebSocket은 최신 업무 상태 보장이 아닙니다. |
+| 직접 볼 지표·방법 | §1–3의 read-only SQL로 backend 상태·blocker·transaction age와 pool client 수를 분리합니다. 동일 project/route의 API/Auth/Postgres/Realtime 로그·오류/지연을 보고 DB PK/version과 화면 값을 대조합니다. query 평균을 API p95로 쓰지 않습니다. |
+| 먼저 확인할 제약 | 완성 전체 stack/앱은 미제공이며 local·hosted의 dashboard/plan/권한은 다릅니다. RLS를 끄거나 service key로 사용자 검증을 우회하지 않습니다. 아래 5분·50요청·작업 2세션+관측 1세션 상한을 지킵니다. |
+| 자주 마주치는 사건 2개 | §5 첫 카드: 자기 `su_lab_` 한 행에서 3초 이내 lock 대기를 관측합니다. 둘째 카드: 자기 Realtime client를 15초 이내 끊은 동안 합성 row 하나를 바꾸고 재연결·snapshot 재조회합니다. 필요한 테이블/client가 없으면 준비부터 수행합니다. |
+| 조치와 회복 oracle | 두 transaction을 ROLLBACK하여 blocker 해소와 원본 행을 확인합니다. Realtime은 DB authoritative PK/version과 화면 일치·누락 설명을 확인합니다. 모든 복구에서 A 허용/B 교차 tenant 거부/signed-out 거부가 유지되어야 합니다. |
+| 제공물·추가 준비 | SQL/권한 oracle·준비 지침·아래 수동 절차를 제공합니다. Auth 사용자·앱·Realtime harness를 준비해야 실제 사건을 실행할 수 있습니다. hosted PITR·Storage/Functions·확장/복구는 별도 허가 환경 LAB입니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 읽기 전용 preflight
 
 사용 권한을 가진 기존 local/self-hosted/hosted 학습 프로젝트 하나를 고릅니다. 새 클라우드 프로젝트 생성·plan 업그레이드·remote link·migration을 요구하지 않습니다. 프로젝트 별칭, PostgreSQL/CLI/SDK 버전, direct/session/transaction pool 연결 종류, 주요 서비스와 기존 로그 접근 범위를 기록합니다. hosted의 Metrics API·리포트·보존 기간은 실제 plan과 권한에 따라 확인하고 없는 기능은 `관측 불가`로 둡니다. local Studio와 hosted dashboard의 기능이 같다고 가정하지 않습니다. [Metrics API](https://supabase.com/docs/guides/observability/metrics), [서비스 로그](https://supabase.com/docs/guides/observability/logs)

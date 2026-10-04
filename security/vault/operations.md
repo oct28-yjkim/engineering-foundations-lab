@@ -4,6 +4,24 @@
 
 기본 경로는 **Vault Community 2.1.1의 실제 baseline·지표·감사·troubleshooting**입니다. CPU 모형은 선택 원리 부록입니다. Enterprise/HCP의 namespaces·DR replication·performance standby를 Community 필수 실습으로 요구하지 않습니다. OpenBao와 API가 비슷해도 제품별 실행 증거가 필요합니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. Community dev의 정상 KV·권한 경계를 먼저 확인하고 health·TTL·소비자 회복을 분리해서 진단합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [공통 LOCAL-DEV 실습](../shared/labs/README.md)의 새 UUID KV v2/policy와 최소 권한 child를 준비합니다. 허용 `data/item` 읽기의 합성 값/버전과 metadata/list 거부를 대조합니다. OpenBao 실행 결과를 Vault 정상 증거로 대신하지 않습니다. |
+| 동작 원리 | Vault identity/auth→ACL→KV/소비자→token/lease 수명을 설명합니다. node health와 요청 인가·앱 credential 사용을 나누고, KV 버전과 동적 자격 증명의 수명 계약을 혼합하지 않습니다. |
+| 직접 볼 지표·방법 | 아래 `vault status`, capability, 실제 health HTTP/body·TTL·client 시간선을 확인합니다. 필요한 권한이 있는 환경에서만 sys/metrics·audit·Raft를 읽습니다. health endpoint 429를 일반 rate-limit으로 단정하지 않습니다. |
+| 먼저 확인할 제약 | 기본은 Community·단일 inmem dev이며 HA/TLS/audit 장애 검증이 아닙니다. Enterprise/HCP 기능은 요구하지 않습니다. 수동 child/auth와 안전한 token 전달 준비, 5분·20요청·동시 1·응답 TTL 30–60초 상한을 지킵니다. |
+| 자주 마주치는 사건 2개 | 아래 §4 첫 카드: 허용/금지 경로의 capability·403과 정상 status를 비교합니다. 둘째 카드: 별도 child의 만료 전/후 같은 요청을 보고 TTL·Agent/client cache·auth 설정 가설을 구분합니다. 운영 token을 revoke하지 않습니다. |
+| 조치와 회복 oracle | 허용 요청으로 돌아가고 거부되어야 할 path는 계속 거부되는지 확인합니다. 만료 child는 되살리지 않고 같은 최소 권한 auth flow로 재발급한 뒤 client의 실제 읽기·합성 값/버전·금지 요청을 검산합니다. |
+| 제공물·추가 준비 | Vault 전용 dev Compose·공통 KV/ACL fixture·아래 수동 절차를 제공합니다. TTL auth 준비가 없으면 미실행으로 남깁니다. 감사 장애·Raft partition·DR은 별도 영속 cluster/키 보관·승인 환경의 확장 LAB입니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 읽기 전용 사전 확인
 
 이미 승인된 환경의 endpoint·CA·CLI 인증 세션을 확인하고 `VAULT_ADDR`·namespace 설정이 의도한 대상인지 검토합니다. 토큰 값이나 환경 전체는 출력하지 않습니다. target이 불명확하거나 TLS 검증을 끄고 접속해야 한다면 진행하지 않습니다. 별도 계정·server·키 발급을 자동 수행하지 않습니다.

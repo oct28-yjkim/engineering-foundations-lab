@@ -4,6 +4,24 @@
 
 기본 실습은 **실제 PostgreSQL 18의 상태를 읽고 장애를 구별하는 것**입니다. 원리·소스 읽기는 원인을 설명하는 수단이며, 모형 결과나 SQL 파일 존재는 운영 실습 통과가 아닙니다. 아래는 실행할 절차이며 이번 문서 작성 과정에서 서버 장애를 재현했다는 기록이 아닙니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. 계좌 두 행의 조회·짧은 트랜잭션부터 시작해 MVCC·잠금·실행 계획을 연결합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | 아래 §2의 새 `ops_pg_` fixture를 준비하고 계좌 두 행의 ID/잔액 `1:100, 2:100` 및 events 20,000행을 조회합니다. 자기 계좌 한 행을 짧은 transaction에서 변경·조회·ROLLBACK하고 새 transaction에서 원래 값이 보이는지 확인합니다. |
+| 동작 원리 | commit/rollback·snapshot·row lock이 보이는 값과 대기를 어떻게 바꾸는지 먼저 예측합니다. 그다음 `EXPLAIN (ANALYZE, BUFFERS, SETTINGS)`의 plan과 실제 처리량을 읽습니다. ANALYZE는 실제 쿼리 실행입니다. |
+| 직접 볼 지표·방법 | §1 SQL을 별도 관측 세션에서 실행해 `pg_stat_activity`의 state/wait/transaction age와 `pg_blocking_pids`를 연결합니다. 같은 구간의 `temp_bytes` delta와 plan의 sort/spill을 함께 보고 추정 tuple 수를 정확한 bloat로 해석하지 않습니다. |
+| 먼저 확인할 제약 | 단일 Compose에는 replica/PITR 검증 환경이 없습니다. 기존 객체를 보존하고 아래 fixture·세션·쿼리 시간 상한을 지킵니다. 권한·통계 수집 지연·긴 transaction snapshot으로 관측이 제한될 수 있습니다. |
+| 자주 마주치는 사건 2개 | §3 A: 같은 행 UPDATE 대기에서 CPU/I/O와 lock을 구별합니다. §3 B: 같은 정렬 SELECT의 session `work_mem`만 바꿔 scan/추정/spill 가설을 비교합니다. spill이 안 나오면 미재현이며 부하를 무한 확대하지 않습니다. |
+| 조치와 회복 oracle | A/B transaction을 끝내고 blocker 0·계좌 100/100·새 요청 정상 여부를 확인합니다. SELECT는 ID/값 집합 동등성과 LOCAL 설정 원복을 검산합니다. 빠른 1회 실행만으로 운영 p99 개선을 선언하지 않습니다. |
+| 제공물·추가 준비 | 제품별 Compose·SQL과 아래 수동 절차를 제공합니다. Docker 실행과 세션 준비는 필요하며 자동 장애 runner는 아닙니다. replica·WAL 보존·독립 restore는 별도 토폴로지의 확장 LAB입니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 대상 확인과 정상 기준선
 
 [환경 안내](../shared/environment.md)와 [트랙 시작 명령](README.md)을 먼저 따릅니다. `docker context show` 및 `docker context inspect`로 개인 로컬 daemon을 확인하고, 기존 볼륨은 보존합니다. 실제 minor/digest·자원 제한·행 수·설정·관측 권한을 기록합니다. 운영에서는 필요한 통계만 읽는 역할을 사용하고 실습의 `lab` 고권한 계정을 복제하지 않습니다. 쿼리 텍스트·client 주소는 민감할 수 있으므로 제출물에서 제거합니다.

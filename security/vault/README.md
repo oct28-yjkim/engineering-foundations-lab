@@ -4,6 +4,12 @@
 
 재현 기준은 **HashiCorp Vault Community 2.1.1**입니다. [릴리스](https://github.com/hashicorp/vault/releases/tag/v2.1.1)와 [소스 읽기 지도](source-reading.md)의 고정 revision을 사용하며, 실행마다 바이너리 버전·이미지 digest·plugin 버전·설정을 기록합니다. 기본 실습은 Community 범위입니다. Enterprise namespaces·복제·performance standby 및 HCP 관리형 서비스는 별도 제품·권한·환경이 필요한 비교 과제로 표시합니다. 공개 소스의 존재를 모든 버전의 오픈소스 라이선스나 Enterprise 기능 제공으로 해석하지 않습니다.
 
+## 기본 LAB 입구
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서로 시작합니다. Community dev의 정상 KV·권한 경계를 먼저 확인하고 health·TTL·소비자 회복을 분리해서 진단합니다. [제품별 기본 LAB 카드](operations.md#basic-lab)에서 정상 결과·직접 볼 지표·자주 만나는 사건 2개·회복 검산과 환경 제공 범위를 확인합니다.
+
+[공통 LAB 계약](../../operations/lab-contract.md)을 적용하며 **28주 심화 과정을 먼저 마칠 필요는 없습니다.** 실행 환경이나 수동 준비가 필요한 단계는 준비/미실행으로 구분하고, 아래 심화 커리큘럼은 기본 LAB 이후 필요한 부분부터 확장합니다.
+
 ## 학습 순서
 
 1. [커리큘럼](curriculum.md)의 선수 조건을 점검합니다. Linux 프로세스/권한·HTTP/TLS·JWT·시간·트랜잭션·합의 기초가 부족하면 별도 보충합니다.

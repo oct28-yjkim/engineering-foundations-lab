@@ -4,6 +4,24 @@
 
 이 트랙의 기본 실습은 **실제 프로젝트의 읽기 전용 baseline → 증상 → 경쟁 가설 → 지표/이벤트/trace 대조 → 제한된 개선 → 회복 검증**입니다. 샘플링 oracle은 분모와 편향을 이해하는 선택 보조 자료입니다. UI 조작이나 모형 PASS만으로 운영 역량을 판정하지 않습니다. 이 문서는 실행 절차이며 실제 장애를 발생시키거나 계정·프로젝트를 생성한 기록이 아닙니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. 합성 요청·오류 하나가 SDK에서 화면까지 도착하는 정상 흐름을 먼저 확인하고 수집 누락과 실제 앱 결함을 나눕니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [준비 지침](labs/local-lab.md)에 따라 자기 시험 앱·허가된 프로젝트·합성 marker를 준비합니다. 정상 요청과 의도된 오류 요청의 독립 원장을 만들고 SDK capture→수집→Issues 가시성을 대조합니다. trace 계측이 준비됐다면 같은 요청의 parent/child 연결도 봅니다. |
+| 동작 원리 | 요청 실패·error event·issue grouping·span을 구분하고 SDK sampling/filtering→ingestion outcome→조회 지연 순서를 설명합니다. issue 수가 줄었다고 업무 오류가 줄었다고 판단하지 않습니다. |
+| 직접 볼 지표·방법 | §2의 Issues, Explore/Traces, Stats를 같은 project/environment/release·UTC 창으로 비교합니다. 업무 실패/전체 요청, span 종류가 같은 p50/p95·표본 수, accepted/filtered/rate-limited/invalid/client discard와 reason을 기록합니다. |
+| 먼저 확인할 제약 | 완성 SDK 앱·전체 self-hosted stack은 미제공입니다. 외부 telemetry·비용·시험 알림 수신자를 먼저 확인하며 합성 요청 최대 100개·동시 1·1req/s 이하·5분을 지킵니다. 송신 허가가 없으면 tabletop/무외부송신 준비만 진행합니다. |
+| 자주 마주치는 사건 2개 | §4 A: 시험 route의 특정 합성 입력에만 예외를 만듭니다. §4 B: `beforeSend`로 marker가 있는 error만 제외해 앱 오류는 있는데 관측은 줄어드는 상태를 봅니다. trace/Replay까지 같은 hook으로 제외된다고 가정하지 않습니다. |
+| 조치와 회복 oracle | 문제 route와 hook revision을 각각 원복합니다. 독립 요청 원장의 업무 결과, 새 marker의 의도한 수집/제외, 중복 event 여부, 가시화 시간을 다시 검산합니다. quota 증액·PII 활성화·sampling 100%를 진단 대신 사용하지 않습니다. |
+| 제공물·추가 준비 | 준비 자료·원리 보조 모형·아래 수동 카드만 제공하며 실제 SDK 앱/프로젝트가 필요합니다. 준비·관측·장애 실행 상태를 따로 기록합니다. self-hosted queue/storage 장애는 해당 stack이 있는 후속 LAB입니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 대상과 권한부터 확인
 
 사용 권한을 가진 기존 학습 프로젝트 하나를 선택합니다. SaaS/self-hosted, organization/project의 별칭, SDK/runtime 버전, release/environment, 조회 가능한 기간, sampling/filter 설정, quota 범위와 확인 시각을 기록합니다. 처음에는 프로젝트 이벤트·Stats·trace 조회 권한만 사용합니다. 접근이 거절되면 필요한 권한을 운영자에게 확인하며 소유자 토큰 발급이나 개인정보 수집 활성화로 우회하지 않습니다.

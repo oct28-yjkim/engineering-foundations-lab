@@ -6,13 +6,13 @@ OpenSearch는 검색·분석 엔진이며 업무 원장의 트랜잭션이나 LL
 
 ## 시작 순서
 
-1. [공통 기초](../../databases/shared/foundations.md)의 OS·네트워크·트랜잭션·분산 실패 모델을 진단합니다. HTTP/JSON, Python, Java 클래스·iterator·동시성은 별도 보충합니다.
-2. [실습 안내](labs/README.md)로 실제 단일 노드를 준비하고 [운영 실습](operations.md)의 정상 기준선·가시성·색인 오류·allocation 진단을 수행합니다.
-3. [28주 커리큘럼](curriculum.md)의 7개 강의와 14개 실험 보고서를 작성합니다.
-4. [소스·논문 지도](source-reading.md)에서 관찰한 현상의 구현과 논문 가정을 대조합니다.
-5. [평가](assessment.md)에서 실행·설계·미검증 증거를 분리합니다.
+1. [기본 LAB](labs/README.md)에서 단일 노드를 준비하고 합성 문서의 정상 색인·검색·정렬·집계 결과를 확인합니다. HTTP/JSON/Python이 낯설면 [공통 기초](../../databases/shared/foundations.md)에서 필요한 부분을 보충합니다.
+2. mapping/analyzer·ACK·GET·refresh·검색 경계를 설명하고 [관측 LAB](labs/observation.md)으로 수집 API·지표 의미·query 비용·환경 제약을 익힙니다.
+3. [단계형 사건 5개](labs/incidents.md)에서 검색 누락·bulk 부분 실패·write block·yellow·pagination 오류를 하나씩 진단·복구합니다. [운영 runbook](operations.md)을 함께 조사합니다.
+4. 추가 자원을 선택했다면 [3→4노드 확장 LAB](labs/scaling-incidents.md)에서 replica 자리 부족·allocation 오류·한 노드 이탈·routing 편중을 확인합니다.
+5. 필요해진 주제의 [28주 커리큘럼](curriculum.md)·[소스·논문 지도](source-reading.md)로 깊이를 확장하고 [평가](assessment.md)에서 기본 실측과 심화 완료를 구분합니다.
 
-기본 실습은 실제 서버의 지표·요청·검색 결과를 연결하는 것입니다. 환경이 없으면 설계/원리 학습으로 진행하고 운영 관문은 미완료로 남깁니다. 원리 모형은 문서 끝의 선택 부록입니다.
+기본 순서는 **정상 기능 → 동작 원리 → 모니터링 → 제약 → 문제 진단·복구**입니다. 28주 전체 이수나 원리 모형 통과는 기본 LAB의 선수 조건이 아닙니다. 환경이 없으면 조사·설계/원리 학습으로 진행하고 실제 실측 관문은 미완료로 남깁니다. [신규 실습 검증 기록](labs/incident-validation.md)과 문서 끝의 선택 부록을 구분합니다.
 
 ## 버전과 실험 범위
 
@@ -21,12 +21,12 @@ OpenSearch는 검색·분석 엔진이며 업무 원장의 트랜잭션이나 LL
 | 범위 | 제공 또는 수행할 것 | 이 범위로 증명하지 못하는 것 |
 | --- | --- | --- |
 | LOCAL-ENGINE / OPERATIONS | 주 실습: 단일 노드 합성 fixture·node/cluster 기준선·사건 2개와 회복 | replica 승격, quorum, TLS/DLS/FLS, 실제 ANN 품질·클러스터 성능 |
-| CLUSTER-DESIGN / CLUSTER-LAB | 장애·격리·복구 설계 / 별도 다중 노드 실측 | 설계를 작성했다는 사실만으로 실제 장애 통과 |
+| CLUSTER-DESIGN / CLUSTER-LAB | 제공된 별도 3→4노드 Compose·수동 배치/복귀/routing 카드 / 사용자 실측 | 작성·구성 검사만으로 실제 장애 통과, AZ 손실·partition·처리량 보장 |
 | SECURITY-LAB / ANN-LAB | 보안 활성화 환경 / 고정 벡터와 실제 ANN 별도 과제 | 기본 단일 노드 코드나 CPU 정렬 모형의 자동 보장 |
 | BUILD | 고정 소스의 회귀 테스트·작은 수정 | 관리형 서비스의 비공개 운영 계층 |
 | OFFLINE (선택 보조) | BM25·refresh 가시성·분산 후보·hybrid/filter 원리 모형 4개 | 실제 Lucene 점수·fsync·내구성·HNSW·분산 장애·권한 |
 
-기본 로컬 엔진 과정에는 GPU·embedding API·클라우드 과금이 필요 없지만 Docker 자원·설치·이미지 다운로드가 필요합니다. 합성 데이터 전용이며 보안 검증 환경이 아닙니다. 강의의 다중 shard, PIT, snapshot, HNSW, 권한·분산 장애 실험은 **학습자가 추가 구현하는 과제**입니다. 제공 스크립트가 모든 강의 과제를 자동으로 수행하지 않습니다. 실제 실행 여부와 제약은 [실습 안내](labs/README.md)를 기준으로 확인합니다.
+기본 로컬 엔진 과정에는 GPU·embedding API·클라우드 과금이 필요 없지만 Docker 자원·설치·이미지 다운로드가 필요합니다. 합성 데이터 전용이며 보안 검증 환경이 아닙니다. 다중 shard/노드의 작은 배치·복귀 실습은 제공하지만 PIT, snapshot, HNSW, 권한·network partition·DR는 **추가 구현 과제**입니다. 제공 스크립트가 모든 강의 과제를 자동 수행하지 않습니다. 실제 실행 여부와 제약은 [실습 안내](labs/README.md)를 기준으로 확인합니다.
 
 ## 다른 트랙과 연결하기
 

@@ -4,6 +4,12 @@ Kafka를 설정하거나 연결하는 수준에서 출발해, **한 이벤트가
 
 기준은 **Apache Kafka 4.3.1, KRaft**입니다. broker와 client 버전, 이미지 digest, feature level은 실험마다 기록합니다. 최신 문서나 과거 ZooKeeper 기반 설명을 현재 설정에 그대로 적용하지 않습니다. [공식 Docker 안내](https://kafka.apache.org/43/getting-started/docker/)
 
+## 기본 LAB 입구
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서로 시작합니다. topic의 정상 produce/consume과 ID 원장을 만든 다음 offset·lag·요청 지연으로 처리 경계를 확인합니다. [제품별 기본 LAB 카드](operations.md#basic-lab)에서 정상 결과·직접 볼 지표·자주 만나는 사건 2개·회복 검산과 환경 제공 범위를 확인합니다.
+
+[공통 LAB 계약](../../operations/lab-contract.md)을 적용하며 **28주 심화 과정을 먼저 마칠 필요는 없습니다.** 실행 환경이나 수동 준비가 필요한 단계는 준비/미실행으로 구분하고, 아래 심화 커리큘럼은 기본 LAB 이후 필요한 부분부터 확장합니다.
+
 ## 읽는 순서
 
 공통 기초가 필요하면 [자료구조·OS·분산 원리](../../databases/shared/foundations.md)부터 시작하고, [공통 실험 방법](../../databases/shared/experiment-method.md)을 적용합니다.

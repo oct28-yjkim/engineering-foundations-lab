@@ -4,6 +4,24 @@
 
 기본 경로는 실제 Query History/Profile·Jobs·compute metrics·pipeline freshness의 증거를 읽고 원인을 설명하는 것입니다. Spark CPU 모형은 선택 원리 부록입니다. 계정이 없으면 관리자가 정제해 제공한 기존 실제 실행 자료로 분석합니다. 가짜 지표를 실제 측정이라고 쓰거나 새 유료 workspace를 자동 생성하지 않습니다. 아래 SQL/사건은 실행 지침이며 이번 개편에서 managed 실행한 결과가 아닙니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. 허가된 작은 query/job의 정상 결과와 실행 ID를 먼저 확보한 뒤 계획·대기·재시도·비용을 연결합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [실습 준비](labs/README.md)의 권한·비용 한도를 확인하고 제공 Delta SQL fixture를 허가된 비운영 객체에 적용하거나 기존 정제 정상 실행 자료를 읽습니다. 알려진 PK/값·commit version과 query/job run ID를 정상 기준선으로 연결합니다. |
+| 동작 원리 | Delta commit, Spark/Photon 실행, warehouse 준비/queue, Jobs retry의 경계를 나눕니다. task 성공·table commit·업무 결과 완료가 언제 다른지 설명하고 cache/compute 차이를 통제합니다. |
+| 직접 볼 지표·방법 | §2의 Query History/Profile로 total/waiting/execution·scan/shuffle/spill을 읽고 Jobs run/task 오류·실행 identity와 연결합니다. 실제 사용 가능한 compute metrics·pipeline freshness·billing unit을 기록합니다. timeline 행 수를 run 수로 세지 않습니다. |
+| 먼저 확인할 제약 | 계정/compute/Unity Catalog는 미제공이고 SELECT도 compute 기동·과금 가능성이 있습니다. system table의 권한·지역·수집 지연·보존은 다릅니다. 아래 100,000행·동시 1·10분과 승인된 금액 상한을 지킵니다. |
+| 자주 마주치는 사건 2개 | §4 query 지연 카드: 같은 bounded query의 predicate/입력 배치 한 가지만 바꿔 queue/cold start/scan/skew를 구분합니다. job 실패 카드: 자기 task의 합성 검증 조건을 한 번 실패시켜 데이터/권한/배포 원인을 분리합니다. 기본은 기존 정제 incident 분석이며 실제 재현은 별도 선택입니다. |
+| 조치와 회복 oracle | 변경한 query/검증 조건만 원복하고 재실행 전에 멱등성을 확인합니다. 정확한 PK/값·중복 mutation 없음, 오류/대기 분포·복구 시간·동일 업무량 대비 사용량을 검산합니다. 재시도 증가나 유료 증설만으로 해결하지 않습니다. |
+| 제공물·추가 준비 | 준비 지침·SQL fixture·아래 수동 진단을 제공하며 관리형 환경은 별도입니다. 자료 분석은 분석 완료, 직접 실행/복구는 미완료로 구분합니다. storage/IAM 변경·DR·cloud별 기능은 추가 승인 환경 LAB입니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 실행 전 권한·비용·범위
 
 cloud/region/workspace, DBR 또는 warehouse channel, compute/access mode, Photon, catalog/schema, 실행 principal, run/query/update ID와 관측 시간을 기록합니다. 아래 링크는 AWS 문서이며 Azure/GCP 지원·권한·스키마는 실제 cloud 문서에서 재확인합니다. 사용자는 비운영 객체의 조회 권한과 쿼리 비용/시간 상한을 먼저 확보합니다. **SELECT도 stopped warehouse를 시작하거나 과금할 수 있습니다.** 권한이 없으면 GRANT나 admin token 발급으로 우회하지 않고 권한 있는 담당자에게 최소 정제 자료를 요청합니다.

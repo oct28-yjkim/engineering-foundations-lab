@@ -4,6 +4,12 @@ Model Context Protocol을 함수 연결법에서 출발하여 **프로토콜 계
 
 기준일은 **2026-10-04**, 프로토콜은 **2026-07-28**, 선택 Python SDK는 **2.3.0**입니다. SDK 버전과 프로토콜 revision은 서로 다른 축입니다. 이 revision의 core는 요청별 metadata를 사용하는 stateless 방식이며, 2025-11-25 및 그 이전의 `initialize` 중심 흐름은 별도 비교 대상으로 다룹니다. [공식 버전 규칙](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning), [SDK 릴리스](https://github.com/modelcontextprotocol/python-sdk/releases/tag/v2.3.0)를 함께 확인합니다.
 
+## 기본 LAB 입구
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서로 시작합니다. 실제 SDK의 목록·tool·resource 정상 요청부터 익히고 schema·오류 층·timeout·프로세스 수명을 관측합니다. [제품별 기본 LAB 카드](operations.md#basic-lab)에서 정상 결과·직접 볼 지표·자주 만나는 사건 2개·회복 검산과 환경 제공 범위를 확인합니다.
+
+[공통 LAB 계약](../../operations/lab-contract.md)을 적용하며 **28주 심화 과정을 먼저 마칠 필요는 없습니다.** 실행 환경이나 수동 준비가 필요한 단계는 준비/미실행으로 구분하고, 아래 심화 커리큘럼은 기본 LAB 이후 필요한 부분부터 확장합니다.
+
 ## 시작 순서
 
 1. [환경·안전 범위](environment.md)와 [커리큘럼](curriculum.md)을 읽습니다. Python async·프로세스·JSON Schema·HTTP/TLS·OAuth·분산 시스템 기초가 부족하면 별도 보충합니다.

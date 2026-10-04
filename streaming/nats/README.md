@@ -4,6 +4,12 @@ Core NATS와 JetStream을 **라우팅·전달 보장·저장·복제·업무 부
 
 기준일은 **2026-10-04**, 서버는 **nats-server 2.15.0**, 선택 Python client는 **nats-py 2.16.0**입니다. 서버·client·CLI·문서 revision은 별도로 기록합니다. rolling 문서의 최신 기능을 고정 버전이 모두 제공한다고 가정하지 않습니다. [서버 릴리스](https://github.com/nats-io/nats-server/releases/tag/v2.15.0), [Python client 릴리스](https://github.com/nats-io/nats.py/releases/tag/v2.16.0)
 
+## 기본 LAB 입구
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서로 시작합니다. Core 전달과 JetStream의 저장·수신·ACK를 실제 서버에서 먼저 구분한 뒤 pending·재전달을 읽습니다. [제품별 기본 LAB 카드](operations.md#basic-lab)에서 정상 결과·직접 볼 지표·자주 만나는 사건 2개·회복 검산과 환경 제공 범위를 확인합니다.
+
+[공통 LAB 계약](../../operations/lab-contract.md)을 적용하며 **28주 심화 과정을 먼저 마칠 필요는 없습니다.** 실행 환경이나 수동 준비가 필요한 단계는 준비/미실행으로 구분하고, 아래 심화 커리큘럼은 기본 LAB 이후 필요한 부분부터 확장합니다.
+
 ## 시작 순서
 
 1. [환경·안전 경계](environment.md), [커리큘럼](curriculum.md), [평가 기준](assessment.md)을 읽습니다. TCP·비동기 처리·트랜잭션·기초 합의 알고리즘이 부족하면 별도 보충합니다.

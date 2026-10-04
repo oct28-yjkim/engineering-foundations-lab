@@ -4,6 +4,12 @@
 
 기본 실습은 실제 OpenSearch의 API·지표·검색 결과를 연결하는 것입니다. BM25 등 수식 모형은 선택 보조 자료이며 cluster 진단 역량을 대신하지 않습니다. 아래 절차는 실습 명세이고 이 문서를 작성하면서 서버 장애를 실행한 기록은 아닙니다.
 
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+[입구](labs/README.md)에서 합성 문서의 색인·검색·정렬·집계를 확인하고, mapping/analyzer·ACK/GET/search·refresh 경계를 설명합니다. [관측 LAB](labs/observation.md)으로 node/index stats·client 지연·Profile을 읽고 단일 노드·cache·표본 수·보안의 한계를 확인한 뒤 [단계형 사건](labs/incidents.md)을 시작합니다. 28주 심화는 선수 조건이 아닙니다.
+
+실행 코드는 검색 누락·bulk 부분 실패·write block·replica 미할당·pagination 제한을 단계별로 남깁니다. 이 문서의 수동 API 절차는 같은 원인을 더 직접 조사하는 보충 경로이며 반드시 두 경로를 중복 실행할 필요는 없습니다. 추가 자원을 선택하면 [3→4노드 실습](labs/scaling-incidents.md)에서 배치·복귀·routing 문제를 다룹니다. 작성된 기대값과 실제 실행은 [검증 기록](labs/incident-validation.md)에서 구분합니다.
+
 ## 1. 읽기 전용 기준선
 
 기준은 저장소의 **3.9.0**이며 실제 응답·Lucene/plugin·image digest·heap·container budget을 기록합니다. 공식 `latest` 문서는 바뀔 수 있으므로 현재 버전과 API 응답 schema를 확인합니다. [실습 환경](labs/README.md)은 인증/TLS가 없는 개인 loopback 환경이며 원격/공유/실제 데이터에 사용하지 않습니다. private local Docker context 확인 후 사용자가 직접 실행합니다.
@@ -82,7 +88,7 @@ Invoke-RestMethod -Method Put -Uri "$opsEndpoint/$opsIndex/_settings" -ContentTy
 
 ## 4. 지연·429·heap 압력 사건: 한도 내 원인 검증
 
-query 비용·동시성 초과·merge/disk 경합·GC를 경쟁 가설로 두고 node stats의 60초 counter 차이와 `_stats/search,indexing,merge,refresh`를 fixture index에 한정해 수집합니다. 자기 소형 SELECT 10회, 동시성 1과 2 비교까지만 허용하고 client latency/오류·queue·rejected·GC를 기록합니다. 문제가 재현되지 않아도 **미재현**으로 보고하며 장애를 만들려고 문서/동시성을 무한 증대하거나 disk를 채우지 않습니다.
+query 비용·동시성 초과·merge/disk 경합·GC를 경쟁 가설로 둡니다. 먼저 [관측 runner](labs/observation.md)로 실제 REST query 두 경로의 정답·client/took·Profile·전후 node/index stats를 비교합니다. 기본 2,000문서·variant별 20회·동시성 1이며 문서/요청 예산은 해당 문서에 고정합니다. 이 비교는 포화·429·OOM을 재현하지 않으며, 연속 추세가 필요하면 위 읽기 전용 기준선 수집을 별도로 수행합니다. 문제가 나오지 않으면 **미재현**으로 보고하며 문서/동시성을 무한 증대하거나 disk를 채우지 않습니다.
 
 실제 거부를 의도적으로 재현하려면 별도 disposable cluster·heap/메모리/디스크 예산·요청 크기/수 상한·즉시 중단 조건을 작성해 실행을 선택합니다. **조치:** 불필요한 field/aggregation 제거, 유입 제한·backoff·batch 조절을 비교합니다. queue·breaker 한도를 바로 올리지 않습니다. **회복:** 신규 rejection Δ=0, queue 배출, 오류/latency가 같은 workload baseline 범위로 복귀, 정확한 검색 결과 유지. 부하 중지 후에도 heap 점유가 0이 되는 것을 요구하지 않습니다.
 

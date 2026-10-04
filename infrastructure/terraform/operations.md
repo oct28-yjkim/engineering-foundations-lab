@@ -2,6 +2,24 @@
 
 [실제 CLI 실습](labs/README.md) → 이 문서 → [커리큘럼](curriculum.md) 순서로 학습합니다. Terraform **1.16.5**를 기준으로 하며 실습 대상은 [격리 환경](../shared/environment.md)의 built-in `terraform_data`와 local state입니다. 상시 서비스 지표보다 **실행별 결과·단계별 시간·변경 대상·lock/상태·provider 오류**가 중심입니다. Python 모형은 선택 보조자료입니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. 실제 로컬 fixture의 plan→검토→apply→no-op를 먼저 익히고 입력·주소·state·오류를 연결합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [실제 CLI 실습](labs/README.md)의 새 ignored 사본에서 built-in `terraform_data` 계획을 검토한 후 해당 로컬 fixture만 적용합니다. 기대 output·state ID를 기록하고 같은 입력의 재계획 exit 0/no-op를 정상 기준선으로 확보합니다. |
+| 동작 원리 | HCL 입력/validation→graph→plan actions→apply→state binding을 연결합니다. config·state·실제 객체는 같은 것이 아니며 plan의 변경 제안과 오류를 구별합니다. provider lock file과 state lock도 다릅니다. |
+| 직접 볼 지표·방법 | 아래 version/providers/workspace/validate/plan 명령으로 실제 대상·exit 0/1/2·diagnostic·planned actions를 기록합니다. 실행별 시간, replacement 주소, state ID를 비교하며 상시 CPU dashboard가 필수는 아닙니다. |
+| 먼저 확인할 제약 | 제공 fixture는 local backend/built-in만 사용하며 cloud API·IAM·remote lock·throttling을 재현하지 않습니다. 일반 plan은 외부 효과가 있을 수 있고 state/plan/debug에는 민감 값이 들어갈 수 있습니다. 다른 저장소에 명령을 그대로 적용하지 않습니다. |
+| 자주 마주치는 사건 2개 | 아래 기본 사건 1: revision 변경 계획의 exit 2를 실패로 오분류하는 wrapper와 정상 diff를 구별합니다. 사건 2: 별도 새 사본에 validation 위반 입력을 plan으로만 전달해 실제 exit 1·diagnostic을 확인합니다. replacement 계획을 실행하지 않습니다. |
+| 조치와 회복 oracle | 원래 revision으로 plan을 되돌려 no-op=0·기존 ID 유지, 잘못된 입력을 정상으로 돌려 validation/plan 통과를 확인합니다. state/객체를 강제로 되돌리지 않고 plan 분류기의 0/1/2 세 경우를 검산합니다. |
+| 제공물·추가 준비 | 고정 CLI 준비 안내·실제 module/fixture·아래 수동 사건을 제공합니다. CLI는 별도 준비이며 새 사건 자동실행기는 아닙니다. remote lock·부분 apply·provider 오류·cloud 확장은 별도 격리 환경 LAB입니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 먼저 수집할 증거
 
 실습 안내의 새 사본·`$iacTerraform`·init을 준비한 뒤 해당 root module에서 실행합니다. 아래 plan은 제공된 무클라우드 fixture에 한정합니다. 일반 plan은 provider/data source/외부 프로그램·backend lock 등을 사용할 수 있으며 읽기 전용 보안 경계가 아닙니다.

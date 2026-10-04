@@ -4,6 +4,24 @@
 
 이 트랙의 주 실습은 **실제 InnoDB의 요청·잠금·실행 계획·복제 상태**입니다. Python 모형은 선택 원리 보조 자료이며 여기의 운영 관문을 대체하지 않습니다. 아래는 학습용 실행 절차이지 이번 변경에서 장애를 실제 실행한 기록이 아닙니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. 정상 InnoDB 트랜잭션과 SELECT를 먼저 실행하고 row lock·MDL·계획 변화의 차이를 배웁니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | 아래 §2의 새 fixture에서 accounts `1:100, 2:100`, events 1,000행을 확인합니다. 짧은 transaction의 자기 행 UPDATE→조회→ROLLBACK을 수행하고 원래 잔액으로 돌아오는지 검산합니다. `customer=42`의 정확한 10개 ID를 baseline으로 저장합니다. |
+| 동작 원리 | InnoDB transaction·row lock, DDL의 metadata lock, index 접근 경로를 구분합니다. SELECT 성공·transaction 종료·DDL 완료는 서로 다른 경계이며 같은 timeout 메시지만으로 원인을 정하지 않습니다. |
+| 직접 볼 지표·방법 | §1 SQL로 `data_locks/data_lock_waits`의 thread→transaction을 보고 `metadata_locks`와 구분합니다. 같은 digest의 rows examined/sent·timer delta 및 `EXPLAIN ANALYZE`를 대조합니다. timer 단위·관측 consumer 활성 여부를 확인합니다. |
+| 먼저 확인할 제약 | 단일 노드 Compose이며 GTID/binlog 설정이 replica 환경을 만드는 것은 아닙니다. host port 없이 container 내부 접속을 사용합니다. DDL implicit commit과 lock timeout의 rollback 범위를 아래 지침대로 확인합니다. |
+| 자주 마주치는 사건 2개 | §3 A: 동일 행 UPDATE 대기를 만들고 row lock wait와 deadlock/CPU 지연을 구별합니다. §3 C: 같은 SELECT를 자기 fixture index 생성 전후 비교합니다. 작은 데이터에서 scan이 선택되어도 엔진 오류로 보지 않습니다. |
+| 조치와 회복 oracle | 대기 transaction 둘을 명시적으로 ROLLBACK해 wait edge 0·잔액 100/100을 확인합니다. SELECT 전후 10개 ID/값이 같고 오류가 없어야 하며 index의 쓰기 비용·변경 상태를 기록합니다. session 설정은 세션 종료로 해제합니다. |
+| 제공물·추가 준비 | 제품별 Compose·SQL/runner와 아래 수동 진단을 제공합니다. 자동 성능/장애 검증 전체는 아닙니다. MDL은 다음 선택 사건, replica·PITR·실제 storage 장애는 별도 환경 LAB입니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 사전 확인과 읽기 전용 기준선
 
 [전용 Compose](compose.yaml)는 8.4.11 단일 노드이며 외부 포트를 열지 않습니다. 개인 로컬 Docker context·메모리/디스크 예산·기존 volume을 확인한 뒤 [접속 명령](labs/README.md)을 사용합니다. 실제 버전/digest와 Performance Schema 활성 여부를 기록합니다. 실습 root/dummy 비밀번호는 운영 계정 설계가 아닙니다. SQL 원문·사용자·오류 메시지에서 비밀을 제거합니다.

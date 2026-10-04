@@ -4,6 +4,24 @@
 
 실습의 기본은 실제 서버의 **정확성·읽기량·지연·메모리·적재 상태**를 함께 관찰하는 것입니다. CPU라는 하드웨어 자원은 관측 항목이며 Python 모형 실행을 뜻하는 과정명으로 사용하지 않습니다. 아래 절차는 학습자가 실행할 과제이며 문서 작성 시 장애를 검증했다는 의미가 아닙니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. MergeTree에 넣은 행을 조회·집계한 뒤 읽기량, part·merge, 비동기 mutation을 관측합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | 아래 §2의 새 MergeTree fixture에 합성 20,000행을 넣고 `count()`, 알려진 `id=42`의 customer/payload를 확인합니다. 정상 SELECT 한 건의 결과와 query_id를 기록한 뒤 두 번째 동일 요청과 비교합니다. |
+| 동작 원리 | ORDER BY 키→granule 선택→읽기량, INSERT→part→background merge, mutation 수락→실제 part 변경의 순서를 먼저 설명합니다. ACK·완료·업무 가시성을 같은 사건으로 보지 않습니다. |
+| 직접 볼 지표·방법 | §1의 `system.query_log`에서 query_id별 read_rows/read_bytes·duration·exception을 보고, `system.parts/merges/mutations`에서 part 수·진행·실패 이유를 함께 조회합니다. 로그는 비동기이며 query bytes는 물리 disk I/O와 다릅니다. |
+| 먼저 확인할 제약 | 기본 단일 MergeTree는 Keeper/replica가 없습니다. 소유 DB·20,000행 시작 fixture·query 메모리/시간 상한을 지키고 missing metric을 0으로 채우지 않습니다. tiny fixture의 빠른 merge/mutation으로 증상이 보이지 않을 수 있습니다. |
+| 자주 마주치는 사건 2개 | §3 B: 최대 10번의 1행 INSERT와 별도 테이블의 동일 10행 batch를 비교해 part 증가를 진단합니다. §3 C: 자기 100행 mutation의 수락·진행·결과를 구분합니다. Too many parts나 긴 mutation 장애를 강제로 만들지는 않습니다. |
+| 조치와 회복 oracle | 발생기를 멈추고 batch 크기/유입 설계를 검토합니다. B 후 20,010행, C 후 `id<100`의 정확한 100행 변경과 나머지 ID/값 보존을 확인합니다. mutation은 ROLLBACK으로 되돌릴 수 없으므로 변경 원장과 원본 fixture를 보존합니다. |
+| 제공물·추가 준비 | 독립 Compose·SQL 및 아래 수동 절차를 제공합니다. 정상 기능과 관측을 먼저 실행하고, Keeper·ReplicatedMergeTree·replica 복귀는 별도 구축이 필요한 확장 LAB으로 표시합니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 1. 환경과 기준선
 
 [시작 안내](README.md)의 개인 로컬 Compose를 사용하고 context·기존 데이터·권한을 먼저 확인합니다. 기준은 26.8 계열이며 실제 patch/digest·build commit·설정·part 상태를 저장합니다. ClickHouse 공식 사이트는 rolling 문서이므로 필드/설정은 `DESCRIBE TABLE` 및 실제 버전과 대조합니다. 없는 관측 항목을 0으로 채우지 않습니다.

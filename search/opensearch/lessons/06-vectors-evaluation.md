@@ -47,7 +47,7 @@ rank는 1부터 시작하며 미등장 list의 기여는 0입니다. rank consta
 2. lexical/vector 후보 깊이를 따로 바꿉니다. candidate union에 정답이 없는 miss와 fusion/reranker가 낮게 둔 ranking miss를 분리합니다. 후보 recall을 고정한 실험도 추가합니다.
 3. RRF constant 또는 fusion weight를 tuning split에서만 선택합니다. score 크기가 하나만 매우 큰 문서, 한 list에만 있는 문서, 서로 상충하는 순위, 모든 score가 같은 list를 음성 fixture로 넣습니다.
 4. query slice별 nDCG·MRR·중복 원문 수·권한 위반·최신성·end-to-end latency를 보고합니다. RRF가 언제나 정규화 결합보다 우월하다는 결론을 사전에 정하지 않습니다.
-5. reranker는 candidate가 고정된 선택 확장입니다. 실제 모델·GPU/API가 필요하면 별도 동의·비용 상한·비밀 처리·모델 revision을 먼저 정합니다. 기본 CPU 합성 점수 실험을 실제 모델 검증으로 보고하지 않습니다.
+5. reranker는 candidate가 고정된 선택 확장입니다. 실제 모델·GPU/API가 필요하면 별도 동의·비용 상한·비밀 처리·모델 revision을 먼저 정합니다. 선택 원리 모형의 합성 점수 실험을 실제 모델 검증으로 보고하지 않습니다.
 
 ### LLM engineer의 추가 계약
 

@@ -4,7 +4,7 @@
 
 SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 스트리밍, 관측, 인증·인가, 성능 측정, 소스 코드 분석을 연결합니다. 가장 높은 단계의 완료 기준은 낯선 현상을 최소 재현으로 줄이고, 원인을 코드와 측정값으로 설명하며, 수정안의 회귀를 검증하는 것입니다.
 
-**제품·도구는 실제 실행과 관측·트러블슈팅 중심**, LLM 논문은 기존 CPU 기본·GPU/API 선택 경로로 학습합니다. 제품별 원리 모형은 선택 보조자료입니다. [개편된 학습 원칙과 제품별 운영 실습](operations/README.md)을 확인합니다.
+**제품·도구의 기본 LAB은 정상 기능 → 동작 원리 → 모니터링 → 제약 확인 → 흔한 문제의 진단·복구 순서**입니다. 기능과 관측을 익힌 뒤 장애를 경험하며, 조사한 사실과 실제 실행 증거를 구분합니다. [기본 LAB 규격](operations/lab-contract.md)과 [제품별 시작점](operations/README.md)을 확인합니다. LLM 논문은 기존 CPU 기본·GPU/API 선택 경로, 제품별 원리 모형은 선택 보조자료로 유지합니다.
 
 **실습 환경은 제품별 디렉터리에 있습니다.** PostgreSQL·ClickHouse도 각각 독립 Compose를 사용하며 루트에는 Compose 파일을 두지 않습니다. [실습 환경 지도](#실습-환경과-compose-위치)에서 대상을 선택합니다. 기존 루트 Compose로 데이터를 만들었다면 새 환경을 시작하기 전에 [기존 데이터 전환 안내](databases/shared/compose-migration.md)를 확인합니다.
 
@@ -12,6 +12,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 
 | 문서 | 역할 |
 | --- | --- |
+| [기본 LAB 진행 규격](operations/lab-contract.md) | 정상 동작·원리·관측·제약을 먼저 배우고 대표 사건을 진단·복구하는 공통 순서 |
 | [운영·모니터링·트러블슈팅](operations/README.md) | 15개 제품의 핵심 지표·진단 순서·회복 검증·보고서 |
 | [데이터베이스 교육 과정](databases/README.md) | 수준 진단, PG+CH 72주 경로와 MySQL 선택 과정, 통과 기준 |
 | [이벤트 스트리밍 교육 과정](streaming/README.md) | Kafka·NATS 선택 트랙과 PG/Kafka/CH 통합 100주 경로 |
@@ -50,6 +51,8 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 
 **제품별 기본 `compose.yaml` 7개가 각각 한 제품을 담당합니다.** 프로젝트·기본 network·volume의 수명 주기를 분리하며 필요한 제품만 실행합니다. PG·ClickHouse에는 기존 데이터 연결용 선택 override가 각각 하나씩 별도로 있습니다. 아래 목록은 기본 실행 구성의 위치이며 이미지 다운로드·엔진 기동·운영 검증이 완료됐다는 뜻은 아닙니다.
 
+OpenSearch에는 기본 단일 노드와 **별도 프로젝트인 선택 [3→4노드 Compose](search/opensearch/compose.cluster.yaml)**도 있습니다. [확장 LAB의 자원·보안·실행 조건](search/opensearch/labs/scaling-incidents.md)을 확인해 따로 실행합니다. 제품별 기본 파일 7개와 선택 topology/override를 구분하며 서로 합치지 않습니다.
+
 | 제품 | 현재 Compose 파일 | 제공 범위 |
 | --- | --- | --- |
 | PostgreSQL | [databases/postgresql/compose.yaml](databases/postgresql/compose.yaml) | 단일 노드, SQL 초기 데이터·관찰 쿼리, 전용 기본 volume |
@@ -85,9 +88,11 @@ docker compose -f streaming/kafka/compose.yaml config --services
 - **Databricks:** [허가된 관리형 환경](platforms/databricks/labs/README.md)을 별도로 준비합니다. 계정·compute·Unity Catalog는 제공하지 않으며 로컬 Spark가 이를 대신하지 않습니다.
 - **LLM 논문:** [CPU 기본 경로](ai/llm-paper-lab/environment.md)는 Python으로 실행합니다. GPU/API는 선택 확장이며 DB Compose와 독립적입니다.
 
-**운영 지침이 있다는 것과 관측 환경이 준비됐다는 것은 다릅니다.** exporter·dashboard·Prometheus/Grafana·지속 부하·다중 노드 환경은 현재 일괄 제공하지 않습니다. 각 트랙의 실제 실행 기록과 미검증 범위를 확인하고, 별도 준비가 필요한 실습은 준비 전까지 실행 완료로 표시하지 않습니다. 특히 NATS 지속 관측과 Spark UI는 위 기본 runner 실행만으로 제공되지 않습니다.
+**운영 지침이 있다는 것과 관측 환경이 준비됐다는 것은 다릅니다.** exporter·dashboard·Prometheus/Grafana·지속 부하는 일괄 제공하지 않습니다. 다중 노드는 OpenSearch 선택 LAB 외에는 해당 트랙에서 추가 구성해야 합니다. 각 트랙의 실제 실행 기록과 미검증 범위를 확인하고, 별도 준비가 필요한 실습은 준비 전까지 실행 완료로 표시하지 않습니다. 특히 NATS 지속 관측과 Spark UI는 위 기본 runner 실행만으로 제공되지 않습니다.
 
 ## 시간 계획
+
+아래는 **심화 학습 계획**입니다. 기본 LAB을 시작하기 위해 28주 과정을 먼저 마칠 필요는 없습니다. 제품 하나를 골라 정상 기능·동작 설명·관측·제약과 대표 사건 두 개를 경험한 뒤, 필요한 모듈로 깊이를 확장합니다.
 
 데이터베이스 두 트랙은 공통 기반 8주 + PostgreSQL 28주 + ClickHouse 28주 + 통합 연구 8주, 총 **72주·약 864시간**입니다. Kafka까지 순차로 포함하면 공통 기반 8주 + PostgreSQL 28주 + Kafka 28주 + ClickHouse 28주 + 통합 연구 8주, 총 **100주·약 1,200시간**을 기준으로 합니다. 공통 기반과 통합 연구는 한 번만 이수합니다.
 
@@ -99,7 +104,7 @@ LLM 논문 실험은 별도의 **28주·336시간 선택 트랙**입니다. [논
 
 Spark와 Databricks도 각각 **28주·14모듈·336시간**의 선택 트랙입니다. [분산 처리 경로](data-processing/README.md)는 Spark 원리 → Databricks 플랫폼 순서를 권장하며, 두 트랙만 순차로 56주입니다. 공통 기초·선택 8주 통합 연구는 별도이고 기존 경로에 자동 가산하지 않습니다. Spark 4.0.4 로컬 실습과 Databricks Runtime의 관리형 기능을 동일 환경으로 취급하지 않습니다.
 
-기술 한 개에 집중하는 경우 공통 기반 8주와 해당 트랙 28주를 먼저 진행합니다. 소스 빌드, 별도 복제 환경 구성, 실제 업무 경험을 더하면 기간이 늘어날 수 있습니다. 숙련도는 자료를 읽은 횟수보다 재현 가능한 결과물로 평가합니다.
+기술 한 개의 심화 과정에 집중하는 경우 공통 기반 8주와 해당 트랙 28주를 선택합니다. 소스 빌드, 별도 복제 환경 구성, 실제 업무 경험을 더하면 기간이 늘어날 수 있습니다. 숙련도는 자료를 읽은 횟수보다 재현 가능한 결과물로 평가합니다.
 
 Terraform과 Terragrunt는 각각 **28주·14모듈·336시간**의 선택 과정입니다. [인프라 경로](infrastructure/README.md)는 Terraform 실행·state 원리 → Terragrunt의 여러 unit 운영 순서이며 순차 56주입니다. 다른 제품 경로나 캡스톤 기간에 자동 합산하지 않습니다.
 
@@ -115,7 +120,7 @@ NATS도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. Core NAT
 
 ## 첫 실습: 제품 관측과 트러블슈팅
 
-제품별로 **실제 실행 → 정상 기준선 → 증상·지표·로그 → 원인/내부 구현 → 조치·복구**를 기본 경로로 사용합니다. [공통 운영 학습 안내](operations/README.md)와 [장애 보고서 양식](operations/incident-report-template.md)을 먼저 봅니다. 원리 모형은 선택 보조자료이며 실제 실습의 선수 조건이나 완료 증거가 아닙니다.
+제품별로 **정상 기능 → 동작 원리 → 정상 관측 → 제약 → 증상 재현·진단 → 조치·회복 확인**을 기본 경로로 사용합니다. [기본 LAB 규격](operations/lab-contract.md)과 [기록 양식](operations/incident-report-template.md)을 먼저 봅니다. 각 제품 README와 운영 문서의 기본 LAB 카드에서 실제 제공 코드·수동 절차·추가 환경을 구분합니다. 원리 모형은 선택 보조자료이며 실제 실습의 선수 조건이나 완료 증거가 아닙니다.
 
 | 트랙 | 환경·실행 시작점 | 기본 운영 실습 |
 | --- | --- | --- |
@@ -123,7 +128,7 @@ NATS도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. Core NAT
 | MySQL | [단일 엔진·SQL](databases/mysql/labs/README.md) | [Performance Schema·InnoDB·복제 진단](databases/mysql/operations.md) |
 | Kafka | [KRaft Compose·로컬 실습](streaming/kafka/labs/local-lab.md) | [lag·ISR·request latency·장애 대응](streaming/kafka/operations.md) |
 | NATS | [격리 서버·SDK](streaming/nats/labs/README.md) | [consumer·ACK·slow consumer·stream 상태](streaming/nats/operations.md) |
-| OpenSearch | [단일 엔진·REST](search/opensearch/labs/README.md) | [shard·heap·rejection·검색/색인 지연](search/opensearch/operations.md) |
+| OpenSearch | [정상 기능·원리·관측부터](search/opensearch/labs/README.md) | [5개 단계형 사건](search/opensearch/labs/incidents.md), [query 관측](search/opensearch/labs/observation.md), [3→4노드 확장](search/opensearch/labs/scaling-incidents.md) |
 | Spark / Databricks | [실제 Spark](data-processing/spark/labs/README.md), [관리형 환경 준비](platforms/databricks/labs/README.md) | [Spark UI·skew·spill](data-processing/spark/operations.md), [query/job·권한·비용](platforms/databricks/operations.md) |
 | Sentry / Supabase | [Sentry 준비](observability/sentry/labs/local-lab.md), [Supabase 준비](platforms/supabase/labs/local-lab.md) | [오류·trace·ingestion](observability/sentry/operations.md), [DB/pool·Auth/RLS·서비스별 오류](platforms/supabase/operations.md) |
 | Terraform / Terragrunt | [격리 local CLI 환경](infrastructure/shared/environment.md) | [plan/state·lock·부분 적용](infrastructure/terraform/operations.md), [unit·dependency·실행 원장](infrastructure/terragrunt/operations.md) |
@@ -151,7 +156,7 @@ python -B -m unittest discover -s ai/llm-paper-lab/labs -p test_lab.py -v
 - Spark의 로컬 배치·스트리밍 runner, 별도 UI·event log 준비 및 실행 계획 진단 지침과 선택 원리 모형
 - Databricks의 관리형 환경 준비 지침·Delta SQL fixture·query/job·비용 진단 과제; 실행 환경 자체는 미제공
 - Terraform/Terragrunt built-in 실제 테스트·로컬 2-unit 실습, plan/state·실행 로그·부분 실패 진단과 선택 원리 모형
-- OpenSearch 단일 노드 Compose·REST fixture, shard/heap/검색 진단과 BM25/RRF/HNSW 논문·소스·선택 원리 모형
+- OpenSearch 정상 REST fixture·5개 단계형 사건 runner·query/지표 관측 runner, 별도 3→4노드 Compose·수동 확장/복구 카드; 실제 엔진 신규 시나리오 실행은 미검증
 - MySQL 단일 노드 Compose·SQL fixture, Performance Schema/InnoDB 진단·소스·복구 연구와 선택 원리 모형
 - OpenBao/Vault 격리 dev Compose·KV/ACL fixture, 제품별 health·lease·audit·Raft 진단·소스·선택 원리 모형
 - MCP 공식 SDK stdio fixture, 요청·오류·timeout 진단·명세/SDK 소스·호환성·선택 원리 모형
@@ -159,7 +164,7 @@ python -B -m unittest discover -s ai/llm-paper-lab/labs -p test_lab.py -v
 - 기초 SQL 문제/답안, 읽기 전용 내부 상태 관찰 SQL
 - 실험 기록 양식과 통합 연구 프로젝트 요구사항
 
-복제 클러스터, Keeper, 다중 controller KRaft, CDC connector, Streams 애플리케이션, 부하 생성기, 디버그 빌드, 모니터링 스택은 심화 단계에서 학습자가 구성할 과제입니다. 현재 Compose를 실행하는 것만으로 이 구성들이 만들어지지는 않습니다. DB와 Kafka Compose 사이에도 네트워크·connector가 자동 연결되지는 않습니다. 문서에 기재한 기대 관찰값과 실행 계획은 실측 결과와 구분합니다.
+OpenSearch 선택 복제 LAB 외의 복제 클러스터, Keeper, 다중 controller KRaft, CDC connector, Streams 애플리케이션, 지속 부하 생성기, 디버그 빌드, 모니터링 스택은 심화 단계에서 학습자가 구성할 과제입니다. 제품별 기본 Compose만으로 이 구성들이 만들어지지는 않습니다. DB와 Kafka Compose 사이에도 네트워크·connector가 자동 연결되지는 않습니다. 문서에 기재한 기대 관찰값과 실행 계획은 실측 결과와 구분합니다.
 
 Sentry/Supabase의 hosted와 self-hosted 기능·버전·운영 책임은 동일하지 않습니다. 소스 읽기 snapshot과 실제 실행 이미지·SDK·CLI 버전을 분리해 기록합니다. 클라우드 계정·프로젝트 생성, 외부 telemetry 전송, 원격 migration·배포는 자동 수행하지 않습니다. 합성 데이터만 사용하고 실제 토큰·사용자 payload·실습에서 생성한 secret은 커밋하지 않습니다. Compose의 공개 dummy 자격 증명은 폐기 가능한 로컬 fixture용이며 실제 인증 정보로 재사용하지 않습니다.
 

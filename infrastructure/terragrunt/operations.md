@@ -2,6 +2,24 @@
 
 [실제 두-unit 실습](labs/README.md)과 [격리 환경](../shared/environment.md)을 먼저 준비합니다. 기준 **Terragrunt 1.1.6 / Terraform 1.16.5**, local backend·built-in module입니다. CLI orchestration은 broker처럼 상시 CPU dashboard를 보는 대신 **선택·시작·완료 집합, unit별 시간, dependency 실패, state 소유권**을 관측합니다.
 
+<a id="basic-lab"></a>
+
+## 기본 LAB: 정상 동작에서 장애 복구까지
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서의 입문 카드입니다. foundation/application 두 unit의 정상 의존성과 no-op부터 익힌 뒤 mock·입력·실행/미실행을 구분합니다. [공통 LAB 계약](../../operations/lab-contract.md)에 따라 정상 결과를 먼저 검산한 뒤 아래 상세 절차로 진행합니다. 28주 심화는 선수 조건이 아니며, 이 카드 추가가 새 자동 실행기 제공이나 실제 장애 검증 완료를 뜻하지 않습니다.
+
+| 단계 | 실행·관측·판정 |
+| --- | --- |
+| 정상 기능부터 | [실제 두-unit 실습](labs/README.md)의 새 ignored 사본에서 각 unit의 계획을 검토하고 순서대로 적용합니다. foundation의 실제 output을 application이 참조하는지 확인하고 두 state/ID·전체 no-op=0를 기록합니다. |
+| 동작 원리 | include/inputs 평가→dependency outputs→실행 큐→unit별 state를 연결합니다. mock 기반 plan은 실제 upstream 배포 성공이 아니며 여러 state는 하나의 전역 transaction이 아닙니다. |
+| 직접 볼 지표·방법 | 아래 `run --all ... plan`의 summary·unit 로그에서 intended/selected/started/success/failure를 이름까지 대조합니다. 지원되는 버전에서만 Run Report를 사용하고 duration·Reason/Cause·upstream 값·state identity를 확인합니다. |
+| 먼저 확인할 제약 | local backend/built-in 두 unit만 제공됩니다. HCL hook/run_cmd/source/backend에는 추가 효과가 있을 수 있습니다. `run --all apply/destroy`는 입문 명령이 아니며 plan 2·제외·upstream 때문에 미실행을 모두 실패로 합치지 않습니다. |
+| 자주 마주치는 사건 2개 | 아래 기본 사건 1: 미적용 새 사본의 `mock-foundation` plan과 foundation 적용 후 실제 output plan을 비교합니다. 사건 2: 정상 완료한 별도 새 사본에서 application 입력만 validation 위반으로 바꾸고 foundation 결과·application 오류·aggregate를 구분합니다. |
+| 조치와 회복 oracle | 오래된 mock plan은 적용하지 않고 실제 output을 읽은 새 plan을 검토합니다. 잘못된 input을 원복하여 두 unit no-op=0·기존 ID/값 유지·실행 대상 일치를 확인합니다. 이 plan 오류를 부분 apply 장애로 보고하지 않습니다. |
+| 제공물·추가 준비 | fixture·CLI 준비·아래 수동 절차를 제공하며 report/로그 수집은 버전 지원을 먼저 확인합니다. backend 경쟁·hook 부작용·원격 provider/부분 apply는 추가 LAB이고 28주 심화는 기본 LAB의 선수 조건이 아닙니다. |
+
+두 사건의 결과가 예상과 다르면 관측한 상태를 기록하고 발생기/변경부터 멈춥니다. 정상 baseline·사건별 경쟁 가설·제한 조치·회복 oracle·미실행 범위를 [사건 보고서](../../operations/incident-report-template.md)에 남깁니다.
+
 ## 기준선·관측
 
 이미 검토한 새 fixture에서 `$iacTerragrunt`, `$iacTerraform`, `$iacLive`를 준비하고 두 unit을 정상 완료한 후 실행합니다. 일반 HCL의 hook/run_cmd/source/backend에는 추가 효과가 있으므로 다른 저장소에 복사해 실행하지 않습니다.

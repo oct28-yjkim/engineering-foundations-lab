@@ -4,6 +4,12 @@
 
 재현 기준은 **OpenBao 2.7.1**입니다. [릴리스](https://github.com/openbao/openbao/releases/tag/v2.7.1)와 [소스 읽기 지도](source-reading.md)의 고정 revision을 사용하며, 실행마다 바이너리 버전·이미지 digest·plugin 버전·설정을 기록합니다. OpenBao 고유 기능은 OpenBao 문서·해당 revision으로 확인합니다. Vault와 기원이 같아도 namespaces·정책 확장·저장소·plugin·토큰 동작의 현재 호환성을 가정하지 않습니다.
 
+## 기본 LAB 입구
+
+**정상 기능 → 동작 원리 → 관측 → 제약 → 진단·복구** 순서로 시작합니다. 최소 권한 child로 정상 KV 읽기를 확인한 뒤 capability·서버 상태·TTL과 소비자 동작을 연결합니다. [제품별 기본 LAB 카드](operations.md#basic-lab)에서 정상 결과·직접 볼 지표·자주 만나는 사건 2개·회복 검산과 환경 제공 범위를 확인합니다.
+
+[공통 LAB 계약](../../operations/lab-contract.md)을 적용하며 **28주 심화 과정을 먼저 마칠 필요는 없습니다.** 실행 환경이나 수동 준비가 필요한 단계는 준비/미실행으로 구분하고, 아래 심화 커리큘럼은 기본 LAB 이후 필요한 부분부터 확장합니다.
+
 ## 학습 순서
 
 1. [커리큘럼](curriculum.md)의 선수 조건을 점검합니다. Linux 프로세스/권한·HTTP/TLS·JWT·시간·트랜잭션·합의 기초가 부족하면 별도 보충합니다.
