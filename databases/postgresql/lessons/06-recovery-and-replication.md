@@ -13,11 +13,11 @@ RPO는 잃어도 되는 데이터 범위, RTO는 서비스를 되살려야 하�
 저장소 루트의 터미널에서 실행합니다. 원본 데이터를 수정하는 작업을 멈춘 짧은 실습 구간을 잡아, dump 시점과 검산 시점의 차이를 통제합니다. 이미 `lab_m11_restore`가 있으면 삭제하지 말고 새 이름을 정해 모든 명령에 일관되게 사용합니다.
 
 ```bash
-docker compose exec postgres pg_dump -U lab -d lab --schema=commerce --format=custom --file=/tmp/m11-commerce.dump
-docker compose exec postgres pg_restore --list /tmp/m11-commerce.dump
-docker compose exec postgres createdb -U lab lab_m11_restore
-docker compose exec postgres pg_restore -U lab -d lab_m11_restore --exit-on-error --no-owner /tmp/m11-commerce.dump
-docker compose exec postgres psql -X -U lab -d lab_m11_restore
+docker compose -f databases/postgresql/compose.yaml exec postgres pg_dump -U lab -d lab --schema=commerce --format=custom --file=/tmp/m11-commerce.dump
+docker compose -f databases/postgresql/compose.yaml exec postgres pg_restore --list /tmp/m11-commerce.dump
+docker compose -f databases/postgresql/compose.yaml exec postgres createdb -U lab lab_m11_restore
+docker compose -f databases/postgresql/compose.yaml exec postgres pg_restore -U lab -d lab_m11_restore --exit-on-error --no-owner /tmp/m11-commerce.dump
+docker compose -f databases/postgresql/compose.yaml exec postgres psql -X -U lab -d lab_m11_restore
 ```
 
 `--schema=commerce`는 여기서 학습 데이터만 복원하기 위한 선택입니다. 모든 extension·role·권한·외부 의존성을 포괄하는 전체 운영 백업이라고 주장하지 않습니다. `/tmp` 파일은 장기 보관소가 아니므로 이 연습은 off-host 백업 검증도 아닙니다. [pg_dump](https://www.postgresql.org/docs/18/app-pgdump.html), [pg_restore](https://www.postgresql.org/docs/18/app-pgrestore.html).

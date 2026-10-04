@@ -22,7 +22,7 @@ python -B search/opensearch/labs/engine_lab.py --help
 python -B search/opensearch/labs/engine_lab.py --run-local
 ```
 
-`up`은 이미지를 내려받고 로컬 컨테이너·network·named volume을 생성합니다. DB/Kafka와 프로젝트·network·volume이 분리돼 있으며 root Compose와 자동 연결되지 않습니다. Docker daemon이 꺼져 있으면 여기서 중단하고 사용자 환경에서 직접 준비합니다. healthcheck 통과는 아래 fixture 검증이나 HA 보장이 아닙니다.
+`up`은 이미지를 내려받고 로컬 컨테이너·network·named volume을 생성합니다. DB/Kafka의 제품별 Compose와 프로젝트·network·volume이 분리돼 있으며 제품 사이의 연결은 자동 구성하지 않습니다. 전체 위치는 [환경 지도](../../../README.md#실습-환경과-compose-위치)에서 확인합니다. Docker daemon이 꺼져 있으면 여기서 중단하고 사용자 환경에서 직접 준비합니다. healthcheck 통과는 아래 fixture 검증이나 HA 보장이 아닙니다.
 
 ### REST runner의 쓰기 범위
 

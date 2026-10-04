@@ -25,11 +25,13 @@ SQL 입문부터 실행 계획, 페이지와 WAL, 동시성 제어, 복구·복�
 
 ## 실습 환경과 실행 범위
 
-저장소 루트에서 실행합니다. 초기 데이터는 사용자 1만 명, 상품 1천 개, 주문 10만 건, 주문 항목 30만 건입니다. 생성 SQL은 새 데이터 볼륨을 초기화할 때만 자동 실행됩니다. 재실행을 위해 기존 볼륨을 삭제하지 말고 각 강의의 별도 실험 테이블을 사용합니다.
+저장소 루트에서 [PostgreSQL 전용 Compose](compose.yaml)를 명시해 실행합니다. 프로젝트 `engineering-foundations-postgresql-lab`은 ClickHouse·다른 제품과 network·volume·수명 주기를 공유하지 않습니다. 초기 데이터는 사용자 1만 명, 상품 1천 개, 주문 10만 건, 주문 항목 30만 건입니다. 생성 SQL은 새 데이터 볼륨을 초기화할 때만 자동 실행됩니다. 재실행을 위해 기존 볼륨을 삭제하지 말고 각 강의의 별도 실험 테이블을 사용합니다.
+
+이전에 루트 Compose를 사용했다면 **아래 기동 전에 [기존 환경 전환 안내](../shared/compose-migration.md)를 먼저 확인합니다.** 기본 구성은 새 프로젝트 volume을 사용하며 기존 데이터를 자동으로 옮기지 않습니다. 기존 컨테이너가 실행 중이면 같은 호스트 포트도 충돌할 수 있습니다.
 
 ```bash
-docker compose up -d postgres
-docker compose exec postgres psql -X -U lab -d lab
+docker compose -f databases/postgresql/compose.yaml up -d --wait postgres
+docker compose -f databases/postgresql/compose.yaml exec postgres psql -X -U lab -d lab
 ```
 
 접속한 `psql`에서:

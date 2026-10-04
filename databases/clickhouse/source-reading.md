@@ -14,14 +14,15 @@ SELECT name, value FROM system.build_options
 WHERE name ILIKE '%VERSION%' OR name ILIKE '%GIT%';
 ```
 
-2. 저장소 루트에서 실제 실행 컨테이너의 image ID와 digest를 확인합니다. build metadata에서 commit이 나오지 않으면 미확인이라고 기록하고 공식 image/release metadata를 더 조사합니다.
+2. 저장소 루트에서 제품별 Compose로 실제 실행 컨테이너 ID를 찾고, 그 컨테이너의 image ID와 digest를 확인합니다. 고정 컨테이너 이름을 가정하지 않습니다. 아래 두 placeholder는 바로 앞 명령의 실제 출력으로 바꾼 뒤 한 줄씩 실행합니다. `ps -q`가 비어 있으면 중단합니다. 기존 volume 전환용 override를 사용하는 경우 [전환 안내](../shared/compose-migration.md)의 전체 파일 목록을 유지합니다. build metadata에서 commit이 나오지 않으면 미확인이라고 기록하고 공식 image/release metadata를 더 조사합니다.
 
 ```text
-docker inspect efl-clickhouse --format "{{.Image}}"
-docker image inspect clickhouse/clickhouse-server:26.8 --format "{{json .RepoDigests}}"
+docker compose -f databases/clickhouse/compose.yaml ps -q clickhouse
+docker inspect --type container "VERIFIED_CONTAINER_ID" --format "{{.Image}}"
+docker image inspect "VERIFIED_IMAGE_ID" --format "{{json .RepoDigests}}"
 ```
 
-태그가 이동했으면 두 명령의 이미지 대상이 다를 수 있으므로 첫 명령의 image ID를 두 번째 명령에도 적용해 **실행 중인 이미지**의 digest를 확인합니다. `RepoDigests`가 없는 로컬 빌드도 별도 표시합니다.
+이동 가능한 `26.8` 태그를 다시 조회하는 대신 컨테이너에서 얻은 immutable image ID를 사용하여 **실행 중인 이미지**의 digest를 확인합니다. `RepoDigests`가 없는 로컬 빌드도 별도 표시합니다.
 
 3. 소스 탐색만 시작하려면 아래 고정 tag를 별도 디렉터리에 가져올 수 있습니다. 실제 runtime 버전이 다르면 공식 태그 목록에서 일치하는 태그를 선택합니다. suffix를 추측해 존재하지 않는 URL을 만들지 않습니다.
 

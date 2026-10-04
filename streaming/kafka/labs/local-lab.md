@@ -8,7 +8,7 @@
 
 ## 1. 구성과 실제 주소
 
-사용 파일은 [독립 Compose](../compose.yaml)입니다. 프로젝트 이름은 `engineering-foundations-kafka-lab`이며 루트의 PostgreSQL/ClickHouse Compose와 별도입니다. 모든 명령에 `-f streaming/kafka/compose.yaml`을 유지합니다.
+사용 파일은 [독립 Compose](../compose.yaml)입니다. 프로젝트 이름은 `engineering-foundations-kafka-lab`이며 [PostgreSQL](../../../databases/postgresql/compose.yaml)·[ClickHouse](../../../databases/clickhouse/compose.yaml)도 각각 독립 프로젝트입니다. 각 제품의 network·volume·수명 주기를 공유하지 않고 CDC 연결도 자동 구성하지 않습니다. 모든 Kafka 명령에 `-f streaming/kafka/compose.yaml`을 유지합니다.
 
 | 접근 위치 | bootstrap / listener | 의미 |
 | --- | --- | --- |

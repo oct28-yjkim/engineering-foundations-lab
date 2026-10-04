@@ -31,11 +31,13 @@
 
 ## 시작
 
-저장소 루트에서 실행합니다. PowerShell과 일반 셸에서 동일하게 사용할 수 있도록 명령을 한 줄로 적었습니다.
+저장소 루트에서 [ClickHouse 전용 Compose](compose.yaml)를 명시해 실행합니다. 프로젝트 `engineering-foundations-clickhouse-lab`은 PostgreSQL·다른 제품과 network·volume·수명 주기를 공유하지 않습니다. PowerShell과 일반 셸에서 동일하게 사용할 수 있도록 명령을 한 줄로 적었습니다.
+
+이전에 루트 Compose를 사용했다면 **아래 기동 전에 [기존 환경 전환 안내](../shared/compose-migration.md)를 먼저 확인합니다.** 기본 구성은 새 프로젝트 volume을 사용하며 기존 데이터를 자동으로 옮기지 않습니다. 기존 컨테이너가 실행 중이면 같은 호스트 포트도 충돌할 수 있습니다.
 
 ```text
-docker compose up -d clickhouse
-docker compose exec clickhouse clickhouse-client --user lab --password lab_password --database lab
+docker compose -f databases/clickhouse/compose.yaml up -d --wait clickhouse
+docker compose -f databases/clickhouse/compose.yaml exec clickhouse clickhouse-client --user lab --password lab_password --database lab
 ```
 
 접속 후:
@@ -62,7 +64,7 @@ Compose의 이미지 `26.8`은 패치가 바뀔 수 있는 태그입니다. `SEL
 Compose는 SQL 디렉터리를 `/lab/sql`로 읽기 전용 마운트합니다. 진단 파일은 저장소 루트에서 다음처럼 실행할 수 있습니다.
 
 ```text
-docker compose exec -T clickhouse clickhouse-client --user lab --password lab_password --database lab --multiquery --queries-file /lab/sql/03_internals.sql
+docker compose -f databases/clickhouse/compose.yaml exec -T clickhouse clickhouse-client --user lab --password lab_password --database lab --multiquery --queries-file /lab/sql/03_internals.sql
 ```
 
 교재의 `CREATE TABLE`은 한 번만 실행하는 실험을 전제로 합니다. 같은 이름이 있으면 새 suffix로 실험을 분리하거나 자신이 만든 해당 테이블의 재사용 조건부터 검토합니다. `INSERT`와 backfill을 다시 실행하면 결과가 바뀝니다. 각 절은 **가설 → 예상 불변식 → 실행 → 실제 증거 → 반례 → 설계 결정** 순서로 기록합니다. 교재의 숫자는 입력 규모와 평가 기준이며, 실행했다고 주장하는 벤치마크 결과가 아닙니다.

@@ -8,7 +8,7 @@
 
 | 환경 | 준비 방법 | 확인할 범위 |
 | --- | --- | --- |
-| 기존 PostgreSQL lab | 루트 DB Compose | SQL·MVCC·WAL·일반 role/RLS 원리. Supabase Auth/API는 없음 |
+| 기존 PostgreSQL lab | [PostgreSQL 전용 Compose](../../../databases/postgresql/compose.yaml)와 [환경 안내](../../../databases/shared/environment.md); 다른 제품과 독립 실행 | SQL·MVCC·WAL·일반 role/RLS 원리. Supabase Auth/API는 없음 |
 | Supabase CLI local | 별도 초기화한 학습 폴더 + 고정 CLI + Docker | 해당 local stack의 Auth·API·RLS·Realtime·Storage·Functions |
 | hosted / self-hosted | 별도 프로젝트 또는 공식 배포 구성 | 실제 배포의 pooling·network·backup·권한·운영 계약 |
 

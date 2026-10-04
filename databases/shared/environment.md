@@ -1,118 +1,128 @@
-# 실습 환경과 실행 범위
+# PostgreSQL·ClickHouse 실습 환경
 
-모든 shell 명령은 저장소 루트에서 한 줄씩 실행합니다. PowerShell과 Bash에서 서로 다른 multiline 문법을 피하기 위해 한 줄 명령을 사용합니다.
+각 DB는 **제품 디렉터리의 Compose로 독립 실행**합니다. 저장소 루트에는 Compose가 없으며, 예전의 루트 `docker compose up -d`는 더 이상 이 실습의 시작 방법이 아닙니다. 아래 명령은 저장소 루트에서 실행하고, 학습할 DB의 절만 선택합니다. 두 제품의 파일을 여러 `-f`로 합치지 않습니다.
 
-## 제공 환경
+이전 루트 Compose로 만든 데이터가 있다면 **새 `up` 전에 [기존 환경 전환 안내](compose-migration.md)를 읽습니다.** 기본 프로젝트명이 달라졌으므로 새 구성은 별도의 새 volume을 사용합니다. 파일 이동만으로 기존 데이터가 복사되거나 이전되지 않습니다.
 
-| 수준 | 제공 여부 | 용도 |
+## 제공 범위와 선택
+
+| 제품 | 실행 파일 | 기본 프로젝트 | 로컬 접속 |
+| --- | --- | --- | --- |
+| PostgreSQL | [postgresql/compose.yaml](../postgresql/compose.yaml) | `engineering-foundations-postgresql-lab` | `127.0.0.1:5432` 또는 Compose exec |
+| ClickHouse | [clickhouse/compose.yaml](../clickhouse/compose.yaml) | `engineering-foundations-clickhouse-lab` | HTTP `127.0.0.1:8123`, native `127.0.0.1:9000` 또는 Compose exec |
+
+각 구성은 단일 노드 E0입니다. 프로젝트·network·volume·수명 주기가 분리되며, 같은 저장소에 있다는 이유로 상호 연결되지 않습니다. `-p`나 `COMPOSE_PROJECT_NAME`을 설정하면 프로젝트명이 바뀝니다. 같은 프로젝트를 다른 실습에 재사용하지 말고 `config` 결과의 이름을 확인합니다. [Docker 프로젝트 이름 규칙](https://docs.docker.com/compose/how-tos/project-name/)
+
+| 수준 | 제공 범위 | 별도 준비가 필요한 내용 |
 | --- | --- | --- |
-| E0 단일 노드 | `compose.yaml` 제공 | SQL·plan·저장 구조·같은 서버의 여러 세션 |
-| E1 추가 관측/부하 | 학습자가 구성 | pageinspect 등 extension, profiler, 부하 생성기 |
-| E2 복제/분산/복구 | 학습자가 구성 | PG primary/standby, CH shard/replica/Keeper, 별도 restore 대상 |
-| E3 엔진 개발 | 학습자가 구성 | 버전 고정 source, debug/release build, regression test |
+| E0 단일 노드 | 제품별 Compose, 초기 SQL, 읽기 전용 `/lab/sql` | 실제 실행 후 SQL·plan·관측 기준선 기록 |
+| E1 추가 관측/부하 | 구현 과제 | 추가 extension, profiler, 부하 생성기·예산 |
+| E2 복제/분산/복구 | 구현 과제 | PG primary/standby, CH shard/replica/Keeper, 별도 restore 대상 |
+| E3 엔진 개발 | 구현 과제 | 버전 고정 source, debug/release build, regression test |
 
-각 강의의 “다중 노드”, “별도 환경”, “구현 과제” 표시는 E0만으로 완료되지 않습니다. 상위 환경의 IaC·Compose·설정·운영 명령 작성 자체가 평가 결과물입니다.
+PostgreSQL의 S/E/T/B는 각각 E0/E1/E2/E3에, ClickHouse의 LOCAL은 E0, CLUSTER-DESIGN은 E2에 대응합니다. OPS-DESIGN은 과제에 따라 E1/E2가 필요합니다. SOURCE 정적 읽기와 실제 빌드·디버깅 결과는 구분합니다.
 
-제품 트랙의 기본 실습은 실제 실행·관측·트러블슈팅입니다. [PostgreSQL 진단](../postgresql/operations.md), [ClickHouse 진단](../clickhouse/operations.md), [공통 운영 학습](../../operations/README.md)을 연결합니다. 원리 모형은 선택 보조자료이고 실제 기준선/진단/회복 증거를 대체하지 않습니다.
+기본 학습은 실제 실행 → 정상 기준선 → 지표·로그·plan → 원인 분석 → 회복 검증입니다. [PostgreSQL 운영 진단](../postgresql/operations.md), [ClickHouse 운영 진단](../clickhouse/operations.md), [공통 운영 학습](../../operations/README.md)을 연결합니다. 원리 모형은 보조자료이며 실제 진단 증거를 대체하지 않습니다.
 
-Kafka는 [별도 Compose](../../streaming/kafka/compose.yaml)와 [로컬 실습 안내](../../streaming/kafka/labs/local-lab.md)를 제공합니다. 이 문서의 `docker compose` 명령은 루트의 두 DB에만 적용됩니다. Kafka는 `docker compose -f streaming/kafka/compose.yaml ...`로 관리하며 프로젝트·네트워크·volume을 분리합니다. 기본 상태에서는 PostgreSQL → Kafka → ClickHouse 파이프라인이 만들어지지 않습니다. connector와 네트워크 연결은 [통합 연구](capstone.md)의 구현 과제입니다.
-
-[NATS 실습](../../streaming/nats/labs/README.md)은 고정 서버/SDK fixture와 [운영 진단](../../streaming/nats/operations.md)이 기본이며 원리 모형은 보조입니다. 실제 runner는 공식 서버 바이너리와 별도 Python venv 준비 후 opt-in으로 새 loopback 서버·임시 저장소를 생성하고 자신이 만든 자원만 정리합니다. DB/Kafka Compose나 기존 NATS 서버에 연결하지 않습니다. Core/JetStream 단일 서버 정확성 결과와 quorum·TLS·복원·DB 업무 통합은 별도 증거로 구분합니다. [환경 안내](../../streaming/nats/environment.md)를 먼저 읽습니다.
-
-MySQL은 [전용 환경](../mysql/labs/README.md)과 `databases/mysql/compose.yaml`을 사용합니다. 기존 root Compose에 세 번째 DB를 추가하지 않으며 MySQL만 학습할 때 두 DB를 먼저 시작할 필요가 없습니다. 호스트 포트 없이 로컬 Docker exec·container socket으로 접속하고 project/network/volume을 분리합니다. CPU 모형과 실제 SQL fixture, 별도 다중 세션·복제·PITR 실험을 구분합니다.
-
-[Sentry 준비 실습](../../observability/sentry/labs/local-lab.md)과 [Supabase CLI local 준비](../../platforms/supabase/labs/local-lab.md)는 별도 과정입니다. Sentry의 offline 계산과 Supabase 권한 reference fixture는 제공하지만, 두 제품의 전체 스택·SDK 앱·클라우드 프로젝트·실제 Auth/RLS 검증은 제공된 DB Compose에 포함되지 않습니다. 기존 PostgreSQL·Kafka·ClickHouse를 제품 내부 dependency로 자동 연결하지 않습니다.
-
-[LLM 논문 실험](../../ai/llm-paper-lab/environment.md)의 CPU 기본 경로는 Python 표준 라이브러리만 사용하며 이 DB Compose와 독립적입니다. GPU·모델 다운로드·외부 API 호출은 별도 선택 확장이고 기본 실험에서 자동 수행하지 않습니다.
-
-[Spark 실습](../../data-processing/spark/labs/README.md)은 Java/PySpark 4.0.4 로컬 runner·UI 관측을 중심으로 하고 원리 모형은 보조입니다. [Databricks 실습](../../platforms/databricks/labs/README.md)은 허가된 관리형 대상과 비용 계약이 필요한 별도 단계입니다. 이 DB Compose가 Spark cluster·Delta·Unity Catalog·Databricks를 제공하지 않습니다.
-
-[OpenSearch 실습](../../search/opensearch/labs/README.md)은 별도 `search/opensearch/compose.yaml`의 실제 엔진·REST 관측을 기본으로 하고 원리 모형은 보조입니다. 단일 노드·합성 데이터·보안 플러그인 off·loopback HTTP 전용이며 운영 보안·권한·HA 검증용이 아닙니다. DB/Kafka와 network·volume·수명 주기를 공유하지 않고 connector·CDC·embedding 모델을 자동 구성하지 않습니다. [검증 기록](../../search/opensearch/labs/validation.md)의 모형/mock/실제 엔진 구분을 확인합니다.
-
-트랙별 표기는 PostgreSQL의 S가 E0, E가 선택 확장을 포함한 E1, T가 E2, B가 E3에 대응합니다. ClickHouse의 LOCAL은 E0, CLUSTER-DESIGN은 E2에 해당하며 OPS-DESIGN은 과제에 따라 E1/E2가 필요합니다. SOURCE의 정적 읽기는 파일 탐색으로 가능하지만 직접 빌드·디버깅은 E3 준비가 필요합니다.
-
-Docker에 사용할 메모리는 입문 두 서비스를 합쳐 6–8GiB 정도를 출발점으로 삼되, 이는 보장된 최소 요구사항이 아닙니다. 실제 소비량을 `docker stats --no-stream`으로 확인합니다. 규모 확대는 1배→2배→10배로 진행하고 disk/memory 예산을 먼저 정합니다. Keeper 다수 노드와 replica를 구성하는 경우 E0 예산을 그대로 적용하지 않습니다.
-
-## 시작과 상태 확인
+## 공통 준비
 
 ```text
 docker version
 docker compose version
-docker compose config --quiet
-docker compose up -d
-docker compose ps
-docker compose logs --tail=60 postgres clickhouse
+docker context show
 ```
 
-`dockerDesktopLinuxEngine` pipe가 없다는 오류는 보통 Linux 엔진이 시작되지 않았거나 context가 다른 상태입니다. Docker Desktop 상태와 `docker context show`를 확인한 뒤 진행합니다. SQL 초기화 실패는 해당 서비스 로그에서 첫 오류를 확인합니다. 단순 healthcheck 성공만으로 seed 데이터가 완성됐다고 판단하지 않습니다.
+Linux 컨테이너 엔진과 선택한 Docker context를 확인합니다. `dockerDesktopLinuxEngine` pipe 오류라면 엔진 상태/context부터 확인하고 SQL 오류로 판단하지 않습니다. 기존 컨테이너가 같은 포트를 사용하는지도 확인합니다. 기존 환경을 자동 종료하거나 교체하지 않습니다.
 
-서비스는 로컬 실습 계정 `lab` / `lab_password`를 사용합니다. PostgreSQL의 이 계정은 초기 관리자이며 운영 application role 설계와 다릅니다. endpoint와 volume은 [Compose](../../compose.yaml)에 정의돼 있습니다.
+DB명·학습 계정·암호는 `lab` / `lab` / `lab_password`입니다. 공개된 로컬 합성 데이터용 값이며 운영 자격 증명이 아닙니다. PostgreSQL의 `lab`은 초기 관리자이므로 운영 application role 설계와 다릅니다. loopback 포트가 있다고 인증·권한·TLS 검증이 완료되는 것도 아닙니다.
 
-## SQL 실행
-
-양쪽 `sql` 디렉터리는 컨테이너의 `/lab/sql`에 읽기 전용으로 연결됩니다. 문제 파일은 주로 문제 설명이며, 답안 파일에는 DDL/학습용 변경이 포함될 수 있으므로 머리말을 읽고 실행합니다.
+## PostgreSQL만 실행
 
 ```text
-docker compose exec postgres psql -X -v ON_ERROR_STOP=1 -U lab -d lab -f /lab/sql/03_internals.sql
-docker compose exec clickhouse clickhouse-client --user lab --password lab_password --database lab --multiquery --queries-file /lab/sql/03_internals.sql
+docker compose -f databases/postgresql/compose.yaml config --quiet
+docker compose -f databases/postgresql/compose.yaml up -d --wait
+docker compose -f databases/postgresql/compose.yaml ps
+docker compose -f databases/postgresql/compose.yaml logs --tail=60 postgres
+docker compose -f databases/postgresql/compose.yaml exec postgres psql -X -v ON_ERROR_STOP=1 -U lab -d lab -f /lab/sql/03_internals.sql
+docker compose -f databases/postgresql/compose.yaml exec postgres psql -X -v ON_ERROR_STOP=1 -U lab -d lab
 ```
 
-대화형 접속:
+대화형 psql에서는 `\i /lab/sql/02_solutions.sql`로 답안을 실행할 수 있습니다. DDL·데이터 변경이 포함되므로 파일 머리말과 범위를 먼저 읽습니다. 다중 세션 과제는 같은 접속 명령을 별도 터미널에서 실행하고 A/B/관측자를 표시합니다.
+
+버전과 이미지 확인:
 
 ```text
-docker compose exec postgres psql -X -v ON_ERROR_STOP=1 -U lab -d lab
-docker compose exec clickhouse clickhouse-client --user lab --password lab_password --database lab
+docker compose -f databases/postgresql/compose.yaml images
+docker compose -f databases/postgresql/compose.yaml exec postgres psql -X -U lab -d lab -c "SELECT version();"
 ```
 
-PostgreSQL에서는 `\i /lab/sql/02_solutions.sql`로 답안을 실행할 수 있습니다. ClickHouse 답안은 위 `--queries-file` 경로를 `02_solutions.sql`로 바꿉니다. 여러 세션 실습은 서로 다른 터미널에서 접속하고 세션 A/B/관측자를 표시합니다.
-
-## 초기 데이터와 버전
-
-| DB | 초기 데이터 | 기본 이미지 계열 |
-| --- | --- | --- |
-| PostgreSQL | users 10,000 / products 1,000 / orders 100,000 / order_items 300,000 | `postgres:18` |
-| ClickHouse | events 500,000 | `clickhouse/clickhouse-server:26.8` |
-
-이 데이터는 문법·정확성·작은 실험의 출발점입니다. 운영의 skew·late event·중복·hot key·지속 적재를 대표하지 않습니다. 각 심화 모듈에서 분포와 크기를 바꾼 실험을 별도로 수행합니다. “실제로 180일 동안 운영했다”는 데이터가 아니라 고정 시각 범위의 합성 데이터입니다.
-
-이미지 tag는 패치 업데이트에 따라 달라질 수 있습니다. 실험마다 아래 정보를 기록하고, 엄밀한 재현이 필요하면 `compose.override.yaml`의 `image`를 관측한 `repository@sha256:...` 값으로 고정합니다. 여기 문서에 임의 digest를 제공하지 않습니다.
+데이터를 보존하는 종료·재시작:
 
 ```text
-docker compose images
-docker image inspect postgres:18 --format '{{json .RepoDigests}}'
-docker image inspect clickhouse/clickhouse-server:26.8 --format '{{json .RepoDigests}}'
-docker compose exec postgres psql -X -U lab -d lab -c "SELECT version();"
-docker compose exec clickhouse clickhouse-client --user lab --password lab_password --query "SELECT version();"
+docker compose -f databases/postgresql/compose.yaml stop
+docker compose -f databases/postgresql/compose.yaml start
 ```
 
-`00_setup.sql`은 최초 초기화용입니다. PostgreSQL의 init scripts는 데이터 디렉터리가 비어 있을 때 실행됩니다. ClickHouse 이미지의 초기화 동작도 버전 및 데이터 상태에 영향을 받으므로 시작을 schema migration으로 취급하지 않습니다. 새 curriculum의 seed를 기존 볼륨에 강제로 덮어쓰지 않습니다. [PostgreSQL 이미지 안내](https://hub.docker.com/_/postgres), [ClickHouse 이미지 안내](https://hub.docker.com/r/clickhouse/clickhouse-server)
-
-## 보존과 재시작
-
-일반 종료·재시작은 volume을 보존합니다.
+## ClickHouse만 실행
 
 ```text
-docker compose stop
-docker compose start
+docker compose -f databases/clickhouse/compose.yaml config --quiet
+docker compose -f databases/clickhouse/compose.yaml up -d --wait
+docker compose -f databases/clickhouse/compose.yaml ps
+docker compose -f databases/clickhouse/compose.yaml logs --tail=60 clickhouse
+docker compose -f databases/clickhouse/compose.yaml exec clickhouse clickhouse-client --user lab --password lab_password --database lab --multiquery --queries-file /lab/sql/03_internals.sql
+docker compose -f databases/clickhouse/compose.yaml exec clickhouse clickhouse-client --user lab --password lab_password --database lab
 ```
 
-초기 데이터부터 다시 시작할 때는 로컬 학습 결과를 먼저 별도 보존합니다. 다음 명령은 **`engineering-foundations-lab` 프로젝트의 두 DB volume을 삭제**합니다. 필요한 데이터가 있을 때는 실행하지 않습니다.
+답안은 `--queries-file` 경로를 `/lab/sql/02_solutions.sql`로 바꿔 실행합니다. DDL·데이터 변경 범위를 먼저 검토합니다. healthcheck 성공만으로 seed 생성 완료나 원하는 스키마 상태를 단정하지 말고 로그와 SQL 결과를 확인합니다.
+
+버전과 이미지 확인:
 
 ```text
-docker compose down -v
-docker compose up -d
+docker compose -f databases/clickhouse/compose.yaml images
+docker compose -f databases/clickhouse/compose.yaml exec clickhouse clickhouse-client --user lab --password lab_password --query "SELECT version();"
 ```
 
-답안과 강의마다 별도 실습 테이블 이름을 사용하며, 정리 명령은 그 테이블만 대상으로 합니다. 기존 volume을 유지한 경우 `03_internals.sql`의 검증 결과가 새 seed의 기대값과 다른지 먼저 확인합니다.
+데이터를 보존하는 종료·재시작:
 
-## OpenBao / Vault 별도 환경
+```text
+docker compose -f databases/clickhouse/compose.yaml stop
+docker compose -f databases/clickhouse/compose.yaml start
+```
 
-[비밀·신원 보안 실습](../../security/shared/labs/README.md)은 CPU 모형 4개와 제품별 선택 dev Compose를 사용합니다. 기존 DB Compose와 독립이며, 컨테이너 외부 네트워크·host port·영속 volume을 제공하지 않습니다. dev는 자동 unseal·공개 dummy root·인메모리 구성이므로 stop/start 시 실습 상태가 사라집니다. 실제 DB 동적 자격 증명·TLS·Raft·snapshot 복원은 별도 격리 환경을 준비하는 [선택 연구](../../capstones/secrets-identity-recovery.md)입니다. DB나 cloud 계정을 자동 생성·연결하지 않습니다.
+## 초기 데이터·버전·보존
 
-## 검증 상태의 해석
+| DB | 최초 초기 데이터 | 기본 이미지 계열 | 기본 신규 volume |
+| --- | --- | --- | --- |
+| PostgreSQL | users 10,000 / products 1,000 / orders 100,000 / order_items 300,000 | `postgres:18` | `engineering-foundations-postgresql-lab_postgres-data` |
+| ClickHouse | events 500,000 | `clickhouse/clickhouse-server:26.8` | `engineering-foundations-clickhouse-lab_clickhouse-data` |
 
-[MCP 실습](../../ai/mcp/labs/README.md)은 이 DB Compose와 독립입니다. CPU 모델은 Python 표준 라이브러리, 선택 stdio 실습은 별도 venv의 공식 MCP SDK 2.3.0을 사용합니다. DB·LLM API·OAuth 서버·현재 앱 연결을 자동 구성하지 않으며 실제 DB 도구 연동은 별도 합성 대상과 최소 권한을 준비하는 과제입니다.
+위 volume 이름은 프로젝트명을 변경하지 않았을 때의 값입니다. 실제 mount를 기준으로 확인합니다. 각 `./sql`은 해당 제품 Compose 디렉터리를 기준으로 해석되며 `/lab/sql`에 읽기 전용 mount됩니다. [Compose 경로와 병합 규칙](https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/)
 
-Terraform·Terragrunt의 선택 실습은 [IaC 전용 환경](../../infrastructure/shared/environment.md)에서 진행합니다. DB/Kafka Compose와 state/cache의 수명 주기를 공유하지 않습니다. CPU 모형과 실제 로컬 CLI 검증, 미검증 cloud backend를 구분합니다.
+seed는 작은 합성 실험의 출발점입니다. 운영의 skew·late event·중복·hot key·지속 적재를 대표하지 않으며, 각 모듈에서 분포와 크기를 별도로 설계합니다. DB별 memory/disk/실험 시간 예산을 정하고 실제 사용량을 확인한 뒤 부하를 늘립니다. 두 DB나 복제 노드를 동시에 켜야 하는 기본 요구사항은 없습니다.
 
-문서의 “예상”과 “통과 기준”은 독자가 수행할 실험 조건입니다. 해당 컴퓨터의 실행 결과를 미리 제공한 것이 아닙니다. Compose 구문 검사는 엔진 실행·이미지 다운로드·SQL 문법 실행·복구 성공을 대신하지 않습니다. 실험 보고서에 수행한 범위와 미수행 범위를 따로 남깁니다.
+이미지 tag는 패치 업데이트에 따라 바뀔 수 있습니다. 실제 엔진 버전과 실행한 이미지 ID/digest를 보고서에 기록합니다. 재현·기존 volume 재사용 시에는 관측한 digest로 image를 고정하고, 별도 override를 쓰면 **모든 명령에서 같은 `-f` 목록**을 명시합니다. 임의 digest나 태그 이름만으로 binary 동일성을 주장하지 않습니다.
+
+`00_setup.sql`은 최초 초기화용이지 schema migration 도구가 아닙니다. PostgreSQL init script는 비어 있는 데이터 디렉터리에서 실행되며 ClickHouse 초기화도 이미지·데이터 상태의 영향을 받습니다. 기존 volume에 새 seed를 강제 적용하지 않습니다. [PostgreSQL 이미지 안내](https://hub.docker.com/_/postgres), [ClickHouse 이미지 안내](https://hub.docker.com/r/clickhouse/clickhouse-server)
+
+데이터 초기화가 필요하면 우선 필요한 결과를 백업하고 별도 대상으로 복원 검증합니다. 그 후 선택한 DB의 **실제 context·프로젝트·컨테이너 mount·volume 이름**을 확인하고, 해당 volume을 쓰는 컨테이너가 없는지 검토한 뒤 그 대상만 정리하는 별도 절차를 작성합니다. 이 안내는 일괄 `down -v`나 volume prune을 제공하지 않습니다. 일반 학습 종료는 위의 `stop`, 재개는 `start`를 사용합니다. 기존 volume을 보존했다면 seed 예상값과 현재 데이터의 차이도 기록합니다.
+
+## 다른 트랙과의 경계
+
+| 트랙 | 독립적인 준비 경로 |
+| --- | --- |
+| MySQL | [전용 Compose·SQL 실습](../mysql/labs/README.md); PG·CH 선행 실행 불필요 |
+| Kafka | [전용 Compose](../../streaming/kafka/compose.yaml), [로컬 실습](../../streaming/kafka/labs/local-lab.md) |
+| NATS | [고정 서버·SDK fixture](../../streaming/nats/labs/README.md), [운영 관측](../../streaming/nats/operations.md); DB Compose와 연결되지 않음 |
+| OpenSearch | [전용 엔진·REST 실습](../../search/opensearch/labs/README.md); loopback·보안 off 합성 데이터용 |
+| Sentry / Supabase | [Sentry 준비](../../observability/sentry/labs/local-lab.md), [Supabase 준비](../../platforms/supabase/labs/local-lab.md); 전체 스택·SDK 앱·실제 Auth/RLS는 별도 준비 |
+| Spark / Databricks | [Spark 로컬 실행](../../data-processing/spark/labs/README.md), [허가된 Databricks 대상](../../platforms/databricks/labs/README.md); 이 Compose가 cluster·Unity Catalog를 제공하지 않음 |
+| OpenBao / Vault | [제품별 dev 환경](../../security/shared/labs/README.md); DB와 연결되지 않으며 dev 인메모리 상태는 영속 DB volume과 다름 |
+| MCP / IaC | [MCP SDK 환경](../../ai/mcp/labs/README.md), [Terraform·Terragrunt CLI 환경](../../infrastructure/shared/environment.md); DB·cloud 연결은 자동 구성하지 않음 |
+| LLM 논문 | [CPU 기본 환경](../../ai/llm-paper-lab/environment.md); GPU·모델 다운로드·외부 API는 선택 확장 |
+
+PostgreSQL → Kafka → ClickHouse 파이프라인도 자동 생성되지 않습니다. connector·권한·네트워크·복구 설계는 [통합 연구](capstone.md)의 별도 구현 과제입니다.
+
+## 검증 결과의 해석
+
+문서의 명령과 통과 기준은 독자가 수행할 지침입니다. Compose `config` 검사는 엔진 기동·이미지 다운로드·SQL 실행·장애 복구 성공을 대신하지 않습니다. 파일 위치 변경은 데이터 이동을 의미하지 않으며, 보고서에 실제 수행 범위와 미수행 범위를 구분합니다. 이번 위치 변경의 실제 점검 결과는 [구성 검증 기록](compose-validation.md)에 남깁니다.

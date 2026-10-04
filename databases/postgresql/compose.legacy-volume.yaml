@@ -1,0 +1,6 @@
+# Optional override; use only after the checks in ../shared/compose-migration.md.
+# Supply alongside compose.yaml, never by itself. Never start two DBs on one volume.
+volumes:
+  postgres-data:
+    external: true
+    name: ${EFL_POSTGRES_LEGACY_VOLUME:?Set EFL_POSTGRES_LEGACY_VOLUME to the verified existing PostgreSQL volume}

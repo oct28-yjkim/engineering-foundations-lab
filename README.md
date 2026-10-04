@@ -6,7 +6,7 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 
 **제품·도구는 실제 실행과 관측·트러블슈팅 중심**, LLM 논문은 기존 CPU 기본·GPU/API 선택 경로로 학습합니다. 제품별 원리 모형은 선택 보조자료입니다. [개편된 학습 원칙과 제품별 운영 실습](operations/README.md)을 확인합니다.
 
-**루트 `compose.yaml`은 PostgreSQL·ClickHouse 전용입니다.** 모든 제품을 한 번에 실행하는 통합 환경이 아닙니다. 제품마다 Compose·로컬 CLI/SDK·관리형 환경 준비 방식이 다르므로 [실습 환경 지도](#실습-환경과-compose-위치)에서 사용할 대상을 먼저 선택합니다.
+**실습 환경은 제품별 디렉터리에 있습니다.** PostgreSQL·ClickHouse도 각각 독립 Compose를 사용하며 루트에는 Compose 파일을 두지 않습니다. [실습 환경 지도](#실습-환경과-compose-위치)에서 대상을 선택합니다. 기존 루트 Compose로 데이터를 만들었다면 새 환경을 시작하기 전에 [기존 데이터 전환 안내](databases/shared/compose-migration.md)를 확인합니다.
 
 ## 시작할 곳
 
@@ -44,15 +44,16 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | [MCP 도구 경계·장애 연구 8주](capstones/mcp-tool-boundary-recovery.md) | principal 격리·schema·cache·취소·업무 idempotency·호환성 |
 | [NATS 전달·업무 복구 연구 8주](capstones/nats-delivery-recovery.md) | dedup·업무 원장·ACK 경계·tenant·quorum·독립 복원 |
 | [전체 실습 환경 지도](#실습-환경과-compose-위치) | 제품별 Compose 위치, 대체 실행 방식, 관측 환경의 제공 범위 |
-| [PostgreSQL·ClickHouse 환경](databases/shared/environment.md) | 루트 DB Compose 실행 명령, 버전 고정, 데이터 보존 |
+| [PostgreSQL·ClickHouse 환경](databases/shared/environment.md) | 제품별 DB Compose 실행 명령, 버전 고정, 데이터 보존·기존 환경 전환 |
 
 ## 실습 환경과 Compose 위치
 
-현재 Compose 파일은 **6개이며 7개 제품**을 포함합니다. PostgreSQL·ClickHouse만 루트의 한 프로젝트를 공유하고, 아래 나머지 다섯 제품은 각각 독립 프로젝트입니다. PG·ClickHouse의 제품별 독립 Compose는 아직 제공하지 않습니다. 이 목록은 실행 구성의 위치이며 이미지 다운로드·엔진 기동·운영 검증이 완료됐다는 뜻은 아닙니다.
+**제품별 기본 `compose.yaml` 7개가 각각 한 제품을 담당합니다.** 프로젝트·기본 network·volume의 수명 주기를 분리하며 필요한 제품만 실행합니다. PG·ClickHouse에는 기존 데이터 연결용 선택 override가 각각 하나씩 별도로 있습니다. 아래 목록은 기본 실행 구성의 위치이며 이미지 다운로드·엔진 기동·운영 검증이 완료됐다는 뜻은 아닙니다.
 
 | 제품 | 현재 Compose 파일 | 제공 범위 |
 | --- | --- | --- |
-| PostgreSQL + ClickHouse | [compose.yaml](compose.yaml) | 단일 노드 두 DB, SQL 초기 데이터; 서비스별 선택 기동 가능 |
+| PostgreSQL | [databases/postgresql/compose.yaml](databases/postgresql/compose.yaml) | 단일 노드, SQL 초기 데이터·관찰 쿼리, 전용 기본 volume |
+| ClickHouse | [databases/clickhouse/compose.yaml](databases/clickhouse/compose.yaml) | 단일 노드, SQL 초기 데이터·관찰 쿼리, 전용 기본 volume; Keeper·replica 없음 |
 | MySQL | [databases/mysql/compose.yaml](databases/mysql/compose.yaml) | 단일 노드, 전용 volume, host 포트 없이 container 내부 접속 |
 | Kafka | [streaming/kafka/compose.yaml](streaming/kafka/compose.yaml) | 단일 broker/controller KRaft, 전용 volume; HA 아님 |
 | OpenSearch | [search/opensearch/compose.yaml](search/opensearch/compose.yaml) | 단일 노드, loopback HTTP, 보안 플러그인 off인 합성 데이터 전용 환경 |
@@ -61,23 +62,26 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 
 ### 실행할 파일을 명시하기
 
-아래 명령은 **저장소 루트에서** 실행하는 읽기 전용 구성 확인입니다. 첫 명령은 `clickhouse`, `postgres`만 표시하고, 두 번째는 `kafka`만 표시합니다. 컨테이너나 이미지 다운로드를 시작하지 않습니다.
+아래 명령은 **저장소 루트에서** 실행하는 읽기 전용 구성 확인입니다. 순서대로 `postgres`, `clickhouse`, `kafka` 한 서비스씩 표시합니다. 컨테이너나 이미지 다운로드를 시작하지 않습니다.
 
 ```text
-docker compose -f compose.yaml config --services
+docker compose -f databases/postgresql/compose.yaml config --services
+docker compose -f databases/clickhouse/compose.yaml config --services
 docker compose -f streaming/kafka/compose.yaml config --services
 ```
 
-실제 기동·접속·정지 명령은 아래 [제품별 시작점](#첫-실습-제품-관측과-트러블슈팅)을 따르며, Compose를 사용할 때는 해당 파일을 `-f`로 명시합니다. `-f` 없이 실행하면 현재/상위 디렉터리에서 Compose를 찾으므로, 다른 트랙 디렉터리에서 루트의 두 DB를 잘못 선택할 수 있습니다. [Docker의 파일 선택 규칙](https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/)
+실제 기동·접속·정지 명령은 아래 [제품별 시작점](#첫-실습-제품-관측과-트러블슈팅)을 따르며, Compose를 사용할 때는 해당 파일을 `-f`로 명시합니다. `-f` 없는 실행은 현재/상위 디렉터리의 파일 검색에 의존하므로 저장소 루트에서 사용하는 공통 실행 방법으로 안내하지 않습니다. [Docker의 파일 선택 규칙](https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/)
 
-루트에서 `docker compose up -d`를 실행해도 다른 제품은 시작되지 않습니다. PG·ClickHouse는 개별 서비스를 선택해 시작할 수 있지만 프로젝트를 공유하므로 프로젝트 단위 종료·volume 삭제를 제품별 독립 작업으로 생각하지 않습니다. 보존·재초기화는 [DB 환경 안내](databases/shared/environment.md)를 먼저 확인합니다. 별도 Compose를 실행해도 DB → Kafka → ClickHouse 연결은 자동 구성되지 않습니다.
+제품별 Compose를 모두 실행해도 DB → Kafka → ClickHouse 파이프라인은 자동 구성되지 않습니다. 통합 실습은 [별도 연구 과제](databases/shared/capstone.md)에서 connector·network·복구 범위를 설계합니다. 서로 다른 제품의 Compose를 하나의 `-f ... -f ...` 목록으로 합쳐 실행하지 않습니다.
+
+기존 루트 프로젝트와 새 DB 프로젝트의 기본 volume 이름은 다릅니다. **새 기본 환경은 기존 데이터를 자동으로 이어받지 않습니다.** 기존 volume을 삭제·복사·자동 연결하지 않으며, 재사용이 필요하면 [전환 안내](databases/shared/compose-migration.md)에 따라 백업·실제 image/volume·기존 컨테이너 정지를 확인한 뒤 해당 제품의 `compose.legacy-volume.yaml`을 명시적으로 추가합니다.
 
 ### Compose가 없는 트랙과 추가 준비
 
 - **NATS:** [서버 바이너리 + SDK runner](streaming/nats/labs/native.md)를 제공합니다. 자신의 서버를 잠시 실행하고 종료하는 정확성 실습이며, 지속 서버·monitoring endpoint는 별도 준비합니다.
 - **Spark:** [PySpark + JVM 로컬 runner](data-processing/spark/labs/README.md)를 제공합니다. 기본 runner는 UI를 끄므로 [UI·event log·History Server 관측](data-processing/spark/operations.md)은 추가 구성이 필요합니다.
 - **MCP / Terraform / Terragrunt:** [MCP SDK stdio](ai/mcp/labs/README.md), [실제 IaC CLI·로컬 state](infrastructure/shared/environment.md)를 사용합니다. 이 기본 경로에는 Compose가 필요하지 않습니다.
-- **Sentry / Supabase:** [Sentry 준비 지침](observability/sentry/labs/local-lab.md), [Supabase CLI local 준비 지침](platforms/supabase/labs/local-lab.md)과 일부 학습 fixture를 제공합니다. 전체 스택·완성 SDK 앱은 포함하지 않으며 루트 DB를 두 제품의 내부 서비스로 재사용하는 구성이 아닙니다.
+- **Sentry / Supabase:** [Sentry 준비 지침](observability/sentry/labs/local-lab.md), [Supabase CLI local 준비 지침](platforms/supabase/labs/local-lab.md)과 일부 학습 fixture를 제공합니다. 전체 스택·완성 SDK 앱은 포함하지 않으며 다른 트랙의 DB를 두 제품의 내부 서비스로 재사용하는 구성이 아닙니다.
 - **Databricks:** [허가된 관리형 환경](platforms/databricks/labs/README.md)을 별도로 준비합니다. 계정·compute·Unity Catalog는 제공하지 않으며 로컬 Spark가 이를 대신하지 않습니다.
 - **LLM 논문:** [CPU 기본 경로](ai/llm-paper-lab/environment.md)는 Python으로 실행합니다. GPU/API는 선택 확장이며 DB Compose와 독립적입니다.
 
@@ -115,7 +119,7 @@ NATS도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. Core NAT
 
 | 트랙 | 환경·실행 시작점 | 기본 운영 실습 |
 | --- | --- | --- |
-| PostgreSQL / ClickHouse | [루트 DB Compose와 SQL](databases/shared/environment.md) | [PG 세션·잠금·plan](databases/postgresql/operations.md), [CH query log·merge·복제](databases/clickhouse/operations.md) |
+| PostgreSQL / ClickHouse | [제품별 DB Compose와 SQL](databases/shared/environment.md) | [PG 세션·잠금·plan](databases/postgresql/operations.md), [CH query log·merge·복제](databases/clickhouse/operations.md) |
 | MySQL | [단일 엔진·SQL](databases/mysql/labs/README.md) | [Performance Schema·InnoDB·복제 진단](databases/mysql/operations.md) |
 | Kafka | [KRaft Compose·로컬 실습](streaming/kafka/labs/local-lab.md) | [lag·ISR·request latency·장애 대응](streaming/kafka/operations.md) |
 | NATS | [격리 서버·SDK](streaming/nats/labs/README.md) | [consumer·ACK·slow consumer·stream 상태](streaming/nats/operations.md) |
@@ -139,7 +143,7 @@ python -B -m unittest discover -s ai/llm-paper-lab/labs -p test_lab.py -v
 
 ## 저장소에 제공되는 것
 
-- 단일 노드 PostgreSQL 18 및 ClickHouse 26.8 Compose 구성과 결정적으로 생성되는 합성 데이터
+- PostgreSQL 18 및 ClickHouse 26.8의 제품별 독립 단일 노드 Compose, 결정적으로 생성되는 합성 데이터, 기존 volume 선택 연결 지침
 - Apache Kafka 4.3.1 단일 broker/controller KRaft Compose, 상태 관측 및 정확성 smoke 실습
 - NATS 심화 과정, 고정 서버/SDK fixture와 운영 진단 지침, Core/JetStream 소스·Raft 원전·선택 원리 모형
 - Sentry의 네트워크 없는 sampling 모델, Supabase의 18개 권한 기대 결과 fixture와 제품별 준비 지침

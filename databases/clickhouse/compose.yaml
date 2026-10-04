@@ -1,0 +1,25 @@
+name: engineering-foundations-clickhouse-lab
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.8
+    environment:
+      CLICKHOUSE_DB: lab
+      CLICKHOUSE_USER: lab
+      CLICKHOUSE_PASSWORD: lab_password
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ports:
+      - "127.0.0.1:8123:8123"
+      - "127.0.0.1:9000:9000"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ./sql/00_setup.sql:/docker-entrypoint-initdb.d/00_setup.sql:ro
+      - ./sql:/lab/sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --user lab --password lab_password --query 'SELECT 1'"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  clickhouse-data:
