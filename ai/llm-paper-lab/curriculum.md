@@ -2,6 +2,8 @@
 
 [시작](README.md) · [논문 목록](papers.md) · [CPU 실습](labs/README.md) · [평가](assessment.md)
 
+이 과정은 [ML→DL→LLM 로드맵](../ml-dl-llm-roadmap.md)의 세 번째 단계입니다. [DL 언어모델 연결 강의](../dl-paper-lab/lessons/04-language-model-bridge.md)에서 token shift·gradient·teacher forcing·causal 조건을 확인한 뒤 M01로 진입합니다. ML/DL을 이미 이해한 학습자는 관문만 확인하고 시작합니다. 앞 단계의 실제 tiny network 학습과 이 과정의 CPU 수학 모형은 제공 범위가 다릅니다.
+
 14개 모듈 × 2주 × 주 12시간을 기본 예산으로 잡습니다. 각 모듈의 24시간은 원문/수학 6, 구현/실험 10, 소스/반례 4, 기록/리뷰 4시간으로 배분합니다. GPU나 API가 없는 모듈은 설계와 수기 검산까지 수행하고 실제 모델 검증 상태는 미실행으로 남깁니다. CPU 경로를 선택했다고 실행하지 않은 모델 결과를 제출할 필요는 없습니다.
 
 | 모듈·주차 | 선수 조건 | 논문과 핵심 질문 | 실험·통과 증거 |

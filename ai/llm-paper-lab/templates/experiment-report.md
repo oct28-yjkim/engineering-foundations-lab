@@ -4,7 +4,7 @@
 
 - run ID·작성자·시작/종료 시각:
 - 연결 논문/version·모듈:
-- 실행 범위: CPU-MODEL / SMALL-MODEL / GPU-EXTENSION / API-EXTENSION:
+- 실행 범위: ML-CPU / DL-CPU / CPU-MODEL / SMALL-MODEL / FRAMEWORK-EXTENSION / DATA-EXTENSION / GPU-EXTENSION / API-EXTENSION:
 - 가설·반증 조건·사전 통과 기준:
 - 상태: 설계 / 실행 / oracle 검증 / 결론 보류:
 

@@ -1,10 +1,10 @@
 # Engineering Foundations Lab — Zero to Hero
 
-데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, MySQL, Apache Kafka, NATS, Sentry, Amplitude, Supabase, Apache Spark, Databricks, Terraform, Terragrunt, OpenSearch, Qdrant, OpenBao, HashiCorp Vault, MCP(Model Context Protocol)와 LLM 논문 실험 트랙을 제공합니다.
+데이터·AI 시스템을 사용하는 단계에서 출발해 **동작을 예측하고, 내부 구현을 추적하며, 장애와 성능 문제를 증거로 설명하는 엔지니어**로 성장하기 위한 한국어 교육 과정입니다. 현재 PostgreSQL, ClickHouse, MySQL, Apache Kafka, NATS, Sentry, Amplitude, Supabase, Apache Spark, Databricks, Terraform, Terragrunt, OpenSearch, Qdrant, OpenBao, HashiCorp Vault, MCP(Model Context Protocol)와 ML·DL·LLM 논문 실험 트랙을 제공합니다.
 
 SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 스트리밍, 관측, 인증·인가, 성능 측정, 소스 코드 분석을 연결합니다. 가장 높은 단계의 완료 기준은 낯선 현상을 최소 재현으로 줄이고, 원인을 코드와 측정값으로 설명하며, 수정안의 회귀를 검증하는 것입니다.
 
-**제품·도구의 기본 LAB은 정상 기능 → 동작 원리 → 모니터링 → 제약 확인 → 흔한 문제의 진단·복구 순서**입니다. 기능과 관측을 익힌 뒤 장애를 경험하며, 조사한 사실과 실제 실행 증거를 구분합니다. [기본 LAB 규격](operations/lab-contract.md)과 [제품별 시작점](operations/README.md)을 확인합니다. LLM 논문은 기존 CPU 기본·GPU/API 선택 경로, 제품별 원리 모형은 선택 보조자료로 유지합니다.
+**제품·도구의 기본 LAB은 정상 기능 → 동작 원리 → 모니터링 → 제약 확인 → 흔한 문제의 진단·복구 순서**입니다. 기능과 관측을 익힌 뒤 장애를 경험하며, 조사한 사실과 실제 실행 증거를 구분합니다. [기본 LAB 규격](operations/lab-contract.md)과 [제품별 시작점](operations/README.md)을 확인합니다. ML·DL·LLM 논문은 CPU 기본·GPU/API 선택 경로, 제품별 원리 모형은 선택 보조자료로 유지합니다.
 
 **실습 환경은 제품별 디렉터리에 있습니다.** PostgreSQL·ClickHouse도 각각 독립 Compose를 사용하며 루트에는 Compose 파일을 두지 않습니다. [실습 환경 지도](#실습-환경과-compose-위치)에서 대상을 선택합니다. 기존 루트 Compose로 데이터를 만들었다면 새 환경을 시작하기 전에 [기존 데이터 전환 안내](databases/shared/compose-migration.md)를 확인합니다.
 
@@ -34,6 +34,9 @@ SQL 작성, 저장 구조, 실행 엔진, 동시성, 복구, 복제, 이벤트 �
 | [OpenBao](security/openbao/README.md) | 14개 모듈, barrier·seal·identity·policy·KV·lease·transit·PKI·audit·Raft·복구 |
 | [HashiCorp Vault](security/vault/README.md) | 14개 모듈, 비밀 수명·workload 인증·최소 권한·암호 서비스·HA·플러그인·edition 경계 |
 | [비밀·신원 보안 경로](security/README.md) | 제품 비교, 격리 dev 환경과 상태·권한·lease·audit 진단 |
+| [ML → DL → LLM 경로](ai/ml-dl-llm-roadmap.md) | 선수 기초·단계별 진입 기준, 64주 순차 경로와 실제 학습/모형의 차이 |
+| [ML 논문 실험](ai/ml-paper-lab/README.md) | 핵심 논문 11편·8모듈, 일반화·지도학습·앙상블·표현과 CPU LAB 4개 |
+| [DL 논문 실험](ai/dl-paper-lab/README.md) | 핵심 논문 12편·10모듈, 역전파·최적화·convolution·sequence와 CPU LAB 4개 |
 | [LLM 논문 실험](ai/llm-paper-lab/README.md) | 핵심 논문 20편·14모듈, CPU 실험 6개와 GPU/API 선택 확장 |
 | [MCP](ai/mcp/README.md) | 14개 모듈, 명세·tools/resources/prompts·stdio/HTTP·인증·권한·cache·재시도·상호운용 |
 | [실험 방법](databases/shared/experiment-method.md) | 재현성, 측정 오차, 정확성 oracle, 반증 |
@@ -90,7 +93,7 @@ docker compose -f streaming/kafka/compose.yaml config --services
 - **Sentry / Supabase:** [Sentry 준비 지침](observability/sentry/labs/local-lab.md), [Supabase CLI local 준비 지침](platforms/supabase/labs/local-lab.md)과 일부 학습 fixture를 제공합니다. 전체 스택·완성 SDK 앱은 포함하지 않으며 다른 트랙의 DB를 두 제품의 내부 서비스로 재사용하는 구성이 아닙니다.
 - **Amplitude:** [웹 SDK 앱과 모바일 수동 LAB](observability/amplitude/labs/README.md)을 제공합니다. 로컬 웹 앱은 허가된 테스트 프로젝트를 명시적으로 선택해야 SDK를 로드합니다. Amplitude 서버·계정·native 모바일 앱은 제공하지 않으며 Compose로 SaaS를 대신하지 않습니다. HTTP V2 fixture는 SDK 경로와 비교하는 보조 도구입니다.
 - **Databricks:** [허가된 관리형 환경](platforms/databricks/labs/README.md)을 별도로 준비합니다. 계정·compute·Unity Catalog는 제공하지 않으며 로컬 Spark가 이를 대신하지 않습니다.
-- **LLM 논문:** [CPU 기본 경로](ai/llm-paper-lab/environment.md)는 Python으로 실행합니다. GPU/API는 선택 확장이며 DB Compose와 독립적입니다.
+- **ML·DL·LLM 논문:** [ML/DL CPU 환경](ai/paper-labs-environment.md)과 [LLM CPU 환경](ai/llm-paper-lab/environment.md)은 Python으로 실행합니다. ML/DL은 실제 작은 모델 학습을 포함하고 기존 LLM은 수학 모형입니다. GPU/API는 선택 확장이며 DB Compose와 독립적입니다.
 
 **운영 지침이 있다는 것과 관측 환경이 준비됐다는 것은 다릅니다.** exporter·dashboard·Prometheus/Grafana·지속 부하는 일괄 제공하지 않습니다. 다중 노드는 OpenSearch·Qdrant 선택 LAB 외에는 해당 트랙에서 추가 구성해야 합니다. 각 트랙의 실제 실행 기록과 미검증 범위를 확인하고, 별도 준비가 필요한 실습은 준비 전까지 실행 완료로 표시하지 않습니다. 특히 NATS 지속 관측과 Spark UI는 위 기본 runner 실행만으로 제공되지 않습니다.
 
@@ -105,6 +108,8 @@ docker compose -f streaming/kafka/compose.yaml config --services
 Sentry와 Supabase도 각각 **28주·14모듈·약 336시간**의 선택 트랙입니다. 백엔드·보안·관측이 우선이면 PostgreSQL → Supabase → Sentry → 보안·관측 앱 연구를 선택할 수 있습니다. 이 3트랙 경로도 공통 8주 + 트랙 84주 + 선택한 캡스톤 8주 = 100주입니다. 통합 연구 주제를 모두 필수로 더하지 않습니다. 기존 다섯 제품(PostgreSQL·ClickHouse·Kafka·Sentry·Supabase)을 모두 순차 이수하는 경우에만 공통 8주 + 140주 + 선택 캡스톤 8주 = **156주·약 1,872시간**입니다. 모든 트랙을 끝내야 실무에 적용할 수 있다는 뜻은 아닙니다.
 
 LLM 논문 실험은 별도의 **28주·336시간 선택 트랙**입니다. [논문 20편](ai/llm-paper-lab/papers.md)을 원리·구현·평가와 연결하며 CPU 오프라인부터 시작합니다. 기존 156주 경로에 자동으로 더하지 않으며 GPU/API는 필요할 때만 확장합니다. 행렬·미분·확률·Python은 별도 선수 지식입니다.
+
+처음부터 이어 배우는 [ML → DL → LLM](ai/ml-dl-llm-roadmap.md)은 **ML 16주·192시간 + DL 20주·240시간 + LLM 28주·336시간 = 64주·768시간**입니다. 선택 기초 4주까지 포함하면 68주·816시간입니다. 기간 대신 단계별 검산/평가 관문으로 진입하며 기존 제품별 경로에 자동 가산하지 않습니다.
 
 Spark와 Databricks도 각각 **28주·14모듈·336시간**의 선택 트랙입니다. [분산 처리 경로](data-processing/README.md)는 Spark 원리 → Databricks 플랫폼 순서를 권장하며, 두 트랙만 순차로 56주입니다. 공통 기초·선택 8주 통합 연구는 별도이고 기존 경로에 자동 가산하지 않습니다. Spark 4.0.4 로컬 실습과 Databricks Runtime의 관리형 기능을 동일 환경으로 취급하지 않습니다.
 
@@ -147,7 +152,7 @@ Qdrant도 **28주·14모듈·7강·336시간**의 선택 트랙입니다. [기�
 
 각 트랙은 **제공된 실행 코드 / 직접 구성할 관측·장애 과제 / 실제 검증 이력**을 구분합니다. 이 표가 모든 제품의 exporter·dashboard·다중 노드·cloud 환경을 자동 제공한다는 뜻은 아닙니다. 실제 계정·비용·권한이 필요한 단계는 사용자가 선택한 허가된 환경에서만 진행하며, 기본 재편 작업이 환경을 자동 실행하거나 자원을 만들지 않습니다.
 
-LLM 논문 트랙은 기존의 **CPU 기본 + GPU/API 선택 확장**을 유지합니다. 수학·알고리즘의 작은 재현과 실제 모델 학습/benchmark 재현을 구분합니다.
+ML·DL·LLM 논문 트랙은 **CPU 기본 + GPU/API 선택 확장**을 사용합니다. [새 ML/DL LAB](ai/ml-dl-llm-roadmap.md)은 소규모 실제 학습을 포함하며, 기존 LLM 수학 모형·실제 대형 모델 학습·원논문 benchmark 재현과 구분합니다.
 
 ```text
 python ai/llm-paper-lab/labs/lab.py --lab all
@@ -163,7 +168,8 @@ python -B -m unittest discover -s ai/llm-paper-lab/labs -p test_lab.py -v
 - NATS 심화 과정, 고정 서버/SDK fixture와 운영 진단 지침, Core/JetStream 소스·Raft 원전·선택 원리 모형
 - Sentry의 네트워크 없는 sampling 모델, Supabase의 18개 권한 기대 결과 fixture와 제품별 준비 지침
 - Amplitude의 고정 버전 웹 SDK 앱·모바일 수동 실습·HTTP V2 진단 fixture, 수집/identity/차트 정합성 관측·사건별 복구 지침; 실제 SaaS·모바일 실행은 미검증
-- LLM 핵심 논문 20편의 읽기·실험 지도, CPU 실험 6개와 단위 테스트, GPU/API 확장·재현 보고서 지침
+- ML 핵심 논문 11편·DL 핵심 논문 12편과 각각 CPU LAB 4개, 수학 기초·단계별 관문·LLM 연결 경로
+- LLM 핵심 논문 20편의 읽기·실험 지도, CPU 모형 6개와 단위 테스트, GPU/API 확장·재현 보고서 지침; Transformer는 DL과 같은 원전
 - Spark의 로컬 배치·스트리밍 runner, 별도 UI·event log 준비 및 실행 계획 진단 지침과 선택 원리 모형
 - Databricks의 관리형 환경 준비 지침·Delta SQL fixture·query/job·비용 진단 과제; 실행 환경 자체는 미제공
 - Terraform/Terragrunt built-in 실제 테스트·로컬 2-unit 실습, plan/state·실행 로그·부분 실패 진단과 선택 원리 모형
