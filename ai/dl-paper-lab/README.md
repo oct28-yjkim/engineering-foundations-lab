@@ -6,6 +6,8 @@ ML의 손실·평가·일반화 위에 **학습 가능한 표현, 계산 그래�
 
 20주·10모듈·주 12시간, 약 240시간을 계획 예산으로 둡니다. GPU를 쓰기 전에 tiny network에서 forward·backward·optimizer·데이터 계약을 확인합니다. ML의 split/metric 원칙은 그대로 유지합니다.
 
+shape/내적은 [벡터·행렬 보충](../math-foundations/lessons/01-vectors-matrices.md), 역전파는 [미분·chain rule](../math-foundations/lessons/02-derivatives-chain-rule.md), 발산은 [최적화·수치](../math-foundations/lessons/04-optimization-numerics.md)로 돌아가 보완합니다. 모델을 서비스로 연결하는 과정은 [ML 시스템 설계](../ml-systems/README.md)에서 병행합니다.
+
 ## 바로 실행
 
 ```text
